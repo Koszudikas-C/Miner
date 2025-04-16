@@ -1,0 +1,6 @@
+@RemoteWorkService_HostAddress = http://localhost:5200
+
+GET {{RemoteWorkService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

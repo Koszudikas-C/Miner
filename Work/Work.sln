@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientBlockChain", "ClientBlockChain\ClientBlockChain.csproj", "{71A3C4ED-8E4F-445E-98FC-97A2E458635C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerBlockChain", "ServerBlockChain\ServerBlockChain.csproj", "{DFC4600D-6573-4092-8575-271845F5FA99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateRemoteService", "UpdateRemoteService\UpdateRemoteService.csproj", "{A8C9183C-8B8F-4D92-913F-1FEBE011A6AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71A3C4ED-8E4F-445E-98FC-97A2E458635C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A3C4ED-8E4F-445E-98FC-97A2E458635C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A3C4ED-8E4F-445E-98FC-97A2E458635C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A3C4ED-8E4F-445E-98FC-97A2E458635C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC4600D-6573-4092-8575-271845F5FA99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC4600D-6573-4092-8575-271845F5FA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC4600D-6573-4092-8575-271845F5FA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC4600D-6573-4092-8575-271845F5FA99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8C9183C-8B8F-4D92-913F-1FEBE011A6AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8C9183C-8B8F-4D92-913F-1FEBE011A6AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8C9183C-8B8F-4D92-913F-1FEBE011A6AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8C9183C-8B8F-4D92-913F-1FEBE011A6AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

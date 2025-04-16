@@ -1,0 +1,5 @@
+Service_name: API Mine = (onio)bsnti7a6yvf7m6ag3ryoolxspvv6j4ps3kvqa47eywoeaumv4q2gasyd.onion Port:80; (nginx)127.0.0.1 Port:80;   (local)127.0.0.1 Port:5050;
+Service_name: Work_servie = (onio)3wfqc53bbzi4uytqxsiohjzc26oj5o3xvulqytdxz5litdlwuyw66mid.onion Port:80; (nginx)127.0.0.1 Port:9090; (local)127.0.0.1 Port:5051 "Servidor responsável por verificar se está tudo ocorrendo como o configurado.
+Service_name: RemoteBlockChain = (onio)ee2vg7qiu4wr3p6wf27zxfrvpmcddvkutocovwnyho4el2obi4vbx2ad.onion Port:80; (nginx)127.0.0.1 Port:9091; (local)127.0.0.1 Port:5000 "Servidor focado na interação é configuração em geral, Com o clientes da mineração".
+É atualização do client em geral"
+Service_name: Proxy miner = (onio)dheq2yivibimsydghgqxnk7iahchjpmzcpijzxrzfmn5lbd6b5yfgdyd.onion Port:80; (nginx)127.0.0.1 Port:9091; (local)127.0.0.1 Port:3333; "Servidor proxy do xmrig. Ponto de recebimento das hash dos cleintes da mineração".
