@@ -7,4 +7,6 @@ public abstract class ManagerTypeEventBusBase()
     public abstract void PublishEventType(JsonElement listData);
 
     public abstract void PublishListEventType(List<JsonElement> listData);
+    
+    
 }

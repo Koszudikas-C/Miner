@@ -6,10 +6,10 @@ namespace LibRemoteAndClient.Entities.Remote.Client;
 
 public class ClientInfo
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     [JsonIgnore]
-    public Socket? Socket { get; set; }
+    public Socket? Socket { get; init; }
     [JsonIgnore]
-    public SslStream? SslStream { get; set; }
+    public SslStream? SslStream { get; init; }
     public ClientMine? ClientMine { get; set; }
 }

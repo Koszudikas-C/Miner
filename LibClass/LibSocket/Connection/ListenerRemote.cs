@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
+using LibCommunicationStatus;
+using LibCommunicationStatus.Entities;
 using LibSocket.Entities.Enum;
 
 namespace LibSocket.Connection;
@@ -14,12 +16,16 @@ public class ListenerRemote(AddressFamily addressFamily,
         CancellationToken cts = default)
     {
         if (Listening) return;
-
+        
         Port = (int)port;
         Socket.Bind(new IPEndPoint(IPAddress.Any, Port));
         Socket.Listen(maxConnections);
-
+        
         Listening = true;
+        
+        CommunicationStatus.SetConnected(true);
+        CommunicationStatus.SetConnecting(true);
+        
         await ConnectForClientAsync(typeAuthMode, cts);
     }
 

@@ -1,8 +1,9 @@
 using LibHandler.EventBus;
+using LibHandler.Interface;
 
 namespace LibHandler.EventBus;
 
-public class GlobalEventBusClient : GlobalEventBusBase<GlobalEventBusClient>
+public class GlobalEventBusClient : GlobalEventBusBase<GlobalEventBusClient>, IEventBus
 {
     public override void Subscribe<TW>(Action<TW> handler)
     {
@@ -80,6 +81,8 @@ public class GlobalEventBusClient : GlobalEventBusBase<GlobalEventBusClient>
         }
     }
 
+    public override void ClearSubscribers() => Handlers.Clear();
+    
     public override void ResetInstance()
     {
         var newInstance = new GlobalEventBusClient();

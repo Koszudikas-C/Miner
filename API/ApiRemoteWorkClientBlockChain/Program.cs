@@ -1,12 +1,10 @@
 using ApiRemoteWorkClientBlockChain.Dependencies;
+using LibMiddleware.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Dependencies Service Collection
 builder.Services.AddConfigServiceCollection(builder.Configuration);
-
-//Controllers
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -33,6 +31,8 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
 

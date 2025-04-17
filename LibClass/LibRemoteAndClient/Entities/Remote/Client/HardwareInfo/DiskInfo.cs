@@ -1,7 +1,8 @@
+using LibRemoteAndClient.Entities.Remote.Client.Abstract;
 
-namespace ServerBlockChain.Entities.Client
+namespace LibRemoteAndClient.Entities.Remote.Client.HardwareInfo;
+
+public class DiskInfo : HardwareInfoBase
 {
-    public static class DiskInfo
-    {
-    }
+
 }

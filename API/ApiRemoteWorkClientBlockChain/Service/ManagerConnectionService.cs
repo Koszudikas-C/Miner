@@ -1,3 +1,4 @@
+using System.Net;
 using ApiRemoteWorkClientBlockChain.Entities;
 using LibHandler.EventBus;
 using LibReceive.Interface;
@@ -6,55 +7,56 @@ using LibRemoteAndClient.Enum;
 using LibSocket.Entities;
 using LibSocket.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
+using LibCommunicationStatus;
+using LibCommunicationStatus.Entities;
 using LibSocket.Entities.Enum;
 using LibSsl.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
-public class ManagerConnectionService : IManagerConnection
+public class ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring,
+    IAuthSsl authSsl) : IManagerConnection
 {
-    private readonly ILogger<ManagerConnectionService> _logger;
-    private readonly ISocketMiring _socketMiring;
-    private readonly IAuthSsl _authSsl;
-    private readonly IReceive _receive;
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
-    private readonly ClientConnected _clientConnected = ClientConnected.Instance;
-    
-    public ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring
-        ,IAuthSsl authSsl, IReceive receive)
-    {
-        _logger = logger;
-        _socketMiring = socketMiring;
-        _authSsl = authSsl;
-        _receive = receive;
-        _globalEventBusRemote.Subscribe<ClientInfo>(OnClientInfoReceived);
-    }
-    
-    public async Task InitializeAsync(ConnectionConfig connectionConfig,
+
+    public async Task<ApiResponse<object>> InitializeAsync(ConnectionConfig connectionConfig, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
     {
+        if(CommunicationStatus.IsConnected)
+            return InstanceApiResponse<object>(HttpStatusCode.Conflict, false,
+                $"Remote server already {connectionConfig.Port} in use", null!);
         try
         {
-            await _socketMiring!.InitializeAsync(connectionConfig.Port, connectionConfig.MaxConnections, 
-                TypeRemoteClient.Remote, TypeAuthMode.AllowAnonymous, cts);
+            await socketMiring!.InitializeAsync(connectionConfig.Port, connectionConfig.MaxConnections,
+                TypeRemoteClient.Remote, typeAuthMode, cts).ConfigureAwait(false);
+
+            for (var i = 0; i < 5; i++)
+            {
+                if (CommunicationStatus.IsConnecting) break;
+                
+                await Task.Delay(1000, cts).ConfigureAwait(false);
+
+                if (i == 4)
+                    return InstanceApiResponse<object>(HttpStatusCode.GatewayTimeout, false, 
+                        "Service initialization failed due to a timeout while attempting to establish" +
+                        " communication with the remote server. Please check the connection settings and try again.", null!);
+            }
+            
+            return InstanceApiResponse<object>(HttpStatusCode.OK, true, 
+                $"Successful service initialization type {typeAuthMode.ToString()}", null!);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            logger.LogError($"Error starting SocketMiringService in mode {typeAuthMode}," +
+                             $" Port:{connectionConfig.Port}," +
+                             $" MaxConnections:{connectionConfig.MaxConnections}: {e.Message}");
+            CommunicationStatus.SetConnected(false);
+            return InstanceApiResponse<object>(HttpStatusCode.InternalServerError, false,
+                "Service initialization failed. Verify the settings and try again.", null!);
         }
     }
-
-    public IReadOnlyCollection<ClientInfo> GetClientLast() => _clientConnected.GetClientInfos();
     
-    private void OnClientInfoReceived(ClientInfo clientInfo)
-    {
-        _receive!.ReceiveDataAsync(clientInfo,TypeRemoteClient.Remote,
-            1);
-        _clientConnected.AddClientInfos(clientInfo);
-        
-        _logger.Log(LogLevel.Information, $"Client connected: {clientInfo.Id}," +
-                                          $" {clientInfo.Socket!.RemoteEndPoint}");
-        
-    }
+    private static ApiResponse<T> InstanceApiResponse<T>(HttpStatusCode statusCode, bool sucess, 
+        string message, IEnumerable<T> data, List<string>? errors = null) 
+        => new ApiResponse<T>(statusCode, sucess, message, data, errors);
 }

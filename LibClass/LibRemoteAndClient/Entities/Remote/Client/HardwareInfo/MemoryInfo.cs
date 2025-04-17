@@ -1,4 +1,4 @@
-using LibRemoteAndClient.Entities.Client.Abstract;
+using LibRemoteAndClient.Entities.Remote.Client.Abstract;
 
 namespace LibRemoteAndClient.Entities.Remote.Client.HardwareInfo;
 

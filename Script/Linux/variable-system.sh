@@ -17,8 +17,8 @@ vars["CERTIFICATE_PASSWORD"]="88199299"
 vars["PROXY_HOST"]="127.0.0.1"
 vars["PROXY_PORT"]="9050"
 vars["REMOTE_PORT"]="80"
-vars["REMOTE_USERNAME"]="OK"
-vars["REMOTE_PASSWORD"]="DqzTQ@dsaweq@4"
+vars["REMOTE_USERNAME_TOR"]="Koszudikas"
+vars["REMOTE_PASSWORD_TOR"]="DqzTQ@dsaw"
 
 # Cria um novo arquivo temporário ignorando as variáveis duplicadas
 temp_file=$(mktemp)

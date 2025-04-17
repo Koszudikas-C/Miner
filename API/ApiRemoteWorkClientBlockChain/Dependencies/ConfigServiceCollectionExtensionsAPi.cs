@@ -27,16 +27,21 @@ public static class ConfigServiceCollectionExtensionsAPi
             .AddScoped(typeof(ISend<>), typeof(SendService<>))
             .AddScoped<IReceive, ReceiveService>()
             .AddScoped<IManagerConnection, ManagerConnectionService>()
-            .AddScoped<GlobalEventBusRemote>()
+            .AddScoped<IManagerClient, ManagerClientService>()
+            .AddSingleton<GlobalEventBusRemote>()
             .AddSingleton(ClientConnected.Instance);
-
-
+        
+        //Version of endpoints
+        services.AddControllers();
+        services.AddProblemDetails();
+        services.AddApiVersioning();
+        
         //Debug Headers
         services.AddHttpLogging(options =>
         {
             options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
         });
-
+        
         //Middleware Headers
         services.Configure<ForwardedHeadersOptions>(options =>
         {

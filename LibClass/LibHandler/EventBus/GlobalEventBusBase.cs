@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using LibHandler.Interface;
 
 namespace LibHandler.EventBus;
 
@@ -15,7 +16,7 @@ public abstract class GlobalEventBusBase<T>
         }
     }
     
-    protected ConcurrentDictionary<Type, List<object>> Handlers = new();
+    protected readonly ConcurrentDictionary<Type, List<object>> Handlers = new();
     
     public abstract void Subscribe<TW>(Action<TW> handler);
     public abstract void SubscribeList<TW>(Action<List<TW>> handlers);
@@ -26,5 +27,6 @@ public abstract class GlobalEventBusBase<T>
     public abstract void Unsubscribe<TW>(Action<TW> handler);
     public abstract void UnsubscribeList<TW>(Action<List<TW>> handlers);
 
+    public abstract void ClearSubscribers();
     public abstract void ResetInstance();
 }

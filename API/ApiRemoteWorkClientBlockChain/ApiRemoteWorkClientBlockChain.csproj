@@ -5,10 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LibClass\LibMiddleware\LibMiddleware.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
     <ProjectReference Include="..\..\Work\ServerBlockChain\ServerBlockChain.csproj" />
   </ItemGroup>

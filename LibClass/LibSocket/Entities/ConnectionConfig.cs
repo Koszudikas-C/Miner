@@ -2,6 +2,6 @@ namespace LibSocket.Entities;
 
 public class ConnectionConfig
 {
-    public uint Port { get; set; }
-    public int MaxConnections { get; set; }
+    public uint Port { get; init; }
+    public int MaxConnections { get; init; }
 }

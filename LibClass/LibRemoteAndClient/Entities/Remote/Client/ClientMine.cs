@@ -11,6 +11,6 @@ public sealed class ClientMine()
     public bool IsStatusMining { get; set; }
     public string So { get; set; } = string.Empty;
     public int HoursRunning { get; set; }
-    public HardwareInfomation? HardwareInfo { get; set; }
+    public HardwareInformation? HardwareInfo { get; set; }
     public MiningStats? Mining { get; set; }
 }

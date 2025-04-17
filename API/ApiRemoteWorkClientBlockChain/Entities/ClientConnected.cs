@@ -5,7 +5,7 @@ namespace ApiRemoteWorkClientBlockChain.Entities;
 
 public class ClientConnected
 {
-    private static readonly Lazy<ClientConnected> _instance = new(() => new ClientConnected());
+    private static Lazy<ClientConnected> _instance = new(() => new ClientConnected());
     public static ClientConnected Instance => _instance.Value;
 
     private readonly Dictionary<Guid, ClientInfo> _clients = new();
@@ -33,4 +33,9 @@ public class ClientConnected
     }
 
     public IReadOnlyCollection<ClientInfo> GetClientInfos() => _clients.Values;
+
+    public void Clear()
+    {
+        _clients.Clear();
+    }
 }

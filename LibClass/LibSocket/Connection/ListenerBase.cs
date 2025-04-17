@@ -39,7 +39,7 @@ public abstract class ListenerBase(
             throw new ArgumentNullException($"Check connection host");
         
         var host = await Dns.GetHostAddressesAsync(hostVariable);
-        return host.ToString()!;
+        return host[0].ToString()!;
 
     }
 
@@ -60,10 +60,8 @@ public abstract class ListenerBase(
             GetEnvInt("PROXY_PORT"),
             GetEnv("SERVICE_NAME_WORK_SERVICE"),
             GetEnvInt("REMOTE_PORT"),
-            // GetEnv("REMOTE_STATUS_OK"),
-            "KOSZUDIKAS",
-            "DqzTQ@dsaw"
-            // GetEnv("REMOTE_SECRET")
+            GetEnv("REMOTE_USERNAME_TOR"),
+            GetEnv("REMOTE_PASSWORD_TOR")
         );
     }
 

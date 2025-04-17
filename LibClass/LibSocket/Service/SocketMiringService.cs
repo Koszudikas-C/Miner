@@ -30,6 +30,10 @@ public class SocketMiringService : ISocketMiring
     {
         try
         {
+            if (port is < 1000 or > 9999)
+                throw new Exception("Port number must be a 4-digit number between 1000 and 9999.");
+
+            
             switch (typeEnum)
             {
                 case TypeRemoteClient.Client:
@@ -44,7 +48,7 @@ public class SocketMiringService : ISocketMiring
         }
         catch (Exception e)
         {
-            await Console.Error.WriteLineAsync($"Error starting ocketmiringservice in mode {typeEnum}: {e}");
+            await Console.Error.WriteLineAsync($"Error starting SocketMiringService in mode {typeEnum}: {e}");
             throw new InvalidOperationException("Failed to boot the socket service.", e);
         }
     }
@@ -73,7 +77,7 @@ public class SocketMiringService : ISocketMiring
 
         listener.ConnectedAct += async (socket) =>
             await OnSocketConnectRemoteAuthAsync(socket, typeAuthMode, typeRemoteClient);
-
+        
         Task.Run(() => listener.StartAsync(typeAuthMode, port, maxConnection));
     }
 
@@ -129,7 +133,6 @@ public class SocketMiringService : ISocketMiring
             PublishTyped(sslStreamObj, typeRemoteClient);
         }
     }
-
     
     private void PublishTyped<T>(T data, TypeRemoteClient remoteClient)
     {

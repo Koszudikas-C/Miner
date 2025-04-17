@@ -33,7 +33,7 @@ public class ListenerClient(
                 }
                 else
                 {
-                    Console.WriteLine($"trying to connect to the ssl server {ip}");
+                    Console.WriteLine($"trying to connect to the ssl server {ip}: {Port}");
                     await Socket.ConnectAsync(ip, Port, cts);
                 }
 
