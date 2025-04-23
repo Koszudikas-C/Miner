@@ -1,4 +1,4 @@
-HEADERnamespace a;
+namespace DataFictitious.Interface;
 
 public interface ISslStreamWrapperTest
 {

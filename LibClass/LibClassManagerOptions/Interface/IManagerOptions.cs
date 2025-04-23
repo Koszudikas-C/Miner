@@ -1,8 +1,10 @@
-using WorkClientBlockChain.Entities.Enum;
+using LibClassManagerOptions.Entities.Enum;
 
-namespace WorkClientBlockChain.Interface;
+namespace LibClassManagerOptions.Interface;
 
 public interface IManagerOptions
 {
-    void InitializeOptions(TypeManagerOptions typeManagerOptions);
+    Task InitializeOptions(TypeManagerOptions typeManagerOptions, CancellationToken cts = default);
+    
+    Task ResponseOptions(TypeManagerResponseOperations typeManagerResponseOperations, CancellationToken cts = default);
 }

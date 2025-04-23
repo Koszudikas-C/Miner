@@ -1,4 +1,4 @@
-using LibSocket.Entities;
+using LibSocketAndSslStream.Entities;
 
 namespace DataFictitious.Connection;
 

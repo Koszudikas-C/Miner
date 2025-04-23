@@ -1,6 +1,18 @@
+using LibRemoteAndClient.Interface;
+
 namespace LibRemoteAndClient.Util;
 
-public class AwaitResult
+public class AwaitResult : IAwaitResult
 {
-    
+    public async Task<object?> AwaitTaskObj(object obj, int repeat = 1,
+        TimeSpan timeout = default)
+    {
+        for (var i = 0; i < repeat; i++)
+        {
+            if (obj is not null) break;
+            await Task.Delay(timeout);
+            continue;
+        }   
+        return obj; 
+    }
 }

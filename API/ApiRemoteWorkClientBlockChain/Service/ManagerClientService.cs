@@ -1,12 +1,12 @@
 using System.Net;
-using ApiRemoteWorkClientBlockChain.Entities;
+using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
 using LibCommunicationStatus.Entities;
 using LibHandler.EventBus;
 using LibReceive.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
-using LibSocket.Interface;
+using LibSocketAndSslStream.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
@@ -16,14 +16,15 @@ public class ManagerClientService : IManagerClient
     private readonly ISocketMiring _socketMiring;
     private readonly IReceive _receive;
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
-    private readonly ClientConnected _clientConnected = ClientConnected.Instance;
+    private readonly IClientConnected _clientConnected;
 
     public ManagerClientService(ILogger<ManagerClientService> logger, ISocketMiring socketMiring
-        , IReceive receive)
+        , IReceive receive, IClientConnected clientConnected)
     {
         _logger = logger;
         _socketMiring = socketMiring;
         _receive = receive;
+        _clientConnected = clientConnected;
         _globalEventBusRemote.Subscribe<ClientInfo>(OnClientInfoReceived);
     }
 
@@ -51,6 +52,21 @@ public class ManagerClientService : IManagerClient
         }
     }
 
+    public ApiResponse<ClientInfo> GetClientInfo(Guid clientId)
+    {
+        if(clientId == Guid.Empty) return InstanceApiResponse<ClientInfo>(
+            HttpStatusCode.NoContent, false, "clientId cannot be empty", null!);
+        
+        var clientInfo = _clientConnected.GetClientInfo(clientId);
+        
+        if(clientInfo == null!) return InstanceApiResponse<ClientInfo>(
+            HttpStatusCode.NoContent, false, "Client not found", null!);
+
+        return InstanceApiResponse<ClientInfo>(HttpStatusCode.OK, true,
+            "Successful", [clientInfo]
+        );
+    }
+
     private static ApiResponse<T> InstanceApiResponse<T>(HttpStatusCode statusCode, bool sucess,
         string message, IEnumerable<T> data, List<string>? errors = null) =>
         new ApiResponse<T>(statusCode, sucess, message, data, errors);
@@ -59,16 +75,16 @@ public class ManagerClientService : IManagerClient
     {
         _receive!.ReceiveDataAsync(clientInfo, TypeRemoteClient.Remote,
             1);
-        _clientConnected.AddClientInfos(clientInfo);
+        _clientConnected.AddClientInfo(clientInfo);
 
-        if (clientInfo.SslStream!.IsAuthenticated)
+        if (clientInfo.SslStreamWrapper!.IsAuthenticated)
         {
             _logger.Log(LogLevel.Information, $"Client connected Auth: {clientInfo.Id}," +
-                                              $" {clientInfo.SslStream!.IsAuthenticated}");
+                                              $" {clientInfo.SslStreamWrapper!.IsAuthenticated}");
             return;
         }
 
         _logger.Log(LogLevel.Information, $"Client connected: {clientInfo.Id}," +
-                                          $" {clientInfo.Socket!.RemoteEndPoint}");
+                                          $" {clientInfo.SocketWrapper!.RemoteEndPoint}");
     }
 }

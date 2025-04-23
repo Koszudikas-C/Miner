@@ -1,4 +1,4 @@
-using LibSocket.Entities;
+using LibSocketAndSslStream.Entities;
 using Moq;
 using WorkClientBlockChain.Interface;
 using Xunit;

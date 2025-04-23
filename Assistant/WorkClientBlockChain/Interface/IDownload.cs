@@ -1,4 +1,4 @@
-using WorkClientBlockChain.Entities.Enum;
+using LibClassManagerOptions.Entities.Enum;
 
 namespace WorkClientBlockChain.Interface;
 

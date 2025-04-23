@@ -3,14 +3,13 @@ using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Service;
 using DataFictitious.Connection;
 using LibCommunicationStatus;
-using LibRemoteAndClient.Enum;
-using LibSocket.Entities;
-using LibSocket.Entities.Enum;
-using LibSocket.Interface;
-using LibSsl.Interface;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Entities.Enum;
+using LibSocketAndSslStream.Interface;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using TypeRemoteClient = LibSocketAndSslStream.Entities.Enum.TypeRemoteClient;
 
 namespace TestApiRemoteWorkClientBlockChain.Service;
 
@@ -19,6 +18,7 @@ public class ManagerConnectionServiceTest
     private readonly Mock<ILogger<ManagerConnectionService>> _loggerMock = new();
     private readonly Mock<ISocketMiring> _socketMiringMock = new();
     private readonly Mock<IAuthSsl> _authSslMock = new();
+    private readonly Mock<IManagerClient> _mockManagerClient = new();
     private readonly IManagerConnection _managerConnection;
 
     public ManagerConnectionServiceTest()
@@ -26,7 +26,8 @@ public class ManagerConnectionServiceTest
         _managerConnection = new ManagerConnectionService(
             _loggerMock.Object,
             _socketMiringMock.Object,
-            _authSslMock.Object
+            _authSslMock.Object,
+            _mockManagerClient.Object
         );
     }
     

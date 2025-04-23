@@ -1,10 +1,9 @@
-using System;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
-using LibSocket.Entities.Enum;
+using LibRemoteAndClient.Entities.Client;
+using LibSearchFile;
+using LibSearchFile.Enum;
+using LibSocketAndSslStream.Entities.Enum;
 using LibSocks5.Entities;
 
 namespace LibSocket.Connection;
@@ -24,23 +23,23 @@ public abstract class ListenerBase(
     public abstract Task StartAsync(TypeAuthMode typeAuthMode, uint port, 
         int maxConnections = 0, CancellationToken cts = default);
 
-    public abstract Task ReconnectAsync(TypeAuthMode typeAuthMode,
+    public abstract Task ReconnectAsync(TypeAuthMode typeAuthMode, uint port,
+        int maxConnection,
         CancellationToken cts = default);
 
     protected Socks5Options? Socks5Options { get; private set; } = GetSocks5Options();
 
     public abstract void Stop();
 
-    protected static async Task<string> GetIpAddress()
+    protected static ConfigVariable GetIpAddress()
     {
-        var hostVariable= Environment.GetEnvironmentVariable("SERVICE_NAME_REMOTE_BLOCK_SSL");
-        
-        if (string.IsNullOrWhiteSpace(hostVariable)) 
-            throw new ArgumentNullException($"Check connection host");
-        
-        var host = await Dns.GetHostAddressesAsync(hostVariable);
-        return host[0].ToString()!;
+        var configVariable = SearchManager.SearchFile(TypeFile.ConfigVariable) as ConfigVariable
+                           ?? new ConfigVariable { RemoteSslHost = "189.78.182.54", RemoteSslPort = 5051 };
 
+        if (string.IsNullOrWhiteSpace(configVariable.RemoteSslHost))
+            throw new ArgumentNullException($"Check connection host");
+
+        return configVariable;
     }
 
     private static Socks5Options GetSocks5Options()

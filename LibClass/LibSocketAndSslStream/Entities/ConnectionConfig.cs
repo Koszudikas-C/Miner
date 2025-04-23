@@ -1,4 +1,4 @@
-namespace LibSocket.Entities;
+namespace LibSocketAndSslStream.Entities;
 
 public class ConnectionConfig
 {

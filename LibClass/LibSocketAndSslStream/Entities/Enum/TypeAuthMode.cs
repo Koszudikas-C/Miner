@@ -1,4 +1,4 @@
-namespace LibSocket.Entities.Enum;
+namespace LibSocketAndSslStream.Entities.Enum;
 
 public enum TypeAuthMode
 {

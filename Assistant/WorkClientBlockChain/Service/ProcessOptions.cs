@@ -1,40 +1,40 @@
-using LibRemoteAndClient.Enum;
-using LibSsl.Enum;
-using LibSsl.Interface;
-using WorkClientBlockChain.Connection;
-using WorkClientBlockChain.Interface;
+using LibClassManagerOptions.Entities.Enum;
+using LibSocketAndSslStream.Interface;
+using LibClassProcessOperations.Interface;
+using LibHandler.EventBus;
+using WorkClientBlockChain.Utils.Interface;
+using WorkClientBlockChain.Connection.Interface;
 
 namespace WorkClientBlockChain.Service;
 
-public class ProcessOptions(ILogger<ProcessOptions> logger, IAuthSsl authSsl) : IProcessOptions
+public class ProcessOptions(ILogger<ProcessOptions> logger, IClientContext clientContext,
+    ISocketMiring socketMiring) 
+    : IProcessOptions
 {
-    public readonly ILogger<ProcessOptions> _logger = logger; 
-    private readonly IAuthSsl _authSsl = authSsl;
-    
-    public async Task<bool> IsProcessAuthSocks5(CancellationToken cts = default)
-    {
-        var clientInfo = ClientContext.GetClientInfo();
-        
-        if (clientInfo == null || !clientInfo.Socket!.Connected) return false;
-        
-        await _authSsl.AuthenticateAsync(clientInfo.Socket, 
-            TypeRemoteClient.Client, clientInfo.Id, cts)!.ConfigureAwait(false);
+    private readonly ILogger<ProcessOptions> _logger = logger; 
+    private readonly IClientContext _clientContext = clientContext;
+    private readonly ISocketMiring _socketMiring = socketMiring;
 
+    private readonly GlobalEventBusClient _globalEventBusRemote =
+        GlobalEventBusClient.Instance!; 
+
+    public async Task IsProcessAuthSocks5Async(CancellationToken cts = default)
+    {
+        var clientInfo = _clientContext.GetClientInfo();
         while (true)
         {
-            if (ClientContext.GetClientInfo()!.SslStream == null)
+            if (_clientContext.GetClientInfo()!.SslStreamWrapper == null)
             {
                 await Task.Delay(1000, cts);
                 continue;
             }
+
+            if (!_clientContext.GetClientInfo()!.SslStreamWrapper!.IsAuthenticated)
+                continue;
             
-            if (ClientContext.GetClientInfo()!.SslStream!.IsAuthenticated)
-            {
-                _logger.LogInformation($"Client {clientInfo.Id} Authenticated()");
-                return true;
-            }
-            
-            await Task.Delay(1000, cts);
+            _logger.LogInformation($"Client {clientInfo!.Id} Authenticated()");
+            _globalEventBusRemote.Publish(TypeManagerResponseOperations.Success); 
+            break;
         }
     }
 

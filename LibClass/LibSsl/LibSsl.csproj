@@ -8,6 +8,10 @@
     <ProjectReference Include="..\LibCertificate\LibCertificate.csproj" />
     <ProjectReference Include="..\LibCommunicationStatus\LibCommunicationStatus.csproj" />
     <ProjectReference Include="..\LibHandler\LibHandler.csproj" />
+    <ProjectReference Include="..\LibSocketAndSslStream\LibSocketAndSslStream.csproj" />
     <ProjectReference Include="..\LibTimeTask\LibTimeTask.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entities\" />
   </ItemGroup>
 </Project>

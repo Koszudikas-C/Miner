@@ -8,6 +8,5 @@
     <ProjectReference Include="..\LibCommunicationStatus\LibCommunicationStatus.csproj" />
     <ProjectReference Include="..\LibHandler\LibHandler.csproj" />
     <ProjectReference Include="..\LibRemoteAndClient\LibRemoteAndClient.csproj" />
-    <ProjectReference Include="..\LibSsl\LibSsl.csproj" />
   </ItemGroup>
 </Project>

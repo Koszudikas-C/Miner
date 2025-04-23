@@ -1,10 +1,11 @@
 using LibHandler.EventBus;
 using LibHandler.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
+using WorkClientBlockChain.Connection.Interface;
 
 namespace WorkClientBlockChain.Connection;
 
-public class ClientContext
+public class ClientContext : IClientContext
 {
     private static readonly object _lock = new();
     private static ClientInfo? _clientInfo;
@@ -13,31 +14,36 @@ public class ClientContext
     
     private static readonly Lazy<ClientContext> _instance = new(() => new ClientContext());
 
-    public static ClientContext Instance => _instance.Value;
+    public static IClientContext Instance => _instance.Value;
 
     private ClientContext()
     {
         GlobalEventBusClient.Subscribe<ClientInfo>(OnClientInfoReceived);
     }
 
-    private static void OnClientInfoReceived(ClientInfo? obj)
+    private void OnClientInfoReceived(ClientInfo? obj)
+    {
+        SetClientInfo(obj);
+    }
+
+    public ClientInfo? GetClientInfo()
     {
         lock (_lock)
         {
-            _clientInfo = obj;
+            return _clientInfo;
         }
     }
 
-    public static ClientInfo? GetClientInfo()
-    {
-        return _clientInfo;
-    }
-    
-    public static void Reset()
+    public void SetClientInfo(ClientInfo? info)
     {
         lock (_lock)
         {
-            _clientInfo = null;
+            _clientInfo = info;
         }
+    }
+
+    public void Reset()
+    {
+        SetClientInfo(null);
     }
 }

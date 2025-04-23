@@ -2,7 +2,6 @@ using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
 using LibSend.Entities;
 using LibSend.Interface;
-using LibSsl.Entities;
 
 namespace LibSend.Service;
 
@@ -27,7 +26,7 @@ public class SendService<T> : ISend<T>
     private static async Task SendAuth(T data, ClientInfo clientInfo,
         CancellationToken cts = default)
     {
-        var send = new SendAuth<T>(clientInfo.SslStream!);
+        var send = new SendAuth<T>(clientInfo.SslStreamWrapper!.InnerSslStream!);
         
         await send.SendAsync(data, cts);
     }
@@ -35,7 +34,7 @@ public class SendService<T> : ISend<T>
     private static async Task Send(T data, ClientInfo clientInfo, 
         CancellationToken cts = default)
     {
-        var send = new Send<T>(clientInfo.Socket!);
+        var send = new Send<T>(clientInfo.SocketWrapper!.InnerSocket);
         
         await send.SendAsync(data, cts);
     }
@@ -59,7 +58,7 @@ public class SendService<T> : ISend<T>
     private static async Task SendAuthList(List<T> dataList, ClientInfo clientInfo,
         CancellationToken cts = default)
     {
-        var send = new SendAuth<T>(clientInfo.SslStream!);
+        var send = new SendAuth<T>(clientInfo.SslStreamWrapper!.InnerSslStream!);
 
         await send!.SendListAsync(dataList, cts);
     }
@@ -67,7 +66,7 @@ public class SendService<T> : ISend<T>
     private static async Task SendList(List<T> dataList, ClientInfo clientInfo,
         CancellationToken cts = default)
     {
-        var send = new Send<T>(clientInfo.Socket!);
+        var send = new Send<T>(clientInfo.SocketWrapper!.InnerSocket);
 
         await send!.SendListAsync(dataList, cts);
     }

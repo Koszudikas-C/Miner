@@ -1,21 +1,17 @@
 using System.Net;
-using ApiRemoteWorkClientBlockChain.Entities;
-using LibHandler.EventBus;
-using LibReceive.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
-using LibSocket.Entities;
-using LibSocket.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
 using LibCommunicationStatus;
 using LibCommunicationStatus.Entities;
-using LibSocket.Entities.Enum;
-using LibSsl.Interface;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Entities.Enum;
+using LibSocketAndSslStream.Interface;
+using TypeRemoteClient = LibSocketAndSslStream.Entities.Enum.TypeRemoteClient;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
 public class ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring,
-    IAuthSsl authSsl) : IManagerConnection
+    IAuthSsl authSsl, IManagerClient managerClient) : IManagerConnection
 {
 
     public async Task<ApiResponse<object>> InitializeAsync(ConnectionConfig connectionConfig, TypeAuthMode typeAuthMode,

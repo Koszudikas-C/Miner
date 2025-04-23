@@ -1,16 +1,21 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using LibRemoteAndClient.Entities.Client;
 using LibSearchFile.Enum;
 
 namespace LibSearchFile;
 
 public static class SearchManager
 {
+    private readonly static string PathFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
+
     public static object? SearchFile(TypeFile type)
     {
         return type switch
         {
             TypeFile.Certificate => SearchCertificate(),
+            TypeFile.ConfigVariable => SearchConfigVariable(),
             _ => null,
         };
     }
@@ -24,8 +29,11 @@ public static class SearchManager
 
     private static X509Certificate2 SearchCertificateWin()
     {
-        var locations = new StoreLocation[] { StoreLocation.CurrentUser,
-            StoreLocation.LocalMachine };
+        var locations = new StoreLocation[]
+        {
+            StoreLocation.CurrentUser,
+            StoreLocation.LocalMachine
+        };
 
         var stores = new StoreName[] { StoreName.My, StoreName.Root };
 
@@ -51,18 +59,16 @@ public static class SearchManager
 
     private static X509Certificate2 SearchCertificateLinux()
     {
-        // var certPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "File", "Certificate", "Certificate.pfx");
-        // const string certPassword = "88199299";
-        
         var certPath = Environment.GetEnvironmentVariable("CERTIFICATE_PATH");
         var certPassword = Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD");
 
         Console.WriteLine($"CERTIFICATE_PATH: {Environment.GetEnvironmentVariable("CERTIFICATE_PATH")}");
         Console.WriteLine($"CERTIFICATE_PASSWORD: {Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD")}");
 
-        if (certPath is null || certPassword is null) throw new ArgumentNullException(nameof(certPath),
-            "CERTIFICATE_PATH, CERTIFICATE_PASSWORD is required.");
-        
+        if (certPath is null || certPassword is null)
+            throw new ArgumentNullException(nameof(certPath),
+                "CERTIFICATE_PATH, CERTIFICATE_PASSWORD is required.");
+
         if (File.Exists(certPath))
         {
             return new X509Certificate2(certPath, certPassword);
@@ -70,5 +76,25 @@ public static class SearchManager
 
         throw new FileNotFoundException("Certificate file not found." +
                                         "Checks if the certificate is on the File/Certificate/Certificate.pfx.");
+    }
+
+    private static object? SearchConfigVariable()
+    {
+        var configVariablePath = Path.Combine(PathFile, "koewa.json");
+        
+        try
+        {
+            if (!File.Exists(configVariablePath)) return null;
+            
+            var json = File.ReadAllText(configVariablePath);
+            
+            var config = JsonSerializer.Deserialize<ConfigVariable>(json);
+
+            return config;  
+        }
+        catch (JsonException)
+        {
+            return File.ReadAllBytes(configVariablePath);
+        }
     }
 }

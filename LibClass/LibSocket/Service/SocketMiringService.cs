@@ -1,21 +1,16 @@
 using System.Net.Sockets;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using LibCommunicationStatus;
 using LibHandler.EventBus;
 using LibJson.Util;
-using LibReceive;
 using LibReceive.Entities;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
 using LibSend.Entities;
-using LibSend.Interface;
-using LibSend.Service;
 using LibSocket.Connection;
-using LibSocket.Entities.Enum;
-using LibSocket.Interface;
-using LibSsl.Entities;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Entities.Enum;
+using LibSocketAndSslStream.Interface;
+using TypeRemoteClient = LibSocketAndSslStream.Entities.Enum.TypeRemoteClient;
 
 namespace LibSocket.Service;
 
@@ -23,6 +18,7 @@ public class SocketMiringService : ISocketMiring
 {
     private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private  ISocketWrapper _socketWrapper;
 
     public async Task InitializeAsync(uint port, int maxConnection,
         TypeRemoteClient typeEnum, TypeAuthMode typeAuthMode,
@@ -51,6 +47,36 @@ public class SocketMiringService : ISocketMiring
             await Console.Error.WriteLineAsync($"Error starting SocketMiringService in mode {typeEnum}: {e}");
             throw new InvalidOperationException("Failed to boot the socket service.", e);
         }
+    }
+
+    public async Task ReconnectAsync(uint port, int maxConnection,
+        TypeRemoteClient typeRemoteClient, TypeAuthMode typeAuthMode, 
+        CancellationToken cts = default)
+    {
+        try
+        {
+            switch(typeRemoteClient)
+            {
+                case TypeRemoteClient remoteClient:
+                    await ReconnectionClientAsync(port, maxConnection,
+                        typeAuthMode, cts);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error ao tentar fazer a conexão: {ex.Message}.");
+        }
+    }
+
+    private async Task ReconnectionClientAsync(uint port, int maxConnection,
+        TypeAuthMode typeAuthMode, CancellationToken cts = default)
+    {
+        var listener = new ListenerClient(AddressFamily.InterNetwork,
+            SocketType.Stream, ProtocolType.Tcp);
+
+        await listener.ReconnectAsync(typeAuthMode, port, maxConnection, cts);
+        CommunicationStatus.SetSending(true);
     }
 
     private async Task StartClientAsync(uint port,
@@ -124,12 +150,14 @@ public class SocketMiringService : ISocketMiring
     {
         if (typeAuthMode == TypeAuthMode.AllowAnonymous)
         {
-            var clientInfo = new ClientInfo { Id = token, Socket = socket };
+            var clientInfo = new ClientInfo { Id = token, SocketWrapper = new SocketWrapper(socket) };
             PublishTyped(clientInfo, typeRemoteClient);
         }
         else
         {
-            var sslStreamObj = new ObjSocketSslStream { Id = token, Socket = socket };
+            var sslStreamObj = new ObjSocketSslStream { Id = token,
+                SocketWrapper = new SocketWrapper(socket) };
+            
             PublishTyped(sslStreamObj, typeRemoteClient);
         }
     }

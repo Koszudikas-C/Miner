@@ -31,3 +31,6 @@ bld/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+## Paste\Files
+Resources/*

@@ -1,4 +1,4 @@
-namespace LibRemoteAndClient.Enum;
+namespace LibSocketAndSslStream.Entities.Enum;
 
 public enum TypeRemoteClient
 {

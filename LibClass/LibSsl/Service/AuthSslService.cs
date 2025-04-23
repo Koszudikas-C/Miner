@@ -3,10 +3,10 @@ using System.Net.Sockets;
 using LibCommunicationStatus;
 using LibHandler.EventBus;
 using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
+using LibSocketAndSslStream.Entities.Enum;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Interface;
 using LibSsl.Auth;
-using LibSsl.Entities;
-using LibSsl.Interface;
 
 namespace LibSsl.Service;
 
@@ -26,7 +26,7 @@ public class AuthSslService : IAuthSsl
             _ = OnClientInfoClient(objSocketSslStream));
     }
 
-    public async Task AuthenticateAsync(Socket socket, TypeRemoteClient typeRemoteClient,
+    public async Task AuthenticateAsync(ISocketWrapper socketWrapper, TypeRemoteClient typeRemoteClient, 
         Guid clientId, CancellationToken cts = default)
     {
         try
@@ -36,19 +36,19 @@ public class AuthSslService : IAuthSsl
             switch (typeRemoteClient)
             {
                 case TypeRemoteClient.Client:
-                    var resultClient = new AuthClient(socket);
+                    var resultClient = new AuthClient(socketWrapper.InnerSocket);
                     if (await resultClient.AuthenticateAsync(cts))
                     {
-                        OnSslAuthenticateClient(resultClient.SslStream!, socket,
+                        OnSslAuthenticateClient(resultClient.SslStream!, socketWrapper.InnerSocket,
                             clientId);
                     }
 
                     break;
                 case TypeRemoteClient.Remote:
-                    var resultRemote = new AuthRemote(socket);
+                    var resultRemote = new AuthRemote(socketWrapper.InnerSocket);
                     if (await resultRemote.AuthenticateAsync(cts))
                     {
-                        OnSslAuthenticateRemote(resultRemote.SslStream!, socket,
+                        OnSslAuthenticateRemote(resultRemote.SslStream!, socketWrapper.InnerSocket,
                             clientId);
                     }
 
@@ -74,8 +74,8 @@ public class AuthSslService : IAuthSsl
         var clientInfo = new ClientInfo()
         {
             Id = clientId,
-            Socket = socket,
-            SslStream = sslStream
+            SocketWrapper = new SocketWrapper(socket),
+            SslStreamWrapper = new SslStreamWrapper(sslStream)
         };
         
         _globalEventBusClient.Publish(clientInfo);
@@ -88,8 +88,8 @@ public class AuthSslService : IAuthSsl
         var clientInfo = new ClientInfo()
         {
             Id = clientId,
-            Socket = socket,
-            SslStream = sslStream
+            SocketWrapper = new SocketWrapper(socket),
+            SslStreamWrapper = new SslStreamWrapper(sslStream)
         };
         
         _globalEventBusRemote.Publish(clientInfo);
@@ -98,14 +98,14 @@ public class AuthSslService : IAuthSsl
     private async Task OnClientInfoRemote(ObjSocketSslStream objSocketSslStream)
     {
         await _semaphore.WaitAsync();
-        await AuthenticateAsync(objSocketSslStream.Socket!, TypeRemoteClient.Remote,
+        await AuthenticateAsync(objSocketSslStream.SocketWrapper!, TypeRemoteClient.Remote,
             objSocketSslStream.Id);
     }
     
     private async Task OnClientInfoClient(ObjSocketSslStream objSocketSslStream)
     {
         await _semaphore.WaitAsync();
-        await AuthenticateAsync(objSocketSslStream.Socket!, TypeRemoteClient.Client,
+        await AuthenticateAsync(objSocketSslStream.SocketWrapper!, TypeRemoteClient.Client,
             objSocketSslStream.Id);
     }
 }

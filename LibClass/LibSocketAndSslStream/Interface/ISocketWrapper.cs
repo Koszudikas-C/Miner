@@ -1,11 +1,12 @@
 using System.Net.Sockets;
 
-namespace LibSocket.Interface;
+namespace LibSocketAndSslStream.Interface;
 
 public interface ISocketWrapper
 {
     bool Connected { get; }
-
+    string? RemoteEndPoint { get; }
+    string? LocalEndPoint { get; }
+    int PortRemote { get; }
     Socket InnerSocket { get; }
-    // Adicione outros métodos/propriedades necessários
 }

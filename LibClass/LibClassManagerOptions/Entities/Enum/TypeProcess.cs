@@ -1,4 +1,4 @@
-namespace WorkClientBlockChain.Entities.Enum;
+namespace LibClassManagerOptions.Entities.Enum;
 
 public enum TypeProcess
 {

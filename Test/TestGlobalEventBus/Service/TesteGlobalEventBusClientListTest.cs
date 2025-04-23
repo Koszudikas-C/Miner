@@ -164,7 +164,7 @@ public class TesteGlobalEventBusClientListTest
 
         _testIEventBusTes.Object.SubscribeList<ClientInfo>(msg => { });
 
-        var expected = ClientInfoTest.ClientInfoList();
+        var expected = ClientInfoTest.GetClientInfoList();
         List<ClientInfo>? received = null;
 
         capturedHandler = msg => received = msg;
@@ -180,8 +180,8 @@ public class TesteGlobalEventBusClientListTest
         _ = expected.Zip(received, (exp, rec) =>
         {
             Assert.Equal(exp.Id, rec.Id);
-            Assert.Equal(exp.Socket, rec.Socket);
-            Assert.Equal(exp.SslStream, rec.SslStream);
+            Assert.Equal(exp.SocketWrapper!.InnerSocket, rec.SocketWrapper!.InnerSocket);
+            Assert.Equal(exp.SslStreamWrapper, rec.SslStreamWrapper);
             Assert.Equal(exp.ClientMine, rec.ClientMine);
             return true;
         });

@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LibClass\LibCryptography\LibCryptography.csproj" />
       <ProjectReference Include="..\LibClass\LibRemoteAndClient\LibRemoteAndClient.csproj" />
       <ProjectReference Include="..\LibClass\LibSocket\LibSocket.csproj" />
     </ItemGroup>

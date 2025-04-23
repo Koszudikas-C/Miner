@@ -1,11 +1,12 @@
 using LibRemoteAndClient.Entities.Remote.Client;
+using LibSocketAndSslStream.Entities;
 
 namespace DataFictitious.Entities.Remote.Client;
 
 public static class ClientInfoTest
 {
 
-    public static ClientInfo ClientInfo()
+    public static ClientInfo GetClientInfo()
     {
         return new ClientInfo()
         {
@@ -13,7 +14,7 @@ public static class ClientInfoTest
             ClientMine = ClientMineTest.CreateFictitiousClientMine()
         };
     }
-    public static List<ClientInfo> ClientInfoList()
+    public static List<ClientInfo> GetClientInfoList()
     {
         return
         [

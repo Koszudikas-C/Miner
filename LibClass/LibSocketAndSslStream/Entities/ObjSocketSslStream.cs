@@ -1,8 +1,7 @@
 using System.Net.Security;
-using System.Net.Sockets;
-using LibSocket.Interface;
+using LibSocketAndSslStream.Interface;
 
-namespace LibSocket.Entities;
+namespace LibSocketAndSslStream.Entities;
 
 public class ObjSocketSslStream
 {

@@ -1,7 +1,6 @@
 using LibCommunicationStatus.Entities;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibSocket.Entities;
-using LibSocket.Entities.Enum;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Entities.Enum;
 
 namespace ApiRemoteWorkClientBlockChain.Interface;
 

@@ -2,10 +2,8 @@ using System.Net;
 using ApiRemoteWorkClientBlockChain.Interface;
 using Asp.Versioning;
 using LibCommunicationStatus.Entities;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibSocket.Entities;
-using LibSocket.Entities.Enum;
-using LibSsl.Interface;
+using LibSocketAndSslStream.Entities;
+using LibSocketAndSslStream.Entities.Enum;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiRemoteWorkClientBlockChain.Controllers;

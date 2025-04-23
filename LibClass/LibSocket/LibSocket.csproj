@@ -7,8 +7,9 @@
   <ItemGroup>
     <ProjectReference Include="..\LibHandler\LibHandler.csproj" />
     <ProjectReference Include="..\LibReceive\LibReceive.csproj" />
+    <ProjectReference Include="..\LibSearchFile\LibSearchFile.csproj" />
     <ProjectReference Include="..\LibSend\LibSend.csproj" />
+    <ProjectReference Include="..\LibSocketAndSslStream\LibSocketAndSslStream.csproj" />
     <ProjectReference Include="..\LibSocks5\LibSocks5.csproj" />
-    <ProjectReference Include="..\LibSsl\LibSsl.csproj" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
-namespace WorkClientBlockChain.Entities.Enum;
+namespace LibClassManagerOptions.Entities.Enum;
 
 public enum TypeManagerOptions
 {
     Error = 0x0F,
     CancelOperations = 0x0E,
     
-    Auth = 0,
+    AuthSocks5 = 0,
     CheckAppClientBlockChain = 1,
     DownloadAppClientBlockChain = 2,
     Logs = 3,

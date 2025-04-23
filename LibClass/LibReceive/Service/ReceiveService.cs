@@ -7,7 +7,6 @@ using LibReceive.Entities;
 using LibReceive.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
-using LibSsl.Entities;
 
 namespace LibReceive.Service;
 
@@ -28,7 +27,7 @@ public class ReceiveService : IReceive
             CommunicationStatus.SetReceiving(true);
             while (!cts.IsCancellationRequested)
             {
-                var receive = new ReceiveAuth(clientInfo.SslStream!, cts);
+                var receive = new ReceiveAuth(clientInfo.SslStreamWrapper!.InnerSslStream!, cts);
 
                 receive.OnReceivedAct += OnReceivedAtc;
                 receive.OnReceivedListAct += OnReceiveList;

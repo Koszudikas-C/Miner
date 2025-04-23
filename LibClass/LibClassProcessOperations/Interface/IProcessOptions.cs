@@ -1,8 +1,10 @@
-namespace WorkClientBlockChain.Interface;
+using LibClassManagerOptions.Entities.Enum;
+
+namespace LibClassProcessOperations.Interface;
 
 public interface IProcessOptions
 {
-    Task<bool> IsProcessAuthSocks5(CancellationToken cts = default);
+    Task IsProcessAuthSocks5Async(CancellationToken cts = default);
 
     Task IsProcessCheckAppClientBlockChain(CancellationToken cts = default);
     

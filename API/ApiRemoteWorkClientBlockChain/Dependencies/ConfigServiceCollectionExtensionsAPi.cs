@@ -1,16 +1,16 @@
 using System.Net;
 using ApiRemoteWorkClientBlockChain.Entities;
+using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Service;
+using LibClassProcessOperations.Interface;
 using LibHandler.EventBus;
 using LibReceive.Service;
 using LibReceive.Interface;
 using LibSend.Service;
 using LibSend.Interface;
-using LibSocket.Connection;
-using LibSocket.Interface;
 using LibSocket.Service;
-using LibSsl.Interface;
+using LibSocketAndSslStream.Interface;
 using LibSsl.Service;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpLogging;
@@ -28,6 +28,8 @@ public static class ConfigServiceCollectionExtensionsAPi
             .AddScoped<IReceive, ReceiveService>()
             .AddScoped<IManagerConnection, ManagerConnectionService>()
             .AddScoped<IManagerClient, ManagerClientService>()
+            .AddScoped<IClientConnected, ClientConnected>()
+            .AddScoped<IProcessOptions, ProcessOptionsService>()
             .AddSingleton<GlobalEventBusRemote>()
             .AddSingleton(ClientConnected.Instance);
         
@@ -55,12 +57,5 @@ public static class ConfigServiceCollectionExtensionsAPi
         services.AddSwaggerGen();
 
         return services;
-    }
-
-    private static async Task<string> Host()
-    {
-        var addresses = await Dns.GetHostAddressesAsync(TargetHost.Host);
-
-        return addresses[0].ToString();
     }
 }

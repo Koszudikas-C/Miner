@@ -1,7 +1,6 @@
 
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
-using LibSsl.Entities;
 
 namespace LibReceive.Interface;
 

@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using LibCommunicationStatus;
-using LibCommunicationStatus.Entities;
-using LibSocket.Entities.Enum;
+using LibSocketAndSslStream.Entities.Enum;
 
 namespace LibSocket.Connection;
 
@@ -26,10 +25,11 @@ public class ListenerRemote(AddressFamily addressFamily,
         CommunicationStatus.SetConnected(true);
         CommunicationStatus.SetConnecting(true);
         
-        await ConnectForClientAsync(typeAuthMode, cts);
+        await ConnectForClientAsync(typeAuthMode, port, maxConnections, cts);
     }
 
-    private async Task ConnectForClientAsync(TypeAuthMode typeAuthMode, CancellationToken cts)
+    private async Task ConnectForClientAsync(TypeAuthMode typeAuthMode,
+        uint port, int maxConnection, CancellationToken cts)
     {
         while (!cts.IsCancellationRequested)
         {
@@ -47,7 +47,7 @@ public class ListenerRemote(AddressFamily addressFamily,
             {
                 Console.WriteLine($"Error when accepting customer: {ex.Message}");
                 await Task.Delay(5000, cts);
-                await ReconnectAsync(typeAuthMode, cts);
+                await ReconnectAsync(typeAuthMode, port, maxConnection, cts);
             }
             finally
             {
@@ -56,7 +56,8 @@ public class ListenerRemote(AddressFamily addressFamily,
         }
     }
 
-    public override async Task ReconnectAsync(TypeAuthMode typeAuthMode, CancellationToken cts = default)
+    public override async Task ReconnectAsync(TypeAuthMode typeAuthMode, 
+        uint port, int maxConnection, CancellationToken cts = default)
     {
         if (!Listening) return;
 

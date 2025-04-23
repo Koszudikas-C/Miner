@@ -1,5 +1,5 @@
 ﻿using System.Net.Sockets;
-using LibSocket.Entities.Enum;
+using LibSocketAndSslStream.Entities.Enum;
 using LibSocks5.Service;
 
 namespace LibSocket.Connection;
@@ -21,7 +21,7 @@ public class ListenerClient(
 
     private async Task ConnectWithRetryAsync(TypeAuthMode typeAuthMode, CancellationToken cts)
     {
-        var ip = await GetIpAddress();
+        var configVariable = GetIpAddress();
         while (!cts.IsCancellationRequested)
         {
             try
@@ -33,8 +33,8 @@ public class ListenerClient(
                 }
                 else
                 {
-                    Console.WriteLine($"trying to connect to the ssl server {ip}: {Port}");
-                    await Socket.ConnectAsync(ip, Port, cts);
+                    Console.WriteLine($"trying to connect to the ssl server {configVariable.RemoteSslHost}: {configVariable.RemoteSslPort}");
+                    await Socket.ConnectAsync(configVariable.RemoteSslHost, configVariable.RemoteSslPort, cts);
                 }
 
                 Console.WriteLine("Connected to the server");
@@ -51,7 +51,8 @@ public class ListenerClient(
     }
 
 
-    public override async Task ReconnectAsync(TypeAuthMode typeAuthMode, CancellationToken cts = default)
+    public override async Task ReconnectAsync(TypeAuthMode typeAuthMode, uint port,
+        int maxConnection, CancellationToken cts = default)
     {
         if (!Listening) return;
 
@@ -59,7 +60,7 @@ public class ListenerClient(
         Socket.Close();
         Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        await ConnectWithRetryAsync(typeAuthMode, cts);
+        await StartAsync(typeAuthMode, port, maxConnection, cts);
     }
 
     public override void Stop()

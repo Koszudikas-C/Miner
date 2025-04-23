@@ -172,7 +172,7 @@ public class TestGlobalEventBusClient
         
         _testIEventBusTes.Object.Subscribe<ClientInfo>(msg => { });
 
-        var expected = ClientInfoTest.ClientInfo();
+        var expected = ClientInfoTest.GetClientInfo();
         ClientInfo? received = null;
         
         captureHandler = msg => received = msg;

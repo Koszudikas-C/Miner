@@ -1,0 +1,7 @@
+
+{
+    "ConfigVariable": {
+        "REMOTE_SSL_HOST": "monerokoszudikas.duckdns.org",
+        "REMOTE_SSL_PORT": "5051"
+    }
+}
