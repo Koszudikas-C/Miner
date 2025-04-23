@@ -2,7 +2,7 @@ namespace WorkClientBlockChain.Interface;
 
 public interface IProcessOptions
 {
-    Task IsProcessAuthSocks5(CancellationToken cts = default);
+    Task<bool> IsProcessAuthSocks5(CancellationToken cts = default);
 
     Task IsProcessCheckAppClientBlockChain(CancellationToken cts = default);
     
