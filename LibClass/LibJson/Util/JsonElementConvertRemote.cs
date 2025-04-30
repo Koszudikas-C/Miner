@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
+using LibDto.Dto;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client.Enum;
 using ClientMine = LibRemoteAndClient.Entities.Remote.Client.ClientMine;
@@ -7,7 +8,7 @@ using LogEntry = LibRemoteAndClient.Entities.Remote.Client.LogEntry;
 
 namespace LibJson.Util;
 
-public class JsonElementConvertRemote
+public static class JsonElementConvertRemote
 {
     public static object ConvertToObject(JsonElement jsonElement)
     {
@@ -43,23 +44,32 @@ public class JsonElementConvertRemote
             return jsonElement.Deserialize<GuidTokenAuth>()!;
         }
 
-        switch (jsonElement.ValueKind)
-        {
-            case JsonValueKind.Object:
-                CreateOrUpdateConfigJson(jsonElement);
+        return IdentifierTypeToProcess1(jsonElement);
+    }
 
-                return "";
-            case JsonValueKind.String:
-                return jsonElement.GetString()!;
-            case JsonValueKind.Undefined:
-            case JsonValueKind.Array:
-            case JsonValueKind.Number:
-            case JsonValueKind.True:
-            case JsonValueKind.False:
-            case JsonValueKind.Null:
-            default:
-                throw new ArgumentException("Unsupported data type", nameof(jsonElement));
+    private static object IdentifierTypeToProcess1(JsonElement jsonElement)
+    {
+        
+        if(JsonMatchesType<ConfigSaveFileDto>(jsonElement))
+            return jsonElement.Deserialize<ConfigSaveFileDto>()!;
+        
+        if(JsonMatchesType<ConfigCryptographDto>(jsonElement))
+            return jsonElement.Deserialize<ConfigCryptographDto>()!;
+        
+        if(JsonMatchesType<ConfigVariableDto>(jsonElement))
+            return jsonElement.Deserialize<ConfigVariableDto>()!;
+        
+        
+        if (jsonElement.ValueKind == JsonValueKind.Object)
+        {
+            CreateOrUpdateConfigJson(jsonElement);
+            throw new InvalidOperationException("Tipo de objeto JSON não reconhecido para conversão. Nenhum tipo correspondente encontrado.");
         }
+
+        if (jsonElement.ValueKind == JsonValueKind.String)
+            return jsonElement.GetString()!;
+
+        throw new ArgumentException("Unsupported data type", nameof(jsonElement));
     }
 
     private static bool JsonMatchesType<T>(JsonElement element)

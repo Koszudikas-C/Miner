@@ -33,12 +33,8 @@ public static class CommunicationStatus
         IsConnecting = status;
     }
     
-    public static void AddPortOpen(RemoteOpenStatus status)
+    public static void SetAuthenticated(bool status)
     {
-        if(!PortOpen.Contains(status))
-            PortOpen.Add(status);
+        Authenticated = status;
     }
-
-    public static bool CheckPortOpen(int port) => 
-        PortOpen.Any(p => p.Port == port);
 }

@@ -12,13 +12,10 @@ internal class PortOpen : IPortOpen
         var connect = tcpClient.ConnectAsync(IPAddress.Any, port);
         var result = await Task.WhenAny(connect, Task.Delay(1000, cts));
 
-        if (result.IsCompleted)
-        {
-            tcpClient.Close();
-            return true;
-        }
-
-        return false;
+        if (!result.IsCompleted) return false;
+        
+        tcpClient.Close();
+        return true;
     }
 }
 

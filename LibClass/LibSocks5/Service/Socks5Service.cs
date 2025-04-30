@@ -11,9 +11,9 @@ using LibSocks5.Interface;
 
 namespace LibSocks5.Service;
 
-public static class Socks5Service
+public class Socks5Service : ISocks5
 {
-    public static async Task<Socket> ConnectAsync(Func<Socket> socketFactory, Socks5Options options,
+    public async Task<Socket> ConnectAsync(Func<Socket> socketFactory, Socks5Options options,
         CancellationToken cts = default)
     {
         ArgumentNullException.ThrowIfNull(options);

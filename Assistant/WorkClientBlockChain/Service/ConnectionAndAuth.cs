@@ -5,14 +5,16 @@ using WorkClientBlockChain.Interface;
 
 namespace WorkClientBlockChain.Service;
 
-public class ConnectionAndAuth(ISocketMiring socketMiring, ILogger<ConnectionAndAuth> logger) : IConnectionAndAuth
+public class ConnectionAndAuth(ISocketMiring socketMiring, 
+    ILogger<ConnectionAndAuth> logger, IAuthSsl authSsl) : IConnectionAndAuth
 {
-    public async Task ConnectAndAuthAsync(ConnectionConfig cooConnectionConfig, CancellationToken cts = default)
+    public async Task ConnectAndAuthAsync(CancellationToken cts = default)
     {
         try
         {
-            await socketMiring.InitializeAsync(cooConnectionConfig.Port, cooConnectionConfig.MaxConnections,
-                TypeRemoteClient.Client, TypeAuthMode.RequireAuthentication, cts);
+            await socketMiring.InitializeAsync(
+                5051, 0,
+                TypeAuthMode.RequireAuthentication, cts);
         }
         catch (Exception e)
         {

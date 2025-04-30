@@ -23,7 +23,7 @@ public class ManagerConnectionService(ILogger<ManagerConnectionService> logger, 
         try
         {
             await socketMiring!.InitializeAsync(connectionConfig.Port, connectionConfig.MaxConnections,
-                TypeRemoteClient.Remote, typeAuthMode, cts).ConfigureAwait(false);
+                typeAuthMode, cts).ConfigureAwait(false);
 
             for (var i = 0; i < 5; i++)
             {

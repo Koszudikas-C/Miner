@@ -4,6 +4,5 @@ namespace WorkClientBlockChain.Interface;
 
 public interface IConnectionAndAuth
 { 
-    Task ConnectAndAuthAsync(ConnectionConfig connectionConfig, 
-        CancellationToken cts = default);
+    Task ConnectAndAuthAsync(CancellationToken cts = default);
 }

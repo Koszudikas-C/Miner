@@ -11,9 +11,14 @@
     <ProjectReference Include="..\..\LibClass\LibClassManagerOptions\LibClassManagerOptions.csproj" />
     <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
     <ProjectReference Include="..\..\LibClass\LibCommunicationStatus\LibCommunicationStatus.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibCryptography\LibCryptography.csproj" />
     <ProjectReference Include="..\..\LibClass\LibHandler\LibHandler.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibSaveFile\LibSaveFile.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSend\LibSend.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dto\" />
   </ItemGroup>
 </Project>

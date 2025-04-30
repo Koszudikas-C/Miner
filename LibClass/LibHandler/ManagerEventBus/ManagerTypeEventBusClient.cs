@@ -1,15 +1,19 @@
 using System.Net;
 using System.Text.Json;
+using LibCryptography.Entities;
+using LibDto.Dto;
 using LibHandler.EventBus;
 using LibJson.Util;
+using LibManagerFile.Entities;
 using LibRemoteAndClient.Entities.Client.Enum;
 using LibRemoteAndClient.Entities.Client;
+using LibSocketAndSslStream.Entities;
 
 namespace LibHandler.ManagerEventBus;
 
 public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
 {
-    private readonly GlobalEventBusClient _globalEventBus = GlobalEventBusClient.Instance!;
+    private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
     
     public override void PublishEventType(JsonElement data)
     {
@@ -19,46 +23,70 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
         switch (obj)
         {
             case ClientMine clientMine:
-                _globalEventBus.Publish(clientMine);
+                _globalEventBusClient.Publish(clientMine);
                 break;
-            // case ListenerClient listener:
-            //     _globalEventBus.Publish(listener);
-            //     break;
             case LogEntry logEntry:
-                _globalEventBus.Publish(logEntry);
+                _globalEventBusClient.Publish(logEntry);
                 break;
             case ClientCommandMine clientCommandMine:
-                _globalEventBus.Publish(clientCommandMine);
+                _globalEventBusClient.Publish(clientCommandMine);
                 break;
             case ClientCommandLog clientCommandLog:
-                _globalEventBus.Publish(clientCommandLog);
+                _globalEventBusClient.Publish(clientCommandLog);
                 break;
             case HttpStatusCode httpStatusCode:
-                _globalEventBus.Publish(httpStatusCode);
+                _globalEventBusClient.Publish(httpStatusCode);
                 break;
             case string message:
-                _globalEventBus.Publish(message);
+                _globalEventBusClient.Publish(message);
+                break;
+            case ConfigSaveFile configSaveFile:
+                _globalEventBusClient.Publish(configSaveFile);
+                break;
+            case ConfigCryptograph configCryptograph:
+                _globalEventBusClient.Publish(configCryptograph);
+                break;
+            case ConfigCryptographDto configCryptographDto:
+                _globalEventBusClient.Publish(configCryptographDto);
+                break;
+            case ConfigVariableDto configVariableDot:
+                _globalEventBusClient.Publish(configVariableDot);
+                break;
+            case ConfigSaveFileDto configSaveFileDto:
+                _globalEventBusClient.Publish(configSaveFileDto);
                 break;
             default:
-                throw new ArgumentException("Unsupported data type", nameof(data));
+                throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));
         }
     }
 
     public override void PublishListEventType(List<JsonElement> listData)
     {
+        if (listData == null || listData.Count == 0)
+            throw new ArgumentNullException(nameof(listData), "List cannot be null or empty");
+
         var obj = listData.Select(JsonElementConvertClient.ConvertToObject).ToList();
+
+        var firstType = obj.FirstOrDefault()?.GetType();
+        if (firstType == null)
+            throw new ArgumentException("Could not determine type of list elements.", nameof(listData));
 
         if (obj.All(o => o is ClientMine))
         {
-            _globalEventBus.Publish(obj.Cast<ClientMine>().ToList());
+            _globalEventBusClient.Publish(obj.Cast<ClientMine>().ToList());
         }
         else if(obj.All(o => o is LogEntry))
         {
-            _globalEventBus.Publish(obj.Cast<LogEntry>().ToList());
+            _globalEventBusClient.Publish(obj.Cast<LogEntry>().ToList());
         }
         else if(obj.All(o => o is ClientCommandMine))
         {
-            _globalEventBus.Publish(obj.Cast<ClientCommandMine>().ToList());
+            _globalEventBusClient.Publish(obj.Cast<ClientCommandMine>().ToList());
+        }
+        else
+        {
+            var types = string.Join(", ", obj.Select(o => o.GetType().FullName ?? "null").Distinct());
+            throw new ArgumentException($"Unsupported list type(s): {types}", nameof(listData));
         }
     }
 }

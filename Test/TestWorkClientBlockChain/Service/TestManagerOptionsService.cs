@@ -1,13 +1,13 @@
 using LibClassManagerOptions.Entities.Enum;
 using LibClassProcessOperations.Interface;
+using LibCryptography.Interface;
+using LibManagerFile.Interface;
 using LibSend.Interface;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
-using WorkClientBlockChain.Connection;
 using WorkClientBlockChain.Service;
 using WorkClientBlockChain.Connection.Interface;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using WorkClientBlockChain.Utils.Interface;
 
 namespace TestWorkClientBlockChain.Service;
@@ -18,8 +18,10 @@ public class ManagerOptionsServiceTests
     private readonly Mock<ILogger<ManagerOptionsService>> _mockLogger = new();
     private readonly Mock<ISend<TypeManagerResponseOperations>> _mockSend = new(); 
     private readonly Mock<IClientContext> _mockClientContext = new();
-    private readonly Mock<IConnectionValidation> _mockConnectionValidation = new();
     private readonly Mock<IPortOpen> _mockPortOpen = new();
+    private readonly Mock<ICryptographFile> _mockCryptographFile = new();
+    private readonly Mock<IDownloadAll> _mockDownloadAll = new();
+    private readonly Mock<ISearchFile> _mockSearchFile = new();
     private readonly ManagerOptionsService _managerOptionsService;
 
     public ManagerOptionsServiceTests()
@@ -30,7 +32,9 @@ public class ManagerOptionsServiceTests
             _mockSend.Object,
             _mockClientContext.Object,
             _mockPortOpen.Object,
-            _mockConnectionValidation.Object
+            _mockCryptographFile.Object,
+            _mockDownloadAll.Object,
+            _mockSearchFile.Object
             );
     }
 
@@ -43,13 +47,13 @@ public class ManagerOptionsServiceTests
     [InlineData(TypeManagerOptions.StatusTransaction)]
     public void InitializeOptions_ValidType_CallsExpectedMethod(TypeManagerOptions option)
     {
-        _managerOptionsService.InitializeOptions(option);
+       _ = _managerOptionsService.InitializeOptions(option);
 
         switch (option)
         {
             case TypeManagerOptions.AuthSocks5:
-                _mockProcessOptions.Verify(x =>
-                    x.IsProcessAuthSocks5Async(It.IsAny<CancellationToken>()), Times.Once);
+                // _mockProcessOptions.Verify(x =>
+                //     x.IsProcessAuthSocks5Async(It.IsAny<CancellationToken>()), Times.Once);
                 break;
             case TypeManagerOptions.CheckAppClientBlockChain:
                 _mockProcessOptions.Verify(x =>

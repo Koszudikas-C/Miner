@@ -1,21 +1,31 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.VisualBasic;
+using System.Text.Json.Serialization;
 
 namespace LibCryptography.Entities;
 
-public class ConfigCryptograph<T>(string filePath)
+public class ConfigCryptograph
 {
     private const string KeyDefault = "22FFD66E1E314CCCA24CC78ACB5CC07C";
     private const string KeyHmacDefault = "19D32BABAEB042B7837AF8CB62EED569";
 
+    
+    private static readonly List<ConfigCryptograph> X1 = [];
+    private static readonly object _lock = new();
     public byte[] HeaderSignature { get; set; } = [0x16, 0x34, 0x50, 0x75];
     public string Key { get; set; } = KeyDefault;
     public string HmacKey { get; set; } = KeyHmacDefault;
     private byte[]? EncryptKey { get; set; }
-    public string FilePath { get; set; } = filePath;
-    private T? Data { get; set; }
+    public string FilePath { get; set; }
+    private object Data { get; set; }
     private byte[]? DataBytes { get; set; }
+    
+    public ConfigCryptograph(string filePath)
+    {
+        FilePath = filePath;
+        
+        AddOrUpdateConfigCryptograph(this);
+    }
 
     public byte[] GetHmacKey()
     {
@@ -26,7 +36,7 @@ public class ConfigCryptograph<T>(string filePath)
         return Encoding.UTF8.GetBytes(HmacKey);
     }
 
-    public byte[]? GetEncryptKey()
+    public byte[] GetEncryptKey()
     {
         if (string.IsNullOrWhiteSpace(Key))
             throw new InvalidOperationException("Encryption key (Key) must not be null or empty.");
@@ -35,17 +45,18 @@ public class ConfigCryptograph<T>(string filePath)
         return EncryptKey ??= Encoding.UTF8.GetBytes(Key);
     }
 
-    public T GetData()
+    public object GetData()
     {
         if (Data is null)
             throw new NullReferenceException("Data is null. Set data before using GetData().");
         return Data;
     }
 
-    public void SetData(T data)
+    public void SetData(object data)
     {
         if (data is null)
             throw new ArgumentNullException(nameof(data), "Data cannot be null.");
+        
         Data = data;
         DataBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data));
     }
@@ -63,6 +74,61 @@ public class ConfigCryptograph<T>(string filePath)
         if (data is null || data.Length == 0)
             throw new ArgumentException("DataBytes cannot be null or empty.", nameof(data));
         DataBytes = data;
+    }
+
+    public void AddOrUpdateConfigCryptograph(ConfigCryptograph configCryptograph)
+    {
+        lock (_lock)
+        {
+            var idx = X1.FindIndex(c => c.GetType() == typeof(ConfigCryptograph));
+            if (idx >= 0)
+            {
+                X1[idx] = configCryptograph;
+                return;
+            }
+
+            X1.Add(configCryptograph);
+        }
+    }
+
+    public ConfigCryptograph GetConfigCryptograph(Type type)
+    {
+        lock (_lock)
+        {
+            if (X1.Any(c => c.GetType() == type))
+                return X1.FirstOrDefault(c => c.GetType() == type)!;
+        }
+
+        throw new InvalidOperationException($"Cryptograph for type {type.Name} does not exist.");
+    }
+
+    public void RemoveConfigCryptograph(Type type)
+    {
+        lock (_lock)
+        {
+            X1.RemoveAll(c => c.GetType() == type);
+            ClearSensitiveData();
+        }
+    }
+
+    private void ClearSensitiveData()
+    {
+        if (EncryptKey is not null)
+            Array.Clear(EncryptKey, 0, EncryptKey.Length);
+        if (DataBytes is not null)
+            Array.Clear(DataBytes, 0, DataBytes.Length);
+
+        Array.Clear(HeaderSignature, 0, HeaderSignature.Length);
+    }
+
+    public static void ClearAllInstances()
+    {
+        lock (_lock)
+        {
+            foreach (var item in X1)
+                item.ClearSensitiveData();
+            X1.Clear();
+        }
     }
 
     public void ValidateAll()

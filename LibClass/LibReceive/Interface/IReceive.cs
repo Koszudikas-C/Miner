@@ -6,6 +6,6 @@ namespace LibReceive.Interface;
 
 public interface IReceive
 {
-    Task ReceiveDataAsync(ClientInfo clientInfo, TypeRemoteClient typeEnum, 
+    Task ReceiveDataAsync(ClientInfo clientInfo, TypeSocketSsl typeSocketSsl, 
         int countReceive = 0, CancellationToken cts = default);
 }

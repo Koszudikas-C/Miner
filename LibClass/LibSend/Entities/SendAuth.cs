@@ -30,13 +30,21 @@ public class SendAuth<T>(SslStream sslStream)
     private async Task SendLengthPrefix(object data,
         bool isList = false, CancellationToken cts = default)
     {
-        this._buffer.BufferSend = BitConverter.GetBytes(JsonSerializer.SerializeToUtf8Bytes(data).Length);
+        try
+        {
+            _buffer.BufferSend = BitConverter.GetBytes(JsonSerializer.SerializeToUtf8Bytes(data).Length);
 
-        Array.Copy(this._buffer.BufferSend, this._buffer.BufferInit, 4);
-        this._buffer.BufferInit[4] = isList ? (byte)1 : (byte)0;
+            Array.Copy(this._buffer.BufferSend, this._buffer.BufferInit, 4);
+            _buffer.BufferInit[4] = isList ? (byte)1 : (byte)0;
 
-        await _sslStream.WriteAsync(this._buffer.BufferInit, cts);
-        CheckWhichType(data, isList);
+            await _sslStream.WriteAsync(this._buffer.BufferInit, cts);
+            CheckWhichType(data, isList);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception(e.Message);
+        }
     }
 
     private async Task SendObject(object data, CancellationToken cts = default)

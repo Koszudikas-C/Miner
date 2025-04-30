@@ -13,11 +13,11 @@ public class TestConnectionAndAuth
     public void ConnectionAndAuthTest()
     {
         var cts = new CancellationTokenSource();
-        var config = new ConnectionConfig { Port = 5051, MaxConnections = 5 };
-        _iConnectionAndAuthMock.Setup(m => m.ConnectAndAuthAsync(config, cts.Token)).Verifiable();
 
-        _iConnectionAndAuthMock.Object.ConnectAndAuthAsync(config, cts.Token);
+        _iConnectionAndAuthMock.Setup(m => m.ConnectAndAuthAsync(cts.Token)).Verifiable();
 
-        _iConnectionAndAuthMock.Verify(m => m.ConnectAndAuthAsync(config, cts.Token), Times.Once());
+        _iConnectionAndAuthMock.Object.ConnectAndAuthAsync(cts.Token);
+
+        _iConnectionAndAuthMock.Verify(m => m.ConnectAndAuthAsync(cts.Token), Times.Once());
     }
 }

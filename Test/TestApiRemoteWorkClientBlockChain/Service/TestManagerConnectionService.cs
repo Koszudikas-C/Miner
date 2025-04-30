@@ -41,8 +41,8 @@ public class ManagerConnectionServiceTest
         CommunicationStatus.SetConnecting(true);
 
         _socketMiringMock
-            .Setup(m => m.InitializeAsync(config.Port, config.MaxConnections, 
-                TypeRemoteClient.Remote, typeAuthMode, cts.Token))
+            .Setup(m => m.InitializeAsync(config.Port, config.MaxConnections,
+                typeAuthMode, cts.Token))
             .Returns(Task.CompletedTask)
             .Verifiable();
         
@@ -63,8 +63,8 @@ public class ManagerConnectionServiceTest
         CommunicationStatus.SetConnecting(false);
 
         _socketMiringMock
-            .Setup(m => m.InitializeAsync(config.Port, config.MaxConnections, 
-                TypeRemoteClient.Remote, typeAuthMode, cts.Token))
+            .Setup(m => m.InitializeAsync(config.Port, config.MaxConnections,
+                typeAuthMode, cts.Token))
             .Returns(Task.CompletedTask);
 
         var result = await _managerConnection.InitializeAsync(config, typeAuthMode, cts.Token);
@@ -83,7 +83,8 @@ public class ManagerConnectionServiceTest
 
         _socketMiringMock
             .Setup(m => m.InitializeAsync(config.Port, config.MaxConnections,
-                TypeRemoteClient.Remote, typeAuthMode, cts.Token))
+                typeAuthMode, cts.Token))
+            
             .ThrowsAsync(new Exception("Port number must be a 4-digit number between 1000 and 9999."));
         
         var result = await _managerConnection.InitializeAsync(config, typeAuthMode, cts.Token);

@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibCryptography\LibCryptography.csproj" />
+    <ProjectReference Include="..\LibManagerFile\LibManagerFile.csproj" />
     <ProjectReference Include="..\LibRemoteAndClient\LibRemoteAndClient.csproj" />
   </ItemGroup>
 </Project>

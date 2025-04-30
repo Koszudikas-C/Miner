@@ -7,7 +7,7 @@ namespace LibCryptography.Service;
 
 public class CryptographFileService : ICryptographFile
 {
-    public byte[] SaveFile<T>(ConfigCryptograph<T> configCrpytograph)
+    public byte[] SaveFile(ConfigCryptograph configCrpytograph)
     {
         if (IsFileEncrypted(configCrpytograph.FilePath!, configCrpytograph.HeaderSignature))
             throw new CryptographicException("File is already encrypted");
@@ -24,7 +24,7 @@ public class CryptographFileService : ICryptographFile
         return result;
     }
     
-    public string LoadFile<T>(ConfigCryptograph<T> configCrpytograph)
+    public string LoadFile(ConfigCryptograph configCrpytograph)
     {
         if (!IsFileEncrypted(configCrpytograph.FilePath, configCrpytograph.HeaderSignature)) 
             throw new CryptographicException();

@@ -1,24 +1,34 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
+using LibCryptography.Entities;
+using LibDto.Dto;
+using LibManagerFile.Entities;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Client.Enum;
+using LibSocketAndSslStream.Entities;
 
 namespace LibJson.Util;
 
-public class JsonElementConvertClient
+public static class JsonElementConvertClient
 {
     public static object ConvertToObject(JsonElement jsonElement)
     {
-        return IdentifierTypeToProcesss(jsonElement);
+        return IdentifierTypeToProcess(jsonElement);
     }
 
-    private static object IdentifierTypeToProcesss(JsonElement jsonElement)
+    private static object IdentifierTypeToProcess(JsonElement jsonElement)
     {
         if (JsonMatchesType<ClientMine>(jsonElement))
             return jsonElement.Deserialize<ClientMine>()!;
 
         if (JsonMatchesType<LogEntry>(jsonElement))
             return jsonElement.Deserialize<LogEntry>()!;
+
+        if (JsonMatchesType<ConfigSaveFile>(jsonElement))
+            return jsonElement.Deserialize<ConfigSaveFile>()!;
+
+        if (JsonMatchesType<ConfigCryptograph>(jsonElement))
+            return jsonElement.Deserialize<ConfigCryptograph>()!;
 
         if (JsonMatchesType<ClientCommandMine>(jsonElement))
         {
@@ -35,17 +45,30 @@ public class JsonElementConvertClient
 
             throw new InvalidOperationException("Expected a number for enum deserialization.");
         }
+        
+        return IdentifierTypeToProcess1(jsonElement);
+    }
 
-        if (JsonValueKind.Object == jsonElement.ValueKind)
+    private static object IdentifierTypeToProcess1(JsonElement jsonElement)
+    {
+        if(JsonMatchesType<ConfigSaveFileDto>(jsonElement))
+            return jsonElement.Deserialize<ConfigSaveFileDto>()!;
+        
+        if(JsonMatchesType<ConfigCryptographDto>(jsonElement))
+           return jsonElement.Deserialize<ConfigCryptographDto>()!;
+        
+        if(JsonMatchesType<ConfigVariableDto>(jsonElement))
+            return jsonElement.Deserialize<ConfigVariableDto>()!;
+        
+        if (jsonElement.ValueKind == JsonValueKind.Object)
         {
             CreateOrUpdateConfigJson(jsonElement);
-
-            return "";
+            throw new InvalidOperationException("Tipo de objeto JSON não reconhecido para conversão. Nenhum tipo correspondente encontrado.");
         }
 
         if (jsonElement.ValueKind == JsonValueKind.String)
             return jsonElement.GetString()!;
-
+        
         throw new ArgumentException("Unsupported data type", nameof(jsonElement));
     }
 
@@ -67,7 +90,8 @@ public class JsonElementConvertClient
         }
 
         var propertyJson = element.EnumerateObject().Select(p => p.Name).ToHashSet();
-        var propertyClass = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        var propertyClass = typeof(T).GetProperties(BindingFlags.Public |
+                                                    BindingFlags.Instance | BindingFlags.NonPublic)
             .Select(p => p.Name).ToHashSet();
 
         return propertyJson.SetEquals(propertyClass);

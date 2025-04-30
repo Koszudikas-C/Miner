@@ -2,26 +2,15 @@ using LibSocks5.Entities.Enum;
 
 namespace LibSocks5.Entities;
 
-public sealed class Socks5Options
+public sealed class Socks5Options(string proxyHost, int proxyPort, string destHost, int destPort)
 {
-    public string ProxyHost { get; } 
-    public int ProxyPort { get; } 
-    public string DestinationHost { get; }
-    public int DestinationPort { get; }
-    public AuthType? Auth { get; set; }
+    public string ProxyHost { get; } = proxyHost;
+    public int ProxyPort { get; } = proxyPort;
+    public string DestinationHost { get; } = destHost;
+    public int DestinationPort { get; } = destPort;
+    public AuthType? Auth { get; set; } = AuthType.None;
     public Credential? Credentials { get; } = new();
-
-    public Socks5Options(string proxyHost, int proxyPort, string destHost, int destPort)
-    {
-        ProxyHost = proxyHost;
-        ProxyPort = proxyPort;
-        DestinationHost = destHost;
-        DestinationPort = destPort;
-        Auth = AuthType.None;
-    }
-
-    public Socks5Options(string proxyHost, string destHost, int destPort) : this(proxyHost, 1080, destHost, destPort) { }
-
+    
     public Socks5Options(string proxyHost, int proxyPort, string destHost, int destPort, string username,
         string password) : this(proxyHost, proxyPort, destHost, destPort)
     {

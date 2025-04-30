@@ -7,5 +7,5 @@ public class ObjSocketSslStream
 {
     public Guid Id { get; set; }
     public ISocketWrapper? SocketWrapper { get; set; }
-    public SslStream? SslStream { get; set; }
+    public ISslStreamWrapper? SslStream { get; set; }
 }

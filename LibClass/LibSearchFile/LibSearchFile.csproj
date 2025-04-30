@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibRemoteAndClient\LibRemoteAndClient.csproj" />
+    <ProjectReference Include="..\Group\MapperObjAndDto\LibDto\LibDto.csproj" />
+    <ProjectReference Include="..\LibManagerFile\LibManagerFile.csproj" />
+
   </ItemGroup>
 </Project>

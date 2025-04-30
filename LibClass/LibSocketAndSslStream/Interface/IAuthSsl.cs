@@ -1,9 +1,13 @@
+using System.Net.Security;
+using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Entities.Enum;
 
 namespace LibSocketAndSslStream.Interface;
 
 public interface IAuthSsl
 {
-    Task AuthenticateAsync(ISocketWrapper socket, TypeRemoteClient typeRemoteClient, 
-        Guid clientId, CancellationToken cts = default);
+    Task AuthenticateAsync(ObjSocketSslStream objSocketSslStream,
+        CancellationToken cts = default);
+
+    void Reconnect(Guid clientId);
 }

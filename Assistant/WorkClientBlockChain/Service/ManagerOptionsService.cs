@@ -1,11 +1,16 @@
+using System.Text.Json;
 using LibClassManagerOptions.Entities.Enum;
 using LibClassManagerOptions.Interface;
 using LibClassProcessOperations.Interface;
+using LibCryptography.Entities;
+using LibCryptography.Interface;
 using LibHandler.EventBus;
+using LibManagerFile.Entities.Enum;
+using LibManagerFile.Interface;
 using LibRemoteAndClient.Enum;
 using LibSend.Interface;
+using LibSocketAndSslStream.Entities;
 using WorkClientBlockChain.Connection.Interface;
-using WorkClientBlockChain.Utils;
 using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Service;
@@ -17,23 +22,29 @@ public class ManagerOptionsService : IManagerOptions
     private readonly ISend<TypeManagerResponseOperations> _send;
     private readonly IClientContext _clientContext;
     private readonly IPortOpen _portOpen;
-    private readonly IConnectionValidation _connectionValidation;
+    private readonly ICryptographFile _cryptographFile;
+    private readonly IDownloadAll _downloadAll;
+    private readonly ISearchFile _searchFile;
     private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
     private CancellationTokenSource _ctsSource = new();
+    private readonly string _pathFile = Path.Combine(Directory.GetCurrentDirectory(), "Resources" + "koewa.json");
 
     public ManagerOptionsService(IProcessOptions processOptions, ILogger<ManagerOptionsService> logger
     , ISend<TypeManagerResponseOperations> send, IClientContext clientContext,
-        IPortOpen portOpen, IConnectionValidation connectionValidation)
+        IPortOpen portOpen, ICryptographFile cryptographFile,
+        IDownloadAll downloadAll, ISearchFile searchFile)
     {
         _processOptions = processOptions;
         _logger = logger;
         _send = send;
         _clientContext = clientContext;
         _portOpen = portOpen;
-        _connectionValidation = connectionValidation;
-
+        _cryptographFile = cryptographFile;
+        _downloadAll = downloadAll;
+        _searchFile = searchFile;
         _globalEventBusClient.Subscribe<TypeManagerOptions>(async void
             (handler) => await InitializeOptions(handler));
+        
         _globalEventBusClient.Subscribe<TypeManagerResponseOperations>(async void
             (handler) => await ResponseOptions(handler));
     }
@@ -45,6 +56,13 @@ public class ManagerOptionsService : IManagerOptions
         switch (expression)
         {
             case TypeManagerOptions.AuthSocks5:
+                if (!await _portOpen.IsOpenPortAsync(9050, cts))
+                {
+                    var configVariable = GetConfigVariable();
+                    var result = await _downloadAll.DownloadAsync(
+                        configVariable.RemoteSslBlock!, "",
+                        _ctsSource.Token);
+                }
                 await _processOptions.IsProcessAuthSocks5Async(_ctsSource.Token);
                 break;
             case TypeManagerOptions.CheckAppClientBlockChain:
@@ -135,5 +153,30 @@ public class ManagerOptionsService : IManagerOptions
     {
         _ctsSource.Cancel();
         _ctsSource = new CancellationTokenSource();
+    }
+
+    private ConfigVariable GetConfigVariable()
+    {
+        var data = _searchFile.SearchFile(TypeFile.ConfigVariable);
+        
+        var configCryptograph = new ConfigCryptograph(_pathFile);
+        
+        switch (data)
+        {
+            case ConfigVariable config:
+                configCryptograph.SetData(config);
+                break;
+            case byte[] bytes:
+                configCryptograph.SetDataBytes(bytes);
+                break;
+            default:
+                throw new FileNotFoundException(nameof(data),"Data not found."); 
+        }
+        
+        var result = _cryptographFile.LoadFile(configCryptograph);
+        
+        var obj = JsonSerializer.Deserialize<ConfigVariable>(result);
+        
+        return obj!;
     }
 }

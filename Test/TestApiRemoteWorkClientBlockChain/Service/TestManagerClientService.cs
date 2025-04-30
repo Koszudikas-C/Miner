@@ -2,8 +2,16 @@ using System.Net;
 using ApiRemoteWorkClientBlockChain.Entities;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Service;
+using LibCryptography.Entities;
+using LibCryptography.Interface;
+using LibDto.Dto;
+using LibManagerFile.Entities;
+using LibManagerFile.Interface;
+using LibMapperObj.Interface;
 using LibReceive.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
+using LibSend.Interface;
+using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Interface;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -15,9 +23,13 @@ public class TestManagerClientService
 {
     private readonly ManagerClientService _managerClientService;
     private readonly Mock<ILogger<ManagerClientService>> _mockLogger = new();
-    private readonly Mock<ISocketMiring> _mockSocketMiring = new();
     private readonly Mock<IReceive> _mockReceive = new();
+    private readonly Mock<ISend<ConfigCryptographDto>> _mockSend = new();
+    private readonly Mock<ISend<ConfigSaveFileDto>> _mockSendConfigSaveFile = new(); 
     private readonly Mock<IClientConnected> _mockClientConnected = new();
+    private readonly Mock<ICryptographFile> _mockCryptographFile = new();
+    private readonly Mock<ISearchFile> _mockSearchFile = new();
+    private readonly Mock<IMapperObj> _mockMapperObj = new();
 
     public TestManagerClientService()
     {
@@ -25,9 +37,13 @@ public class TestManagerClientService
 
         _managerClientService = new ManagerClientService(
             _mockLogger.Object,
-            _mockSocketMiring.Object,
             _mockReceive.Object,
-            _mockClientConnected.Object
+            _mockClientConnected.Object,
+            _mockSend.Object,
+            _mockSendConfigSaveFile.Object,
+            _mockCryptographFile.Object,
+            _mockSearchFile.Object,
+            _mockMapperObj.Object
         );
     }
 

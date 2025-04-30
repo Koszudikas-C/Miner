@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Configurações
+HOST="localhost"    # ou IP desejado
+PORT=5050           # porta para monitorar
+URL="http://localhost:5050/api/v1/ManagerRemoteV1/StartRemote?typeAuthMode=0"  # URL para fazer o request
+TOKEN="FrxYFCeT6DtP74YnwyvzC76cX8EdjuAOv5KHkjnEXZ0CMUmfmwx7LFPcjCdhWZQLjbbsjNypODujOkKmUazFtEqcYAjsJZnv3Y9VWFpvogyncJKHiwNLhnS1gDNRvWEd"  # Defina seu token aqui
+
+# Função para checar se a porta está aberta
+is_port_open() {
+    nc -z "$HOST" "$PORT" 2>/dev/null
+    return $?
+}
+
+# Loop até a porta abrir
+echo "Aguardando a porta $PORT em $HOST abrir..."
+while true; do
+    if is_port_open; then
+        echo "Porta $PORT aberta! Fazendo requisição HTTP para $URL..."
+        curl -X GET "$URL" -H "x-api-key: $TOKEN"
+        break
+    else
+        sleep 1  # espera 1 segundo antes de tentar de novo
+    fi
+done

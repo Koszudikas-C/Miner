@@ -3,14 +3,25 @@ using ApiRemoteWorkClientBlockChain.Entities;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Service;
+using LibCertificate.Interface;
+using LibCertificate.Service;
 using LibClassProcessOperations.Interface;
+using LibCryptography.Interface;
+using LibCryptography.Service;
 using LibHandler.EventBus;
+using LibManagerFile.Interface;
+using LibMapperObj.Interface;
+using LibMapperObj.Service;
 using LibReceive.Service;
 using LibReceive.Interface;
+using LibSaveFile.Service;
+using LibSearchFile.Service;
 using LibSend.Service;
 using LibSend.Interface;
 using LibSocket.Service;
 using LibSocketAndSslStream.Interface;
+using LibSocks5.Interface;
+using LibSocks5.Service;
 using LibSsl.Service;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpLogging;
@@ -22,14 +33,21 @@ public static class ConfigServiceCollectionExtensionsAPi
     public static IServiceCollection AddConfigServiceCollection(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddScoped<ISocketMiring, SocketMiringService>()
-            .AddScoped<IAuthSsl, AuthSslService>()
-            .AddScoped(typeof(ISend<>), typeof(SendService<>))
-            .AddScoped<IReceive, ReceiveService>()
+        services.AddScoped<ISocketMiring, SocketRemoteService>()
+            .AddScoped<IAuthSsl, AuthSslRemoteService>()
+            .AddScoped<IAuthRemote, AuthRemoteService>()
+            .AddScoped(typeof(ISend<>), typeof(SendServiceRemote<>))
+            .AddScoped<IReceive, ReceiveServiceRemote>()
             .AddScoped<IManagerConnection, ManagerConnectionService>()
             .AddScoped<IManagerClient, ManagerClientService>()
-            .AddScoped<IClientConnected, ClientConnected>()
+            .AddSingleton<IClientConnected>(ClientConnected.Instance)
             .AddScoped<IProcessOptions, ProcessOptionsService>()
+            .AddScoped<IListenerRemote, ListenerRemoteService>()
+            .AddScoped<ICryptographFile, CryptographFileService>()
+            .AddScoped<ISearchFile, SearchFileService>()
+            .AddScoped<ISaveFile, SaveFileService>()
+            .AddScoped<ICertificate, CertificateService>()
+            .AddScoped<IMapperObj, MapperObjService>()
             .AddSingleton<GlobalEventBusRemote>()
             .AddSingleton(ClientConnected.Instance);
         
@@ -53,8 +71,8 @@ public static class ConfigServiceCollectionExtensionsAPi
 
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        // services.AddEndpointsApiExplorer();
+        // services.AddSwaggerGen();
 
         return services;
     }

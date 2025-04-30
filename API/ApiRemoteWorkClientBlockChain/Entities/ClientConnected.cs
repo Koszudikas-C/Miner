@@ -6,7 +6,7 @@ namespace ApiRemoteWorkClientBlockChain.Entities;
 
 public class ClientConnected : IClientConnected
 {
-    private static Lazy<ClientConnected> _instance = new(() => new ClientConnected());
+    private static readonly Lazy<ClientConnected> _instance = new(() => new ClientConnected());
 
     public static ClientConnected Instance => _instance.Value;
 

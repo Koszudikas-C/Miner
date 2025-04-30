@@ -4,6 +4,6 @@ namespace LibCryptography.Interface;
 
 public interface ICryptographFile
 {
-    byte[] SaveFile<T>(ConfigCryptograph<T> configCryptograph);
-    string LoadFile<T>(ConfigCryptograph<T> configCryptograph);
+    byte[] SaveFile(ConfigCryptograph configCryptograph);
+    string LoadFile(ConfigCryptograph configCryptograph);
 }
