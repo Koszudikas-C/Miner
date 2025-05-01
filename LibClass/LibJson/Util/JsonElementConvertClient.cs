@@ -24,12 +24,6 @@ public static class JsonElementConvertClient
         if (JsonMatchesType<LogEntry>(jsonElement))
             return jsonElement.Deserialize<LogEntry>()!;
 
-        if (JsonMatchesType<ConfigSaveFile>(jsonElement))
-            return jsonElement.Deserialize<ConfigSaveFile>()!;
-
-        if (JsonMatchesType<ConfigCryptograph>(jsonElement))
-            return jsonElement.Deserialize<ConfigCryptograph>()!;
-
         if (JsonMatchesType<ClientCommandMine>(jsonElement))
         {
             if (jsonElement.ValueKind == JsonValueKind.Number)
@@ -63,7 +57,7 @@ public static class JsonElementConvertClient
         if (jsonElement.ValueKind == JsonValueKind.Object)
         {
             CreateOrUpdateConfigJson(jsonElement);
-            throw new InvalidOperationException("Tipo de objeto JSON não reconhecido para conversão. Nenhum tipo correspondente encontrado.");
+            throw new InvalidOperationException("Object type JSON Not recognized for conversion. No corresponding type found.");
         }
 
         if (jsonElement.ValueKind == JsonValueKind.String)

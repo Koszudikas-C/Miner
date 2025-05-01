@@ -33,6 +33,7 @@ public class ListenerClientService(
         var resultConfigVariable = configVariable.GetConfigVariable();
         var data = (ConfigVariable)resultConfigVariable.GetData();
         var resultConfigSocks5 = socks5Options.GetSocks5Options();
+        var ip = await Dns.GetHostEntryAsync(data.RemoteSslBlock!, cts);
         
         while (!cts.IsCancellationRequested)
         {
@@ -49,8 +50,7 @@ public class ListenerClientService(
                     Console.WriteLine($"trying to connect to the ssl server " +
                                       $"{data.RemoteSslBlock}: {data.RemoteSslBlockPort}");
                     
-                    await _listener.Socket.ConnectAsync((await Dns.GetHostEntryAsync(data.RemoteSslBlock!, cts))
-                        .AddressList[0].ToString(),
+                    await _listener.Socket.ConnectAsync(ip.AddressList[0].ToString(),
                         data.RemoteSslBlockPort, cts);
                 }
 

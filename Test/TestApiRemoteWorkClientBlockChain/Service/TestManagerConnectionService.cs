@@ -1,8 +1,14 @@
 using System.Net;
+using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Service;
 using DataFictitious.Connection;
 using LibCommunicationStatus;
+using LibCryptography.Interface;
+using LibDto.Dto;
+using LibManagerFile.Interface;
+using LibMapperObj.Interface;
+using LibSend.Interface;
 using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Entities.Enum;
 using LibSocketAndSslStream.Interface;
@@ -18,7 +24,14 @@ public class ManagerConnectionServiceTest
     private readonly Mock<ILogger<ManagerConnectionService>> _loggerMock = new();
     private readonly Mock<ISocketMiring> _socketMiringMock = new();
     private readonly Mock<IAuthSsl> _authSslMock = new();
+    private readonly Mock<ISearchFile> _mockSearchFile = new();
     private readonly Mock<IManagerClient> _mockManagerClient = new();
+    private readonly Mock<ISend<ConfigCryptographDto>> _mockSendConfigCryptography = new();
+    private readonly Mock<ISend<ConfigSaveFileDto>> _mockSendConfigSaveFile = new();
+    private readonly Mock<IClientConnected> _mockClientConnected = new ();
+    private readonly Mock<ICryptographFile> _mockCryptograph = new();
+    private readonly Mock<IMapperObj> _mapperObj = new();
+    
     private readonly IManagerConnection _managerConnection;
 
     public ManagerConnectionServiceTest()
@@ -27,7 +40,13 @@ public class ManagerConnectionServiceTest
             _loggerMock.Object,
             _socketMiringMock.Object,
             _authSslMock.Object,
-            _mockManagerClient.Object
+            _mockManagerClient.Object,
+            _mockSearchFile.Object,
+            _mockSendConfigCryptography.Object,
+            _mockSendConfigSaveFile.Object,
+            _mockClientConnected.Object,
+            _mockCryptograph.Object,
+            _mapperObj.Object
         );
     }
     

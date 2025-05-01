@@ -52,8 +52,8 @@ public class ManagerTypeEventBusRemote
             case ConfigCryptographDto configCryptographDto:
                 _globalEventBusRemote.Publish(configCryptographDto);
                 break;
-            case ConfigVariableDto configVariableDot:
-                _globalEventBusRemote.Publish(configVariableDot);
+            case ConfigVariableDto configVariableDto:
+                _globalEventBusRemote.Publish(configVariableDto);
                 break;
             case ConfigSaveFileDto configSaveFileDto:
                 _globalEventBusRemote.Publish(configSaveFileDto);

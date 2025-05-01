@@ -49,8 +49,8 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
             case ConfigCryptographDto configCryptographDto:
                 _globalEventBusClient.Publish(configCryptographDto);
                 break;
-            case ConfigVariableDto configVariableDot:
-                _globalEventBusClient.Publish(configVariableDot);
+            case ConfigVariableDto configVariableDto:
+                _globalEventBusClient.Publish(configVariableDto);
                 break;
             case ConfigSaveFileDto configSaveFileDto:
                 _globalEventBusClient.Publish(configSaveFileDto);

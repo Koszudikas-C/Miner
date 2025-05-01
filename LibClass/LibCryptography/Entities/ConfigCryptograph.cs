@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace LibCryptography.Entities;
 
@@ -17,7 +16,7 @@ public class ConfigCryptograph
     public string HmacKey { get; set; } = KeyHmacDefault;
     private byte[]? EncryptKey { get; set; }
     public string FilePath { get; set; }
-    private object Data { get; set; }
+    private object? Data { get; set; }
     private byte[]? DataBytes { get; set; }
     
     public ConfigCryptograph(string filePath)
@@ -59,6 +58,11 @@ public class ConfigCryptograph
         
         Data = data;
         DataBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data));
+    }
+
+    public void SetDataClear()
+    {
+        Data = null;
     }
 
     public byte[] GetDataBytes()

@@ -18,7 +18,4 @@
     <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dto\" />
-  </ItemGroup>
 </Project>
