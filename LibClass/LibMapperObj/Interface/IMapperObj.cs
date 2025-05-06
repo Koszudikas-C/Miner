@@ -5,9 +5,14 @@ namespace LibMapperObj.Interface;
 
 public interface IMapperObj
 {
+    TTarget Map<TSource, TTarget>(TSource source)
+        where TTarget : new();
+    
     TDto MapToDto<TSource, TDto>(TSource source, TDto dto);
     
     TSource MapToObj<TDto, TSource>(TDto dto, TSource source);
+    
+    void MapTo<TSource, TTarget>(TSource source, TTarget target);
 
     TDto MapToDto<TSource, TDto>(TSource source, TDto dto, Func<PropertyInfo, bool>? propertyFilter);
 

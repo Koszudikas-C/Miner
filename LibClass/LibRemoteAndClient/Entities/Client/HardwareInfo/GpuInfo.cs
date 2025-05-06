@@ -46,7 +46,6 @@ public class GpuInfo : HardwareInfoBase
             DriverVersion = gpu.DriverVersion;
             Resolution = $"{gpu.CurrentHorizontalResolution} x {gpu.CurrentVerticalResolution}";
             RefreshRate = gpu.CurrentRefreshRate.ToString();
-            Console.WriteLine(gpu.Name);
         }
     }
 
@@ -76,7 +75,6 @@ public class GpuInfo : HardwareInfoBase
         {
             if (hardware.HardwareType == HardwareType.Cpu)
             {
-                Console.WriteLine($"CPU: {hardware.Name}");
                 hardware.Update();
                 ProcessSensors(hardware, "CPU");
             }
@@ -91,7 +89,6 @@ public class GpuInfo : HardwareInfoBase
                 || hardware.HardwareType == HardwareType.GpuAmd
                 || hardware.HardwareType == HardwareType.GpuIntel)
             {
-                Console.WriteLine($"GPU: {hardware.Name}");
                 hardware.Update();
                 ProcessSensors(hardware, "GPU");
             }
@@ -104,7 +101,6 @@ public class GpuInfo : HardwareInfoBase
         {
             if (hardware.HardwareType == HardwareType.Memory)
             {
-                Console.WriteLine($"Memory: {hardware.Name}");
                 hardware.Update();
                 ProcessSensors(hardware, "Memory");
             }
@@ -117,7 +113,6 @@ public class GpuInfo : HardwareInfoBase
         {
             if (hardware.HardwareType == HardwareType.Storage)
             {
-                Console.WriteLine($"Storage: {hardware.Name}");
                 hardware.Update();
                 ProcessSensors(hardware, "Disk");
             }
@@ -131,17 +126,14 @@ public class GpuInfo : HardwareInfoBase
             switch (sensor.SensorType)
             {
                 case SensorType.Load:
-                    Console.WriteLine($"{componentType} Usage: {sensor.Value}%");
                     break;
 
                 case SensorType.Temperature:
-                    Console.WriteLine($"{componentType} Temperature: {sensor.Value}°C");
                     break;
 
                 case SensorType.Data:
                     string unit = componentType == "GPU" ? "MB" : "GB";
                     string dataType = componentType == "GPU" ? "VRAM Used" : "Used";
-                    Console.WriteLine($"{componentType} {dataType}: {sensor.Value} {unit}");
                     break;
             }
         }

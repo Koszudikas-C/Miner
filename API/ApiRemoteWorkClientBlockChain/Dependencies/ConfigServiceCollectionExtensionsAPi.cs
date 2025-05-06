@@ -20,8 +20,6 @@ using LibSend.Service;
 using LibSend.Interface;
 using LibSocket.Service;
 using LibSocketAndSslStream.Interface;
-using LibSocks5.Interface;
-using LibSocks5.Service;
 using LibSsl.Service;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpLogging;

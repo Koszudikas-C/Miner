@@ -25,12 +25,20 @@ public sealed class ReceiveAuth(SslStream sslStream)
 
     private async Task ReceiveLengthPrefixAsync(CancellationToken cts = default)
     {
-        _ = await this._sslStream.ReadAsync(this._buffer.BufferInit, cts);
+        try
+        {
+            _ = await this._sslStream.ReadAsync(this._buffer.BufferInit, cts);
 
-        this._buffer.BufferSize = BitConverter.ToInt32(this._buffer.BufferInit, 0);
-        this._buffer.IsList = this._buffer.BufferInit[4] == 1;
+            this._buffer.BufferSize = BitConverter.ToInt32(this._buffer.BufferInit, 0);
+            this._buffer.IsList = this._buffer.BufferInit[4] == 1;
 
-        this._buffer.BufferReceive = new byte[this._buffer.BufferSize];
+            this._buffer.BufferReceive = new byte[this._buffer.BufferSize];
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private async Task ReceiveObjectAsync(CancellationToken cts = default)

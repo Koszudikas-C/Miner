@@ -40,8 +40,7 @@ public class ConfigCryptographTest(ISearchFile searchFile, IMapperObj mapperObj)
         
         if (configCryptographDto.Data is not null)
             result.SetData(configCryptographDto.Data);
-
-
+        
         return result;
     }
 

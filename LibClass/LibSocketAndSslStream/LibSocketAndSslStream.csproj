@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Group\MapperObjAndDto\LibDto\LibDto.csproj" />
       <ProjectReference Include="..\LibCryptography\LibCryptography.csproj" />
       <ProjectReference Include="..\LibSocks5\LibSocks5.csproj" />
     </ItemGroup>

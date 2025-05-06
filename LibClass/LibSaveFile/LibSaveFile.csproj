@@ -10,8 +10,4 @@
       <ProjectReference Include="..\LibManagerFile\LibManagerFile.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Entities\" />
-    </ItemGroup>
-
 </Project>

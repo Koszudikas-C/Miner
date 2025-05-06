@@ -8,6 +8,7 @@ using LibCryptography.Interface;
 using LibDto.Dto;
 using LibManagerFile.Interface;
 using LibMapperObj.Interface;
+using LibReceive.Interface;
 using LibSend.Interface;
 using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Entities.Enum;
@@ -31,6 +32,7 @@ public class ManagerConnectionServiceTest
     private readonly Mock<IClientConnected> _mockClientConnected = new ();
     private readonly Mock<ICryptographFile> _mockCryptograph = new();
     private readonly Mock<IMapperObj> _mapperObj = new();
+    private readonly Mock<IReceive> _mockReceive = new();
     
     private readonly IManagerConnection _managerConnection;
 
@@ -46,7 +48,8 @@ public class ManagerConnectionServiceTest
             _mockSendConfigSaveFile.Object,
             _mockClientConnected.Object,
             _mockCryptograph.Object,
-            _mapperObj.Object
+            _mapperObj.Object,
+            _mockReceive.Object
         );
     }
     

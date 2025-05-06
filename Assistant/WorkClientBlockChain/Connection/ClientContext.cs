@@ -24,6 +24,7 @@ public class ClientContext : IClientContext
     private void OnClientInfoReceived(ClientInfo? obj)
     {
         SetClientInfo(obj);
+        _posAuth.SendClientMine(obj!); 
         _posAuth.ReceiveDataCrypt(obj!);
     }
 

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using LibDto.Dto;
+using LibDto.Dto.ClientMine;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client.Enum;
 using ClientMine = LibRemoteAndClient.Entities.Remote.Client.ClientMine;
@@ -17,9 +18,6 @@ public static class JsonElementConvertRemote
 
     private static object IdentifierTypeToProcesss(JsonElement jsonElement)
     {
-        if (JsonMatchesType<ClientMine>(jsonElement))
-            return jsonElement.Deserialize<ClientMine>()!;
-
         if (JsonMatchesType<LogEntry>(jsonElement))
             return jsonElement.Deserialize<LogEntry>()!;
 
@@ -59,17 +57,19 @@ public static class JsonElementConvertRemote
         if(JsonMatchesType<ConfigVariableDto>(jsonElement))
             return jsonElement.Deserialize<ConfigVariableDto>()!;
         
+        if(JsonMatchesType<ClientMineDto>(jsonElement))
+            return jsonElement.Deserialize<ClientMineDto>()!;
         
         if (jsonElement.ValueKind == JsonValueKind.Object)
         {
             CreateOrUpdateConfigJson(jsonElement);
-            throw new InvalidOperationException("Tipo de objeto JSON não reconhecido para conversão. Nenhum tipo correspondente encontrado.");
+            throw new InvalidOperationException("Object type JSON Not recognized for conversion. No corresponding type found.");
         }
 
         if (jsonElement.ValueKind == JsonValueKind.String)
             return jsonElement.GetString()!;
 
-        throw new ArgumentException("Unsupported data type", nameof(jsonElement));
+        throw new ArgumentException("Unsupported data type json convert", nameof(jsonElement));
     }
 
     private static bool JsonMatchesType<T>(JsonElement element)

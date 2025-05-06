@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using LibCryptography.Entities;
 using LibDto.Dto;
+using LibDto.Dto.ClientMine;
 using LibHandler.EventBus;
 using LibJson.Util;
 using LibManagerFile.Entities;
@@ -22,9 +23,6 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
 
         switch (obj)
         {
-            case ClientMine clientMine:
-                _globalEventBusClient.Publish(clientMine);
-                break;
             case LogEntry logEntry:
                 _globalEventBusClient.Publish(logEntry);
                 break;
@@ -54,6 +52,9 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
                 break;
             case ConfigSaveFileDto configSaveFileDto:
                 _globalEventBusClient.Publish(configSaveFileDto);
+                break;
+            case ClientMineDto clientMineDto:
+                _globalEventBusClient.Publish(clientMineDto); 
                 break;
             default:
                 throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));

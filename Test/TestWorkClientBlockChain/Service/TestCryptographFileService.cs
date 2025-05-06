@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text.Json;
-
 using DataFictitious.LibClass.LibCryptograph;
 using LibCryptography.Entities;
 using LibCryptography.Service;
@@ -34,7 +33,7 @@ public class TestCryptographFileService
             );
     }
     
-    private static void Restore_test_file<T>()
+    private static void Restore_test_file()
     {
         var configCryptograph = new ConfigCryptograph(DirectoryApp);
         
@@ -47,7 +46,7 @@ public class TestCryptographFileService
     [Fact]
     public void Save_file_not_found_exception()
     {
-        Restore_test_file<ConfigVariable>();
+        Restore_test_file();
         var config = _configVariable.GetConfigCryptographConfigVariable();
         
         if (File.Exists(DirectoryApp)) File.Delete(DirectoryApp);
@@ -58,7 +57,7 @@ public class TestCryptographFileService
     [Fact]
     public void Save_file_config_variable_host()
     {
-        Restore_test_file<ConfigVariableDto>();
+        Restore_test_file();
         
         var config = _configVariable.GetConfigCryptographConfigVariable();
         
@@ -70,7 +69,7 @@ public class TestCryptographFileService
     [Fact]
     public void Save_file_encrypted_exception()
     {
-        Restore_test_file<ConfigVariable>();
+        Restore_test_file();
         var config = _configVariable.GetConfigCryptographConfigVariable();
         
        _mockCryptograph.SaveFile(config);
@@ -80,7 +79,7 @@ public class TestCryptographFileService
     [Fact]
     public void Save_file_modify_header_signature_exception()
     {
-        Restore_test_file<ConfigVariable>();
+        Restore_test_file();
         var config = _configVariable.GetConfigCryptographConfigVariable();
         
         config.HeaderSignature = [0x4, 0x2, 0x3, 0x4];
@@ -104,7 +103,7 @@ public class TestCryptographFileService
 
         Assert.NotNull(result);
         Assert.IsType<ConfigVariableDto>(resultJson!);
-        Assert.Equal(host, resultJson!.RemoteSslBlock);
+        Assert.Equal(host, resultJson.RemoteSslBlock);
         Assert.Equal(port, resultJson.RemoteSslBlockPort);
     }
     

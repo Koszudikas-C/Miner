@@ -1,16 +1,15 @@
-#!/bin/bash
-set -e
+#!/bin/sh
 
-platforms=("win-x64" "linux-x64" "osx-x64")
+platforms="linux-x64 win-x64 osx-x64"
 outputDir="publish"
 
-echo "Compilando para as plataformas: ${platforms[*]}"
+echo "Compilando para as plataformas: $platforms"
 echo "------------------------------------------"
 
-for platform in "${platforms[@]}"; do
+for platform in $platforms; do
     echo "Compilando para: $platform"
-    dotnet publish -c Release -r "$platform" -p:PublishSingleFile=true --self-contained true -o "$outputDir/$platform"
+    dotnet publish -c Release -r "$platform" -p:PublishSingleFile=true --self-contained true
 done
 
 echo "------------------------------------------"
-echo "Publicações concluídas em $outputDir"
+echo "Publicações concluídas!"

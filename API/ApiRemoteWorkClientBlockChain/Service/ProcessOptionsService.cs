@@ -8,11 +8,17 @@ using LibRemoteAndClient.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
-public class ProcessOptionsService(LibSend.Interface.ISend<TypeManagerOptions> send,
-   IReceive receive, IClientConnected clientConnected) : IProcessOptions
+public class ProcessOptionsService : IProcessOptions
 {
+    private readonly IOperationFactory _operationFactory;
+    private readonly IClientConnected _clientConnected;
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
-    private readonly IClientConnected _clientConnected = clientConnected;
+
+    public ProcessOptionsService(IOperationFactory operationFactory, IClientConnected clientConnected)
+    {
+        _operationFactory = operationFactory;
+        _clientConnected = clientConnected;
+    }
 
     public async Task IsProcessAuthSocks5Async(CancellationToken cts = default)
     {
@@ -21,11 +27,8 @@ public class ProcessOptionsService(LibSend.Interface.ISend<TypeManagerOptions> s
         if (clientInfo == null! || !clientInfo.SocketWrapper!.Connected)
             _globalEventBusRemote.Publish(TypeManagerResponseOperations.NotFound);
 
-        await send.SendAsync(TypeManagerOptions.AuthSocks5, clientInfo!,
-            TypeSocketSsl.Socket, cts).ConfigureAwait(false);
+        var operation = await _operationFactory.CreateAuthSocks5Operation();
 
-        await receive.ReceiveDataAsync(clientInfo!,
-            TypeSocketSsl.Socket, 0, cts);
     }
 
     public Task IsProcessCheckAppClientBlockChain(CancellationToken cts = default)

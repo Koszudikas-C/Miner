@@ -1,0 +1,13 @@
+using LibDto.Dto.ClientMine.Abstract;
+
+namespace LibDto.Dto.ClientMine.HardwareInfo;
+
+public class GpuInfoDto : HardwareInfoBaseDto
+{
+    public string? Manufacturer { get; set; }
+    public string? VRAM { get; set; }
+    public string? VRAMUsed { get; set; }
+    public string? DriverVersion { get; set; }
+    public string? Resolution { get; set; }
+    public string? RefreshRate { get; set; }
+}

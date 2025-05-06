@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
     <ProjectReference Include="..\..\LibClass\LibMiddleware\LibMiddleware.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSaveFile\LibSaveFile.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibSearchFile\LibSearchFile.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
   </ItemGroup>

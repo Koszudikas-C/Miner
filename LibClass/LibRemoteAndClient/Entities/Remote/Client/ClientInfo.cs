@@ -1,4 +1,3 @@
-using System.Net.Security;
 using System.Text.Json.Serialization;
 using LibSocketAndSslStream.Interface;
 
@@ -11,5 +10,6 @@ public class ClientInfo
     public ISocketWrapper? SocketWrapper { get; init; }
     [JsonIgnore]
     public ISslStreamWrapper? SslStreamWrapper { get; init; }
-    public ClientMine? ClientMine { get; init; }
+
+    public ClientMine? ClientMine { get; set; }
 }

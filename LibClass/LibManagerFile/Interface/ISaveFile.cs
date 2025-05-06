@@ -4,10 +4,10 @@ namespace LibManagerFile.Interface;
 
 public interface ISaveFile
 {
-    Task<bool> SaveFileWriteAsync(ConfigSaveFile configSaveFile,
+    Task<string> SaveFileWriteAsync(ConfigSaveFile configSaveFile,
         CancellationToken cts = default);
-    Task<bool> SaveFileWriteByteAsync(ConfigSaveFile configSaveFile,
+    Task<string> SaveFileWriteBytesAsync(ConfigSaveFile configSaveFile,
         CancellationToken cts = default);
-    bool SaveFileWrite(ConfigSaveFile configSaveFile);
-    bool SaveFileByteWrite(ConfigSaveFile configSaveFile);
+    string SaveFileWrite(ConfigSaveFile configSaveFile);
+    string SaveFileWriteBytes(ConfigSaveFile configSaveFile);
 }

@@ -10,13 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Connection\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Assistant\WorkClientBlockChain\WorkClientBlockChain.csproj" />
       <ProjectReference Include="..\..\DataFictitious\DataFictitious.csproj" />
       <ProjectReference Include="..\..\LibClass\LibCryptography\LibCryptography.csproj" />
+      <ProjectReference Include="..\..\LibClass\LibSearchFile\LibSearchFile.csproj" />
     </ItemGroup>
 
     <ItemGroup>

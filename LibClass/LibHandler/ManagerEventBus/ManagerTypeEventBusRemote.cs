@@ -2,6 +2,7 @@ using System.Net.Security;
 using System.Text.Json;
 using LibCryptography.Entities;
 using LibDto.Dto;
+using LibDto.Dto.ClientMine;
 using LibHandler.EventBus;
 using LibJson.Util;
 using LibManagerFile.Entities;
@@ -15,16 +16,13 @@ public class ManagerTypeEventBusRemote
 {
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
 
-    public void PublishEventType(JsonElement listData)
+    public void PublishEventType(JsonElement data)
     {
-        var obj = JsonElementConvertRemote.ConvertToObject(listData) ?? 
-        throw new ArgumentNullException(nameof(listData));
+        var obj = JsonElementConvertRemote.ConvertToObject(data) ?? 
+        throw new ArgumentNullException(nameof(data));
 
         switch (obj)
         {
-            case ClientMine clientMine:
-                _globalEventBusRemote.Publish(clientMine);
-                break;
             case LogEntry logEntry:
                 _globalEventBusRemote.Publish(logEntry);
                 break;
@@ -58,8 +56,11 @@ public class ManagerTypeEventBusRemote
             case ConfigSaveFileDto configSaveFileDto:
                 _globalEventBusRemote.Publish(configSaveFileDto);
                 break;
+            case ClientMineDto clientMineDto:
+                _globalEventBusRemote.Publish(clientMineDto); 
+                break;
             default:
-                throw new ArgumentException($"Unsupported listData type: {obj.GetType().FullName ?? "null"}", nameof(listData));
+                throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));
         }
     }
 

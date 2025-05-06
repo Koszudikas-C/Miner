@@ -1,17 +1,20 @@
 using System.Net;
+using System.Runtime.InteropServices;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using LibRemoteAndClient.Enum;
 using ApiRemoteWorkClientBlockChain.Interface;
-using ApiRemoteWorkClientBlockChain.Util;
+using ApiRemoteWorkClientBlockChain.Utils;
 using LibCommunicationStatus;
 using LibCommunicationStatus.Entities;
 using LibCryptography.Entities;
 using LibCryptography.Interface;
 using LibDto.Dto;
+using LibDto.Dto.ClientMine;
 using LibHandler.EventBus;
 using LibManagerFile.Entities.Enum;
 using LibManagerFile.Interface;
 using LibMapperObj.Interface;
+using LibReceive.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibSend.Interface;
 using LibSocketAndSslStream.Entities;
@@ -32,13 +35,15 @@ public class ManagerConnectionService : IManagerConnection
     private readonly IClientConnected _clientConnected;
     private readonly ICryptographFile _cryptographFile;
     private readonly IMapperObj _mapperObj;
-    
+    private readonly IReceive _receive;
+
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+
     public ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring,
-        IAuthSsl authSsl, IManagerClient managerClient, 
-        ISearchFile searchFile, ISend<ConfigCryptographDto> sendConfigCryptographDto, 
+        IAuthSsl authSsl, IManagerClient managerClient,
+        ISearchFile searchFile, ISend<ConfigCryptographDto> sendConfigCryptographDto,
         ISend<ConfigSaveFileDto> sendConfigSaveFileDto, IClientConnected clientConnected,
-        ICryptographFile cryptographFile, IMapperObj mapperObj)
+        ICryptographFile cryptographFile, IMapperObj mapperObj, IReceive receive)
     {
         _logger = logger;
         _socketMiring = socketMiring;
@@ -50,15 +55,17 @@ public class ManagerConnectionService : IManagerConnection
         _clientConnected = clientConnected;
         _cryptographFile = cryptographFile;
         _mapperObj = mapperObj;
-        
-        _globalEventBusRemote.Subscribe<ClientInfo>(async void (clientInfo) => 
+        _receive = receive;
+
+        _globalEventBusRemote.Subscribe<ClientInfo>(async void (clientInfo) =>
             await OnClientInfoReceived(clientInfo));
+        _globalEventBusRemote.Subscribe<ClientMineDto>(OnClientMineReceived);
     }
 
     public async Task<ApiResponse<object>> InitializeAsync(ConnectionConfig connectionConfig, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
     {
-        if(CommunicationStatus.IsConnected)
+        if (CommunicationStatus.IsConnected)
             return InstanceApiResponse<object>(HttpStatusCode.Conflict, false,
                 $"Remote server already {connectionConfig.Port} in use", null!);
         try
@@ -69,16 +76,17 @@ public class ManagerConnectionService : IManagerConnection
             for (var i = 0; i < 5; i++)
             {
                 if (CommunicationStatus.IsConnecting) break;
-                
+
                 await Task.Delay(1000, cts).ConfigureAwait(false);
 
                 if (i == 4)
-                    return InstanceApiResponse<object>(HttpStatusCode.GatewayTimeout, false, 
+                    return InstanceApiResponse<object>(HttpStatusCode.GatewayTimeout, false,
                         "Service initialization failed due to a timeout while attempting to establish" +
-                        " communication with the remote server. Please check the connection settings and try again.", null!);
+                        " communication with the remote server. Please check the connection settings and try again.",
+                        null!);
             }
-            
-            return InstanceApiResponse<object>(HttpStatusCode.OK, true, 
+
+            return InstanceApiResponse<object>(HttpStatusCode.OK, true,
                 $"Successful service initialization type {typeAuthMode.ToString()}", null!);
         }
         catch (Exception e)
@@ -92,7 +100,7 @@ public class ManagerConnectionService : IManagerConnection
                 "Service initialization failed. Verify the settings and try again.", null!);
         }
     }
-    
+
     public async Task<ApiResponse<object>> SendFileConfigVariableAsync(
         ConfigCryptographDto configCryptographDto,
         Guid clientId, CancellationToken cts = default)
@@ -120,12 +128,12 @@ public class ManagerConnectionService : IManagerConnection
                 false, "Error sending the encryption configuration to the client", null!);
         }
     }
-    
-    private static ApiResponse<T> InstanceApiResponse<T>(HttpStatusCode statusCode, bool success, 
-        string message, IEnumerable<T> data, List<string>? errors = null) 
+
+    private static ApiResponse<T> InstanceApiResponse<T>(HttpStatusCode statusCode, bool success,
+        string message, IEnumerable<T> data, List<string>? errors = null)
         => new ApiResponse<T>(statusCode, success, message, data, errors);
-    
-    
+
+
     private async Task OnClientInfoReceived(ClientInfo clientInfo)
     {
         try
@@ -142,8 +150,10 @@ public class ManagerConnectionService : IManagerConnection
                 _logger.Log(LogLevel.Information, $"Client connected: {clientInfo.Id}," +
                                                   $" {clientInfo.SocketWrapper!.RemoteEndPoint}");
             }
-            
-            await SendConfig(clientInfo);
+
+            await _receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.SslStream, 0);
+
+            await SendConfig(clientInfo).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -155,31 +165,41 @@ public class ManagerConnectionService : IManagerConnection
 
     private async Task SendConfig(ClientInfo clientInfo)
     {
-        var configCryptographConfigVariable = PosAuth.PreparationFileCryptedConfigVariablePosAuth();
+        var configCryptograph = await CreateEncryptedConfigAsync(clientInfo);
 
-        var dataJson = await _searchFile.SearchFileAsync(TypeFile.ConfigVariable);
-        
-        configCryptographConfigVariable.SetData(dataJson);
-        
-        var data = _cryptographFile.SaveFile(configCryptographConfigVariable);
-        
-        configCryptographConfigVariable.SetDataClear();
-        
-        configCryptographConfigVariable.SetDataBytes(data);
+        await SendConfigSaveFileAsync(configCryptograph, clientInfo).ConfigureAwait(false);
 
-        await SendConfigSaveFileAsync(configCryptographConfigVariable, clientInfo).ConfigureAwait(false);
-        
-        var configCryptographDto = _mapperObj.MapToDto(configCryptographConfigVariable, new ConfigCryptographDto());
-            
-        await SendFileConfigVariableAsync(configCryptographDto, clientInfo.Id);
+        var dto = _mapperObj.MapToDto(configCryptograph, new ConfigCryptographDto());
+
+        await SendFileConfigVariableAsync(dto, clientInfo.Id);
     }
 
-    private async Task SendConfigSaveFileAsync(ConfigCryptograph configCryptographDto, ClientInfo clientInfo)
+    private async Task<ConfigCryptograph> CreateEncryptedConfigAsync(ClientInfo clientInfo)
+    {
+        var cryptograph = PosAuth.PreparationFileCryptedConfigVariablePosAuth(clientInfo);
+
+        var dataJson = await _searchFile.SearchFileAsync(TypeFile.ConfigVariable);
+
+        cryptograph.SetData(dataJson);
+
+        var encryptedData = _cryptographFile.SaveFile(cryptograph);
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            cryptograph.FilePath = clientInfo.ClientMine!.PathLocal! + "Resources\\koewa";
+        
+        cryptograph.SetDataClear();
+        cryptograph.SetDataBytes(encryptedData);
+
+        return cryptograph;
+    }
+
+    private async Task SendConfigSaveFileAsync(ConfigCryptograph configCryptographDto,
+        ClientInfo clientInfo)
     {
         try
         {
             var configSaveFileDto = PosAuth.ConfigSaveFileDtoPosAuth(clientInfo, configCryptographDto);
-            
+
             await _sendConfigSaveFileDto.SendAsync(configSaveFileDto, clientInfo, TypeSocketSsl.SslStream);
         }
         catch (Exception e)
@@ -193,5 +213,13 @@ public class ManagerConnectionService : IManagerConnection
     private void ConnectionDisconnected(ClientInfo clientInfo)
     {
         _clientConnected.RemoveClientInfo(clientInfo);
+    }
+
+    private void OnClientMineReceived(ClientMineDto obj)
+    {
+        var clientMine = _mapperObj.Map<ClientMineDto, ClientMine>(obj);
+        _logger.LogInformation($"ClientMine received: {clientMine.ClientInfoId}");
+        _logger.LogInformation($"Total clients: {_clientConnected.GetClientInfos().Count}");
+        _clientConnected.AddClientMine(clientMine);
     }
 }

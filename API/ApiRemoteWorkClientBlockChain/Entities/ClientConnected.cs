@@ -11,6 +11,7 @@ public class ClientConnected : IClientConnected
     public static ClientConnected Instance => _instance.Value;
 
     private readonly Dictionary<Guid, ClientInfo> _clients = new();
+    private readonly Dictionary<Guid, ClientMine> _clientsMine = new();
 
     private Guid ClientInfoLastRequirementId { get; set; }
 
@@ -37,7 +38,23 @@ public class ClientConnected : IClientConnected
         _clients[clientInfo.Id] = clientInfo;
         return _clients.Values.ToList();
     }
+    
+    public List<ClientMine> AddClientMine(ClientMine clientMine)
+    {
+        if (!_clients.TryGetValue(clientMine.ClientInfoId, out var existingClient)) return _clientsMine.Values.ToList();
+        
+        existingClient.ClientMine = clientMine;
+        _clients[clientMine.ClientInfoId] = existingClient;
+        _clientsMine[clientMine.Id] = clientMine;
+        return _clientsMine.Values.ToList();
 
+    }
+
+    public List<ClientMine> UpdateClientMine(ClientMine clientMine)
+    {
+        throw new NotImplementedException();
+    }
+    
     public ClientInfo GetClientInfoLastRequirement() => _clients.GetValueOrDefault(ClientInfoLastRequirementId)!;
 
     public ClientInfo GetClientInfo(Guid clientId, bool removeLastRequirement)

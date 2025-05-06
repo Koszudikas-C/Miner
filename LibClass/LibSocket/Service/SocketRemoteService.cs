@@ -78,7 +78,7 @@ public class SocketRemoteService(
             
             await receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.Socket, 0, cts);
             
-            await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10), cts);
+            await tcs.Task.WaitAsync(TimeSpan.FromHours(1), cts);
         }
         catch (Exception e)
         {

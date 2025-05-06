@@ -5,11 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibCryptography\LibCryptography.csproj" />
     <ProjectReference Include="..\LibHandler\LibHandler.csproj" />
     <ProjectReference Include="..\LibMapperObj\LibMapperObj.csproj" />
     <ProjectReference Include="..\LibReceive\LibReceive.csproj" />
-    <ProjectReference Include="..\LibSearchFile\LibSearchFile.csproj" />
     <ProjectReference Include="..\LibSend\LibSend.csproj" />
     <ProjectReference Include="..\LibSocketAndSslStream\LibSocketAndSslStream.csproj" />
     <ProjectReference Include="..\LibSocks5\LibSocks5.csproj" />
