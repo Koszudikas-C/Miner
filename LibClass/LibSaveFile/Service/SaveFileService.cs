@@ -6,6 +6,8 @@ namespace LibSaveFile.Service;
 
 public class SaveFileService : ISaveFile
 {
+    private int _count;
+    
     public async Task<string> SaveFileWriteAsync(ConfigSaveFile configSaveFile,
         CancellationToken cts = default)
     {
@@ -27,6 +29,7 @@ public class SaveFileService : ISaveFile
         }
         catch (UnauthorizedAccessException)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             await SaveFileWriteAsync(configSaveFile, cts);
@@ -36,6 +39,7 @@ public class SaveFileService : ISaveFile
         }
         catch (DirectoryNotFoundException)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             await SaveFileWriteAsync(configSaveFile, cts);
@@ -43,15 +47,16 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"DirectoryNotFoundException. SaveFileWriteAsync directory: {configSaveFile.PathFile}");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+        catch (Exception)
+        {     
+            throw new Exception();
         }
     }
 
     public async Task<string> SaveFileWriteBytesAsync(ConfigSaveFile configSaveFile, CancellationToken cts = default)
     {
+        if (configSaveFile.DataBytes is null)
+            throw new ArgumentNullException("The property responsible for processing the bytes is null.");
         try
         {
             var writeTask = File.WriteAllBytesAsync(configSaveFile.PathFile,
@@ -70,6 +75,7 @@ public class SaveFileService : ISaveFile
         }
         catch (UnauthorizedAccessException)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             await SaveFileWriteBytesAsync(configSaveFile, cts);
@@ -79,6 +85,7 @@ public class SaveFileService : ISaveFile
         }
         catch (DirectoryNotFoundException)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             await SaveFileWriteBytesAsync(configSaveFile);
@@ -86,10 +93,9 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"DirectoryNotFoundException. SaveFileWriteByteAsync directory: {configSaveFile.PathFile}");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new Exception();
         }
     }
 
@@ -104,7 +110,7 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"SaveFileWrite directory: {configSaveFile.PathFile}");
         }
-        catch (UnauthorizedAccessException)
+        catch (UnauthorizedAccessException) when (_count == 0)
         {
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
@@ -113,7 +119,7 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"UnauthorizedAccessException. SaveFileWrite directory: {configSaveFile.PathFile}");
         }
-        catch (DirectoryNotFoundException)
+        catch (DirectoryNotFoundException) when (_count == 0)
         {
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
@@ -124,13 +130,14 @@ public class SaveFileService : ISaveFile
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new Exception();
         }
     }
 
     public string SaveFileWriteBytes(ConfigSaveFile configSaveFile)
     {
+        if (configSaveFile.DataBytes is null)
+            throw new ArgumentNullException("The property responsible for processing the bytes is null.");
         try
         {
             File.WriteAllBytes(configSaveFile.PathFile, configSaveFile.DataBytes!);
@@ -139,8 +146,9 @@ public class SaveFileService : ISaveFile
 
             return ReturnMessageSuccess($@"SaveFileWriteBytes directory: {configSaveFile.PathFile}");
         }
-        catch (UnauthorizedAccessException)
+        catch (UnauthorizedAccessException) when (_count == 0)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             SaveFileWriteBytes(configSaveFile);
@@ -148,8 +156,9 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"UnauthorizedAccessException. SaveFileWriteBytes directory: {configSaveFile.PathFile}");
         }
-        catch (DirectoryNotFoundException)
+        catch (DirectoryNotFoundException) when( _count == 0)
         {
+            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
              SaveFileWriteBytes(configSaveFile);
@@ -157,27 +166,23 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"DirectoryNotFoundException. SaveFileWriteBytes directory: {configSaveFile.PathFile}");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new Exception();
         }
     }
 
 
-    private static string PreparationConfigSaveFile(string filePath)
+    private static string PreparationConfigSaveFile(string? filePath)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-            "Resources");
+        var dir = string.IsNullOrWhiteSpace(filePath)
+            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources")
+            : Path.GetDirectoryName(filePath)!;
 
-        Directory.CreateDirectory(filePath);
-
-        if (File.Exists(filePath))
-            File.Delete(filePath);
-
-        return filePath;
+        Directory.CreateDirectory(dir);
+        return Path.Combine(dir, Path.GetFileName(filePath ?? "default.txt"));
     }
+
 
     private static string ReturnMessageSuccess(string func) => $"File saved in the directory: {func}";
 
@@ -195,7 +200,4 @@ public class SaveFileService : ISaveFile
 
         File.SetCreationTime(configSaveFile.PathFile, configSaveFile.Created);
     }
-
-    private static string DirectoryDefault(string fileName) =>
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", fileName);
 }

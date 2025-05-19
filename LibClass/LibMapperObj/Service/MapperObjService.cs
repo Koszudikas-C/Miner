@@ -12,7 +12,17 @@ public class MapperObjService : IMapperObj
         where TTarget : new()
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
+        
         var target = new TTarget();
+        MapTo(source, target);
+        return target;
+    }
+    
+    public TTarget Map<TSource, TTarget>(TSource source, Func<TTarget> factory)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        
+        var target = factory();
         MapTo(source, target);
         return target;
     }
@@ -97,7 +107,7 @@ public class MapperObjService : IMapperObj
             {
                 targetProp.SetValue(target, sourceValue);
             }
-            // Lista genérica
+            
             else if (IsList(sourceProp.PropertyType, out var sourceItemType) &&
                      IsList(targetProp.PropertyType, out var targetItemType))
             {
@@ -112,8 +122,8 @@ public class MapperObjService : IMapperObj
             }
             else
             {
-                var nestedTarget = Activator.CreateInstance(targetProp.PropertyType);
-                var mappedNested = MapDynamic(sourceValue, sourceProp.PropertyType, targetProp.PropertyType);
+                Activator.CreateInstance(targetProp.PropertyType);
+                var mappedNested = MapDynamicConstructor(sourceValue, sourceProp.PropertyType, targetProp.PropertyType);
                 targetProp.SetValue(target, mappedNested);
             }
         }
@@ -209,7 +219,7 @@ public class MapperObjService : IMapperObj
         itemType = typeof(object);
         return false;
     }
-
+    
     private object MapDynamic(object source, Type sourceType, Type targetType)
     {
         var method = GetType()
@@ -218,6 +228,27 @@ public class MapperObjService : IMapperObj
     
         return method.Invoke(this, [source])!;
     }
+    
+    private object MapDynamicConstructor(object source, Type sourceType, Type targetType)
+    {
+
+        var methods = GetType()
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Where(m => m.Name == nameof(Map)
+                        && m.IsGenericMethodDefinition
+                        && m.GetGenericArguments().Length == 2
+                        && m.GetParameters().Length == 1
+                        && m.GetParameters()[0].ParameterType.IsGenericParameter)
+            .ToArray();
+
+        if (methods.Length != 1)
+            throw new InvalidOperationException("Não foi possível determinar unicamente o método genérico 'Map<TSource,TTarget>(TSource)'.");
+
+        var method = methods[0].MakeGenericMethod(sourceType, targetType);
+
+        return method.Invoke(this, new[] { source })!;
+    }
+
 
     private static List<(PropertyInfo source, PropertyInfo target)> GetMappedProperties(Type sourceType, Type targetType)
     {
@@ -227,8 +258,8 @@ public class MapperObjService : IMapperObj
             return cached.Select(p => (p, targetType.GetProperty(p.Name)!)).ToList();
         }
 
-        var sourceProps = sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var targetProps = targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        var sourceProps = sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+        var targetProps = targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
             .Where(p => p.CanWrite).ToDictionary(p => p.Name);
 
         var matches = sourceProps

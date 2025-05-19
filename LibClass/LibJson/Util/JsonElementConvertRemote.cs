@@ -4,7 +4,6 @@ using LibDto.Dto;
 using LibDto.Dto.ClientMine;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client.Enum;
-using ClientMine = LibRemoteAndClient.Entities.Remote.Client.ClientMine;
 using LogEntry = LibRemoteAndClient.Entities.Remote.Client.LogEntry;
 
 namespace LibJson.Util;
@@ -47,23 +46,47 @@ public static class JsonElementConvertRemote
 
     private static object IdentifierTypeToProcess1(JsonElement jsonElement)
     {
-        
-        if(JsonMatchesType<ConfigSaveFileDto>(jsonElement))
+        if (JsonMatchesType<ConfigSaveFileDto>(jsonElement))
             return jsonElement.Deserialize<ConfigSaveFileDto>()!;
-        
-        if(JsonMatchesType<ConfigCryptographDto>(jsonElement))
+
+        if (JsonMatchesType<ConfigCryptographDto>(jsonElement))
             return jsonElement.Deserialize<ConfigCryptographDto>()!;
-        
-        if(JsonMatchesType<ConfigVariableDto>(jsonElement))
+
+        if (JsonMatchesType<ConfigVariableDto>(jsonElement))
             return jsonElement.Deserialize<ConfigVariableDto>()!;
-        
-        if(JsonMatchesType<ClientMineDto>(jsonElement))
+
+        if (JsonMatchesType<ClientMineDto>(jsonElement))
             return jsonElement.Deserialize<ClientMineDto>()!;
+
+        if (JsonMatchesType<ParamsManagerOptionsDto<ParamsSocks5Dto>>(jsonElement))
+            return jsonElement.Deserialize<ParamsManagerOptionsDto<ParamsSocks5Dto>>()!;
+
+        if (JsonMatchesType<ParamsSocks5Dto>(jsonElement))
+            return jsonElement.Deserialize<ParamsSocks5Dto>()!;
+
+        if (JsonMatchesType<DownloadRequestDto>(jsonElement))
+            return jsonElement.Deserialize<DownloadRequestDto>()!;
         
+        if (JsonMatchesType<UploadResponseHeaderDto>(jsonElement))
+            return jsonElement.Deserialize<UploadResponseHeaderDto>()!;
+
+        if (JsonMatchesType<UploadResponseDto>(jsonElement))
+            return jsonElement.Deserialize<UploadResponseDto>()!;
+
+        if (JsonMatchesType<ParamsSocks5Dto>(jsonElement))
+            return jsonElement.Deserialize<ParamsSocks5Dto>()!;
+        
+        if(JsonMatchesType<ParamsManagerOptionsResponseDto>(jsonElement))
+            return jsonElement.Deserialize<ParamsManagerOptionsResponseDto>()!;
+
+        if (JsonMatchesType<DownloadRequestDto>(jsonElement))
+            return jsonElement.Deserialize<DownloadRequestDto>()!;
+
         if (jsonElement.ValueKind == JsonValueKind.Object)
         {
             CreateOrUpdateConfigJson(jsonElement);
-            throw new InvalidOperationException("Object type JSON Not recognized for conversion. No corresponding type found.");
+            throw new InvalidOperationException(
+                "Object type JSON Not recognized for conversion. No corresponding type found.");
         }
 
         if (jsonElement.ValueKind == JsonValueKind.String)
@@ -105,7 +128,7 @@ public static class JsonElementConvertRemote
 
         var formatted = JsonSerializer.Serialize(jsonElement,
             new JsonSerializerOptions { WriteIndented = true });
-        
+
         writer.Write(formatted);
     }
 }

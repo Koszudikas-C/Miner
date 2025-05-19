@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using LibRemoteAndClient.Enum;
@@ -36,6 +37,7 @@ public class ManagerConnectionService : IManagerConnection
     private readonly ICryptographFile _cryptographFile;
     private readonly IMapperObj _mapperObj;
     private readonly IReceive _receive;
+    private readonly IPosAuth _posAuth;
 
     private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
 
@@ -43,7 +45,7 @@ public class ManagerConnectionService : IManagerConnection
         IAuthSsl authSsl, IManagerClient managerClient,
         ISearchFile searchFile, ISend<ConfigCryptographDto> sendConfigCryptographDto,
         ISend<ConfigSaveFileDto> sendConfigSaveFileDto, IClientConnected clientConnected,
-        ICryptographFile cryptographFile, IMapperObj mapperObj, IReceive receive)
+        ICryptographFile cryptographFile, IMapperObj mapperObj, IReceive receive, IPosAuth posAuth)
     {
         _logger = logger;
         _socketMiring = socketMiring;
@@ -56,9 +58,9 @@ public class ManagerConnectionService : IManagerConnection
         _cryptographFile = cryptographFile;
         _mapperObj = mapperObj;
         _receive = receive;
+        _posAuth = posAuth;
 
-        _globalEventBusRemote.Subscribe<ClientInfo>(async void (clientInfo) =>
-            await OnClientInfoReceived(clientInfo));
+        _globalEventBusRemote.Subscribe<ClientInfo>((handle) => _ = OnClientInfoReceived(handle));
         _globalEventBusRemote.Subscribe<ClientMineDto>(OnClientMineReceived);
     }
 
@@ -91,7 +93,6 @@ public class ManagerConnectionService : IManagerConnection
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             _logger.LogError($"Error starting SocketMiringService in mode {typeAuthMode}," +
                              $" Port:{connectionConfig.Port}," +
                              $" MaxConnections:{connectionConfig.MaxConnections}: {e.Message}");
@@ -121,7 +122,6 @@ public class ManagerConnectionService : IManagerConnection
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             _logger.LogError($"Error in SendConfigVariableOneAsync: {e.Message}");
 
             return InstanceApiResponse<object>(HttpStatusCode.InternalServerError,
@@ -157,9 +157,10 @@ public class ManagerConnectionService : IManagerConnection
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            _logger.LogError($"Error in OnClientInfoReceived: {e.Message}");
-            throw new Exception(e.Message);
+            ConnectionDisconnected(clientInfo);
+            _logger.LogError(
+                $"A socketexception on the client side was generated for this reason it will be disconnected: Error: {e.Message}");
+            throw new Exception();
         }
     }
 
@@ -169,9 +170,20 @@ public class ManagerConnectionService : IManagerConnection
 
         await SendConfigSaveFileAsync(configCryptograph, clientInfo).ConfigureAwait(false);
 
-        var dto = _mapperObj.MapToDto(configCryptograph, new ConfigCryptographDto());
+        try
+        {
+            var dto = _mapperObj.MapToDto(configCryptograph, new ConfigCryptographDto());
 
-        await SendFileConfigVariableAsync(dto, clientInfo.Id);
+            await _posAuth.SendDataAsync(dto, clientInfo.Id);
+
+            await _receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.SslStream);
+        }
+        catch (SocketException e)
+        {
+            _logger.LogInformation($"A error in sending the configuration to the client:  Error: {e.Message}");
+            ConnectionDisconnected(clientInfo);
+            throw new SocketException();
+        }
     }
 
     private async Task<ConfigCryptograph> CreateEncryptedConfigAsync(ClientInfo clientInfo)
@@ -184,9 +196,9 @@ public class ManagerConnectionService : IManagerConnection
 
         var encryptedData = _cryptographFile.SaveFile(cryptograph);
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (clientInfo.ClientMine!.PlatformSystem == OSPlatform.Windows.ToString())
             cryptograph.FilePath = clientInfo.ClientMine!.PathLocal! + "Resources\\koewa";
-        
+
         cryptograph.SetDataClear();
         cryptograph.SetDataBytes(encryptedData);
 
@@ -206,7 +218,7 @@ public class ManagerConnectionService : IManagerConnection
         {
             _logger.LogError($"An error occurred when sending the file configuration files: {e.Message}");
             ConnectionDisconnected(clientInfo);
-            throw new Exception(e.Message);
+            throw new Exception();
         }
     }
 

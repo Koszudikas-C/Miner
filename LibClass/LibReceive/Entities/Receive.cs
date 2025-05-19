@@ -22,8 +22,8 @@ public sealed class Receive(
     {
         var token = MergeTokens(_cancellationToken, cancellationToken);
 
-        await ExecuteWithTimeout(() => ReceiveLengthPrefixAsync(token), TimeSpan.FromMinutes(2), token);
-        await ExecuteWithTimeout(() => ReceiveObjectAsync(token), TimeSpan.FromMinutes(2), token);
+        await ExecuteWithTimeout(() => ReceiveLengthPrefixAsync(token), TimeSpan.FromSeconds(30), token);
+        await ExecuteWithTimeout(() => ReceiveObjectAsync(token), TimeSpan.FromSeconds(30), token);
 
         DeserializeObject();
     }

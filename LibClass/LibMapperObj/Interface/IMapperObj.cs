@@ -7,6 +7,8 @@ public interface IMapperObj
 {
     TTarget Map<TSource, TTarget>(TSource source)
         where TTarget : new();
+
+    TTarget Map<TSource, TTarget>(TSource source, Func<TTarget> factory);
     
     TDto MapToDto<TSource, TDto>(TSource source, TDto dto);
     

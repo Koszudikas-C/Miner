@@ -1,4 +1,5 @@
 using System.Net.Security;
+using System.Text;
 using System.Text.Json;
 using LibRemoteAndClient.Util;
 
@@ -14,8 +15,8 @@ public class SendAuth<T>(SslStream sslStream)
 
     public async Task SendAsync(T data, CancellationToken cts = default)
     {
-        await ExecuteWithTimeout(() => SendLengthPrefix(data!, false, cts), TimeSpan.FromMinutes(1), cts);
-        await ExecuteWithTimeout(() => SendObject(data!, cts), TimeSpan.FromMinutes(1), cts);
+        await ExecuteWithTimeout(() => SendLengthPrefix(data!, false, cts), TimeSpan.FromSeconds(30), cts);
+        await ExecuteWithTimeout(() => SendObject(data!, cts), TimeSpan.FromSeconds(30), cts);
 
         await _sslStream.FlushAsync(cts);
     }
@@ -25,6 +26,52 @@ public class SendAuth<T>(SslStream sslStream)
     {
         await SendLengthPrefix(listData, true, cts);
         await SendObject(listData, cts);
+
+        await _sslStream.FlushAsync(cts);
+    }
+
+    public async Task SendFileAsync(T fileData, CancellationToken cts = default)
+    {
+        var fileDataBytes = await SendLengthPrefixFile(fileData, cts);
+        await SendFileObj(fileDataBytes, cts);
+        
+        await _sslStream.FlushAsync(cts);
+    }
+
+    private async Task<byte[]> SendLengthPrefixFile(T fileData, CancellationToken cts = default)
+    {
+        try
+        {
+            var fileDataBytes = Encoding.UTF8.GetBytes(fileData!.ToString()!);
+            _buffer.BufferSend = BitConverter.GetBytes(fileDataBytes.Length);
+
+            await _sslStream.WriteAsync(_buffer.BufferSend, cts);
+
+            return fileDataBytes;
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error when sending the size of the object.");
+        }
+    }
+
+    private async Task SendFileObj(byte[] fileData, CancellationToken cts = default)
+    {
+        try
+        {
+            _buffer.BufferInit = new byte[81920];
+            var offset = 0;
+            while (offset < fileData.Length)
+            {
+                var chunkSize  = Math.Min(_buffer.BufferInit.Length, fileData.Length - offset);
+                await _sslStream.WriteAsync(fileData.AsMemory(0, chunkSize), cts);
+                offset += chunkSize;
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error by sending the OBJ from the file. Error: {e.Message}");
+        }
     }
 
     private async Task SendLengthPrefix(object data,
@@ -40,10 +87,9 @@ public class SendAuth<T>(SslStream sslStream)
             await _sslStream.WriteAsync(this._buffer.BufferInit, cts);
             CheckWhichType(data, isList);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw new Exception(e.Message);
+            throw new Exception("Error when sending the size of the object.");
         }
     }
 

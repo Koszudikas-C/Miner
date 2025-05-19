@@ -1,42 +1,47 @@
 using System.Net;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
-using LibCommunicationStatus;
+using LibClassManagerOptions.Entities;
+using LibClassManagerOptions.Entities.Enum;
+using LibClassManagerOptions.Interface;
+using LibClassProcessOperations.Entities;
 using LibCommunicationStatus.Entities;
-using LibCryptography.Entities;
 using LibDto.Dto;
-using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
 using LibSend.Interface;
-using Microsoft.AspNetCore.Authentication;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
 public class PosAuthService(
     ILogger<PosAuthService> logger,
     IClientConnected clientConnected,
-    ISend<ConfigCryptographDto> sendConfigCryptographDto)
+    ISend<ConfigCryptographDto> sendConfigCryptographDto,
+    IManagerOptions<ParamsSocks5> managerOptions)
     : IPosAuth
 {
-    public async Task<ApiResponse<object>> SendDataAsync(ConfigCryptographDto configCryptographDto, Guid clientId, CancellationToken cts = default)
+    private readonly IManagerOptions<ParamsSocks5> _managerOptions = managerOptions;
+    
+    public async Task SendDataAsync(ConfigCryptographDto configCryptographDto,
+        Guid clientId, CancellationToken cts = default)
     {
         try
         {
             var clientInfo = clientConnected.GetClientInfo(clientId);
             
-            if (!clientInfo.SslStreamWrapper!.IsAuthenticated)
-                return InstanceApiResponse<object>(HttpStatusCode.Unauthorized, false, "Unauthorized client: " + clientInfo.Id, null!);
-
             await sendConfigCryptographDto.SendAsync(configCryptographDto, clientInfo, TypeSocketSsl.SslStream, cts);
-            return InstanceApiResponse<object>(HttpStatusCode.OK, true, "Successful send", null!);
+            
+            logger.LogInformation("Successful encrypted configuration was sent.");
+
+            var paramsSocks5 = new ParamsSocks5();
+            paramsSocks5.ParamsGetProcessInfo.Port = 9050;
+            paramsSocks5.ParamsGetProcessInfo.NameProcess = "tor";
+            var paramsManagerOptionsSocks5 = new ParamsManagerOptions<ParamsSocks5>(TypeManagerOptions.AuthSocks5, paramsSocks5);
+            
+            await _managerOptions.InitializeOptionsAsync(paramsManagerOptionsSocks5, cts);
         }
         catch (Exception e)
         {
             logger.LogError($"Error sending data: {e.Message}");
-            return InstanceApiResponse<object>(HttpStatusCode.InternalServerError, false, "Error sending data", null!);
         }
     }
-
-    private static ApiResponse<T> InstanceApiResponse<T>(HttpStatusCode statusCode, bool success, string message, IEnumerable<T> data, List<string>? errors = null) 
-        => new ApiResponse<T>(statusCode, success, message, data, errors);
 }

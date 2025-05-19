@@ -1,12 +1,10 @@
-using System;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using LibHandler.EventBus;
 using LibHandler.ManagerEventBus;
 using LibReceive.Entities;
+using LibReceive.Entities.Enum;
 using LibReceive.Interface;
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
@@ -33,13 +31,14 @@ public class ReceiveServiceClient : IReceive
                 switch (typeSocketSsl)
                 {
                     case TypeSocketSsl.SslStream:
-                        await ReceiveAuth(clientInfo, cts);
+                        await ReceiveAuth(clientInfo, TypeReceive.Default, cts);
                         break;
                     case TypeSocketSsl.Socket:
-                        await ReceiveSocket(clientInfo, cts);
+                        await ReceiveSocket(clientInfo, TypeReceive.Default, cts);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(typeSocketSsl), $"Invalid socket type: {typeSocketSsl}");
+                        throw new ArgumentOutOfRangeException(nameof(typeSocketSsl),
+                            $"Invalid socket type: {typeSocketSsl}");
                 }
             }
         }
@@ -54,7 +53,44 @@ public class ReceiveServiceClient : IReceive
         }
     }
 
-    private async Task ReceiveAuth(ClientInfo clientInfo, CancellationToken cts = default)
+    public async Task ReceiveDataFileAsync(ClientInfo clientInfo, TypeSocketSsl typeSocketSsl,
+        int countReceive = 0, CancellationToken cts = default)
+    {
+        if (clientInfo == null)
+            throw new ArgumentNullException(nameof(clientInfo), "ClientInfo cannot be null.");
+        await _semaphoreSlim.WaitAsync(cts);
+        try
+        {
+            while (!cts.IsCancellationRequested)
+            {
+                if (countReceive-- == -1) break;
+                switch (typeSocketSsl)
+                {
+                    case TypeSocketSsl.SslStream:
+                        await ReceiveAuth(clientInfo, TypeReceive.File, cts);
+                        break;
+                    case TypeSocketSsl.Socket:
+                        await ReceiveSocket(clientInfo, TypeReceive.File, cts);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(typeSocketSsl),
+                            $"Invalid socket type: {typeSocketSsl}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error receiving data: {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            _semaphoreSlim.Release();
+        }
+    }
+
+    private async Task ReceiveAuth(ClientInfo clientInfo, TypeReceive typeReceive,
+        CancellationToken cts = default)
     {
         if (clientInfo.SslStreamWrapper?.InnerSslStream == null)
             throw new InvalidOperationException("SslStream is not available in ClientInfo.");
@@ -62,10 +98,18 @@ public class ReceiveServiceClient : IReceive
         receive.OnReceivedAct += OnReceivedAtc;
         receive.OnReceivedListAct += OnReceiveList;
         receive.OnClosedAct += OnReceiveAuthClose;
-        await receive.ReceiveDataAsync();
+
+        if (typeReceive == TypeReceive.Default)
+        {
+            await receive.ReceiveDataAsync(cts);
+            return;
+        }
+
+        await receive.ReceiveDataFileAsync(cts);
     }
 
-    private async Task ReceiveSocket(ClientInfo clientInfo, CancellationToken cts = default)
+    private async Task ReceiveSocket(ClientInfo clientInfo, TypeReceive typeReceive,
+        CancellationToken cts = default)
     {
         if (clientInfo.SocketWrapper?.InnerSocket == null)
             throw new InvalidOperationException("Socket is not available in ClientInfo.");
@@ -73,13 +117,20 @@ public class ReceiveServiceClient : IReceive
         receive.OnReceivedAct += OnReceivedAtc;
         receive.OnReceivedListAct += OnReceiveList;
         receive.OnClosedAct += OnReceiveSocketClose;
-        await receive.ReceiveDataAsync();
+
+        if (typeReceive == TypeReceive.Default)
+        {
+            await receive.ReceiveDataAsync(cts);
+            return;
+        }
+
+        await receive.ReceiveDataAsync(cts);
     }
 
     private void OnReceivedAtc(JsonElement data)
     {
         Console.WriteLine($"Data received{data}");
-        _managerTypeEventBusClient.PublishEventType(data!);
+        _managerTypeEventBusClient.PublishEventType(data);
     }
 
     private void OnReceiveList(List<JsonElement> listData)
@@ -92,7 +143,7 @@ public class ReceiveServiceClient : IReceive
     {
         _globalEventBusClient.Publish(sslStream);
     }
-    
+
     private void OnReceiveSocketClose(Socket socket)
     {
         _globalEventBusClient.Publish(socket);

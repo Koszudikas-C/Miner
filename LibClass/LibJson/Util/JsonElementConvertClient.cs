@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
+using LibClassProcessOperations.Entities;
 using LibDto.Dto;
 using LibDto.Dto.ClientMine;
 using LibRemoteAndClient.Entities.Client;
@@ -51,6 +52,24 @@ public static class JsonElementConvertClient
         
         if(JsonMatchesType<ClientMineDto>(jsonElement))
             return jsonElement.Deserialize<ClientMineDto>()!;
+
+        if (JsonMatchesType<ParamsManagerOptionsDto<ParamsSocks5Dto>>(jsonElement))
+            return jsonElement.Deserialize<ParamsManagerOptionsDto<ParamsSocks5Dto>>()!;
+
+        if (JsonMatchesType<ParamsSocks5Dto>(jsonElement))
+            return jsonElement.Deserialize<ParamsSocks5Dto>()!;
+
+        if (JsonMatchesType<DownloadRequestDto>(jsonElement))
+            return jsonElement.Deserialize<DownloadRequestDto>()!;
+
+        if (JsonMatchesType<UploadResponseHeaderDto>(jsonElement))
+            return jsonElement.Deserialize<UploadResponseHeaderDto>()!;
+
+        if (JsonMatchesType<UploadResponseDto>(jsonElement))
+            return jsonElement.Deserialize<UploadResponseDto>()!;
+        
+        if(JsonMatchesType<ParamsManagerOptionsResponseDto>(jsonElement))
+            return jsonElement.Deserialize<ParamsManagerOptionsResponseDto>()!;
         
         if (jsonElement.ValueKind == JsonValueKind.Object)
         {

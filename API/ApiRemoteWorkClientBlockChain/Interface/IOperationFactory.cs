@@ -1,6 +1,6 @@
 using LibClassProcessOperations.Interface;
 
-namespace ApiRemoteWorkClientBlockChain.Service
+namespace ApiRemoteWorkClientBlockChain.Interface
 {
     public interface IOperationFactory
     {

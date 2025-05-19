@@ -23,7 +23,8 @@ public class CertificateService (ISearchFile searchFile) : ICertificate
     {
         if (certificate == null) return false;
 
-        var isExpired = DateTime.UtcNow < certificate.NotBefore || DateTime.UtcNow > certificate.NotAfter;
+        var isExpired = DateTime.UtcNow < certificate.NotBefore
+                        || DateTime.UtcNow > certificate.NotAfter;
         var hasPrivateKey = certificate.HasPrivateKey;
         var isSelfSigned = certificate.Subject == certificate.Issuer;
 

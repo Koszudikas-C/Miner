@@ -23,20 +23,17 @@ public class ConfigSaveFile
         SetPathFile(pathFile);
     }
 
-    public void SetPathFile(string directory)
-    {
-        if (string.IsNullOrWhiteSpace(directory))
-            throw new InvalidExpressionException(
-                $"Check the past directory, it cannot be null or empty:{directory}");
-        
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            PathFile = @$"{directory}\{FileName}";
-            return;
-        }
+public void SetPathFile(string directory)
+{
+    if (string.IsNullOrWhiteSpace(directory))
+        throw new InvalidExpressionException(
+            $"The directory cannot be null, empty or whitespace: '{directory}'");
+    
+    var cleanDirectory = directory.TrimStart('/', '\\');
+    
+    PathFile = Path.Combine(cleanDirectory, FileName);
+}
 
-        PathFile = @$"{directory}/{FileName}";
-    }
 
     public void SetExtension(TypeExtensionFile typeExtensionFile)
     {
@@ -44,7 +41,7 @@ public class ConfigSaveFile
             throw new InvalidExpressionException(
                 $"Check the past typeExtensionFile, it cannot be null or empty:{typeExtensionFile}"
             );
-        
+
         if (Path.HasExtension(FileName))
             FileName = Path.GetFileNameWithoutExtension(FileName);
 

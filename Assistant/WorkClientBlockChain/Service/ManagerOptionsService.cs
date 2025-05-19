@@ -1,152 +1,164 @@
 using System.Text.Json;
+using LibClassManagerOptions.Entities;
 using LibClassManagerOptions.Entities.Enum;
 using LibClassManagerOptions.Interface;
+using LibClassProcessOperations.Entities;
 using LibClassProcessOperations.Interface;
 using LibCryptography.Entities;
 using LibCryptography.Interface;
+using LibDto.Dto;
+using LibDto.Dto.Enum;
 using LibHandler.EventBus;
 using LibManagerFile.Entities.Enum;
 using LibManagerFile.Interface;
+using LibMapperObj.Interface;
 using LibRemoteAndClient.Enum;
 using LibSend.Interface;
 using LibSocketAndSslStream.Entities;
 using WorkClientBlockChain.Connection.Interface;
-using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Service;
 
-public class ManagerOptionsService : IManagerOptions
+public class ManagerOptionsService<T> : IManagerOptions<T>
 {
-    private readonly IProcessOptions _processOptions;
-    private readonly ILogger<ManagerOptionsService> _logger;
-    private readonly ISend<TypeManagerResponseOperations> _send;
-    private readonly IClientContext _clientContext;
-    private readonly IPortOpen _portOpen;
+    private readonly ILogger<ManagerOptionsService<T>> _logger;
+    private readonly ISend<ParamsManagerOptionsResponseDto> _send;
+    private readonly IClientConnected _clientConnected;
     private readonly ICryptographFile _cryptographFile;
-    private readonly IDownloadAll _downloadAll;
     private readonly ISearchFile _searchFile;
+    private readonly IProcessOptionsClient _processOptionsClient;
     private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
+    private readonly IMapperObj _mapperObj;
     private CancellationTokenSource _ctsSource = new();
     private readonly string _pathFile = Path.Combine(Directory.GetCurrentDirectory(), "Resources" + "koewa.json");
 
-    public ManagerOptionsService(IProcessOptions processOptions, ILogger<ManagerOptionsService> logger
-    , ISend<TypeManagerResponseOperations> send, IClientContext clientContext,
-        IPortOpen portOpen, ICryptographFile cryptographFile,
-        IDownloadAll downloadAll, ISearchFile searchFile)
+    public ManagerOptionsService(ILogger<ManagerOptionsService<T>> logger,
+        ISend<ParamsManagerOptionsResponseDto> send, IClientConnected clientConnected,
+        ICryptographFile cryptographFile, ISearchFile searchFile,
+        IProcessOptionsClient processOptionsClient, IMapperObj mapperObj)
     {
-        _processOptions = processOptions;
         _logger = logger;
         _send = send;
-        _clientContext = clientContext;
-        _portOpen = portOpen;
+        _clientConnected = clientConnected;
         _cryptographFile = cryptographFile;
-        _downloadAll = downloadAll;
         _searchFile = searchFile;
-        _globalEventBusClient.Subscribe<TypeManagerOptions>(async void
-            (handler) => await InitializeOptions(handler));
+        _processOptionsClient = processOptionsClient;
+        _mapperObj = mapperObj;
+
+        ManagerSubscribeType();
+    }
+
+    private void ManagerSubscribeType()
+    {
+        _globalEventBusClient.Subscribe<ParamsManagerOptionsDto<ParamsSocks5Dto>>(
+            (handler) => _ = OnReceiveParamsOptionsSocks5Async(handler));
         
-        _globalEventBusClient.Subscribe<TypeManagerResponseOperations>(async void
-            (handler) => await ResponseOptions(handler));
+        //Response
+        _globalEventBusClient.Subscribe<ParamsManagerOptionsResponseDto>(
+            (handler) => _ = ResponseOptionsAsync(handler));
     }
 
-    public async Task InitializeOptions(TypeManagerOptions expression,
+    public async Task InitializeOptionsAsync(ParamsManagerOptions<T> paramsManagerOptions,
         CancellationToken cts = default)
     {
-
-        switch (expression)
+        try
         {
-            case TypeManagerOptions.AuthSocks5:
-                if (!await _portOpen.IsOpenPortAsync(9050, cts))
-                {
-                    var configVariable = GetConfigVariable();
-                    var result = await _downloadAll.DownloadAsync(
-                        configVariable.RemoteSslBlock!, "",
-                        _ctsSource.Token);
-                }
-                await _processOptions.IsProcessAuthSocks5Async(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.CheckAppClientBlockChain:
-                await _processOptions.IsProcessCheckAppClientBlockChain(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.DownloadAppClientBlockChain:
-                await _processOptions.IsProcessDownloadAppClientBlockChain(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.Logs:
-                await _processOptions.IsProcessLogs(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.StatusConnection:
-                await _processOptions.IsProcessStatusConnection(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.StatusTransaction:
-                await _processOptions.IsProcessStatusTransaction(_ctsSource.Token);
-                break;
-            case TypeManagerOptions.CancelOperations:
-                ResetCancellationToken();
-                break;
-            case TypeManagerOptions.Error:
-            default:
-                ResetCancellationToken();
-                _logger.LogError($"Check the command arguments is invalid: {expression}");
-                throw new ArgumentException($"Check the command arguments is invalid: {expression}");
+            switch (paramsManagerOptions.TypeManagerOptions)
+            {
+                case TypeManagerOptions.AuthSocks5:
+                    var paramsSocks5 = paramsManagerOptions.GetParamsForProcess<ParamsSocks5>();
+                    await _processOptionsClient.ProcessAsync(paramsSocks5, cts);
+                    break;
+                case TypeManagerOptions.CheckAppClientBlockChain:
+                    break;
+                case TypeManagerOptions.DownloadAppClientBlockChain:
+                    break;
+                case TypeManagerOptions.Logs:
+                    break;
+                case TypeManagerOptions.StatusConnection:
+                    break;
+                case TypeManagerOptions.StatusTransaction:
+                    break;
+                case TypeManagerOptions.CancelOperations:
+                    ResetCancellationToken();
+                    break;
+                case TypeManagerOptions.Error:
+                default:
+                    ResetCancellationToken();
+                    _logger.LogError(
+                        $"Check the command arguments is invalid: {paramsManagerOptions.TypeManagerOptions}");
+                    throw new ArgumentException(
+                        $"Check the command arguments is invalid: {paramsManagerOptions.TypeManagerOptions}");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
 
-    public async Task ResponseOptions(TypeManagerResponseOperations expression,
+    public async Task ResponseOptionsAsync(ParamsManagerOptionsResponseDto paramsManagerOptions,
         CancellationToken cts = default)
     {
-        switch (expression)
+        switch (paramsManagerOptions.TypeManagerOptionsResponse)
         {
-            case TypeManagerResponseOperations.Success:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.Success:
                 _logger.LogInformation($"Success");
+                await SendParamsOptionsResponse(paramsManagerOptions, cts);
                 break;
-            case TypeManagerResponseOperations.NotFound:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.NotFound:
                 _logger.LogInformation($"NotFound");
+                await SendParamsOptionsResponse(paramsManagerOptions, cts);
                 break;
-            case TypeManagerResponseOperations.Unauthorized:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.Unauthorized:
                 _logger.LogInformation($"Unauthorized");
+                await SendParamsOptionsResponse(paramsManagerOptions, cts);
                 break;
-            case TypeManagerResponseOperations.Error:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.Error:
                 break;
-            case TypeManagerResponseOperations.InvalidRequest:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.InvalidRequest:
+
                 break;
-            case TypeManagerResponseOperations.Timeout:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.Timeout:
+
                 break;
-            case TypeManagerResponseOperations.AlreadyExists:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.AlreadyExists:
+
                 break;
-            case TypeManagerResponseOperations.ValidationFailed:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.ValidationFailed:
+
                 break;
-            case TypeManagerResponseOperations.PartialSuccess:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.PartialSuccess:
+
                 break;
-            case TypeManagerResponseOperations.Pending:
-                await Send(expression);
+            case TypeManagerOptionsResponseDto.Pending:
+
                 break;
+            case TypeManagerOptionsResponseDto.ProcessNotKill:
+                await _send.SendAsync(paramsManagerOptions, _clientConnected.GetClientInfo()!, TypeSocketSsl.SslStream,
+                    cts);
+                _logger.LogInformation($"Send process not kill");
+                break;
+            case TypeManagerOptionsResponseDto.SslStreamNotAuthenticated:
+            case TypeManagerOptionsResponseDto.SocketNotConnected:
+            case TypeManagerOptionsResponseDto.PortNotOpen:
+            case TypeManagerOptionsResponseDto.TypeNotDefined:
             default:
                 ResetCancellationToken();
-                _logger.LogError($"Check the command arguments is invalid: {expression}");
-                await Send(expression);
-                throw new ArgumentException($"Check the command arguments is invalid: {expression}");
+                _logger.LogError(
+                    $"Check the command arguments is invalid: {paramsManagerOptions.TypeManagerOptionsResponse}");
+
+                throw new ArgumentException(
+                    $"Check the command arguments is invalid: {paramsManagerOptions.TypeManagerOptionsResponse}");
         }
     }
 
-    private async Task Send(TypeManagerResponseOperations expression)
+    private async Task SendParamsOptionsResponse(ParamsManagerOptionsResponseDto paramsManagerOptions,
+        CancellationToken cts = default)
     {
-        var clientInfo = _clientContext.GetClientInfo();
-        var typeSocketSsl = TypeSocketSsl.Socket;
-        if (clientInfo is not null && clientInfo.SslStreamWrapper!.IsAuthenticated!)
-        {
-            typeSocketSsl = TypeSocketSsl.SslStream;
-        }
-
-        await _send.SendAsync(expression, clientInfo!, typeSocketSsl, _ctsSource.Token);
+        var clientInfo = _clientConnected.GetClientInfo();
+        await _send.SendAsync(paramsManagerOptions, clientInfo!, TypeSocketSsl.SslStream, cts);
     }
 
     private void ResetCancellationToken()
@@ -158,9 +170,9 @@ public class ManagerOptionsService : IManagerOptions
     private ConfigVariable GetConfigVariable()
     {
         var data = _searchFile.SearchFile(TypeFile.ConfigVariable);
-        
+
         var configCryptograph = new ConfigCryptograph(_pathFile);
-        
+
         switch (data)
         {
             case ConfigVariable config:
@@ -170,13 +182,25 @@ public class ManagerOptionsService : IManagerOptions
                 configCryptograph.SetDataBytes(bytes);
                 break;
             default:
-                throw new FileNotFoundException(nameof(data),"Data not found."); 
+                throw new FileNotFoundException(nameof(data), "Data not found.");
         }
-        
+
         var result = _cryptographFile.LoadFile(configCryptograph);
-        
+
         var obj = JsonSerializer.Deserialize<ConfigVariable>(result);
-        
+
         return obj!;
+    }
+
+    private async Task OnReceiveParamsOptionsSocks5Async(ParamsManagerOptionsDto<ParamsSocks5Dto> paramsManagerOptionsDto)
+    {
+        if (paramsManagerOptionsDto.ParamsForProcess is null)
+        {
+            _logger.LogWarning($"The parameter to process cannot be null.{paramsManagerOptionsDto.ParamsForProcess}");
+            throw new ArgumentNullException(nameof(paramsManagerOptionsDto.ParamsForProcess));
+        }
+
+        var paramsSocks5 = _mapperObj.Map<ParamsSocks5Dto, ParamsSocks5>(paramsManagerOptionsDto.ParamsForProcess);
+        await _processOptionsClient.ProcessAsync(paramsSocks5);
     }
 }

@@ -1,10 +1,11 @@
-using LibClassManagerOptions.Entities.Enum;
+using LibClassManagerOptions.Entities;
+using LibDto.Dto;
 
 namespace LibClassManagerOptions.Interface;
 
-public interface IManagerOptions
+public interface IManagerOptions<T>
 {
-    Task InitializeOptions(TypeManagerOptions typeManagerOptions, CancellationToken cts = default);
+    Task InitializeOptionsAsync(ParamsManagerOptions<T> paramsManagerOptions, CancellationToken cts = default);
     
-    Task ResponseOptions(TypeManagerResponseOperations typeManagerResponseOperations, CancellationToken cts = default);
+    Task ResponseOptionsAsync(ParamsManagerOptionsResponseDto paramsManagerOptionsResponseDto, CancellationToken cts = default);
 }

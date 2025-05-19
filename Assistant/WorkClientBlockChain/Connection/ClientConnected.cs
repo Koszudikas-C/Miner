@@ -6,26 +6,21 @@ using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Connection;
 
-public class ClientContext : IClientContext
+public class ClientConnected : IClientConnected
 {
     private static readonly object _lock = new();
     private static ClientInfo? _clientInfo;
     
-    private readonly IPosAuth _posAuth; 
-    
     private static readonly GlobalEventBusClient GlobalEventBusClient = GlobalEventBusClient.Instance!;
     
-    public ClientContext(IPosAuth posAuth)
+    public ClientConnected()
     {
-        _posAuth = posAuth;
         GlobalEventBusClient.Subscribe<ClientInfo>(OnClientInfoReceived);
     }
 
     private void OnClientInfoReceived(ClientInfo? obj)
     {
         SetClientInfo(obj);
-        _posAuth.SendClientMine(obj!); 
-        _posAuth.ReceiveDataCrypt(obj!);
     }
 
     public ClientInfo? GetClientInfo()

@@ -17,41 +17,88 @@ public sealed class ReceiveAuth(SslStream sslStream)
 
     public async Task ReceiveDataAsync(CancellationToken cts = default)
     {
-        await ExecuteWithTimeoutAsync(() => ReceiveLengthPrefixAsync(cts), TimeSpan.FromMinutes(2), cts);
-        await ExecuteWithTimeoutAsync(() => ReceiveObjectAsync(cts), TimeSpan.FromMinutes(2), cts);
-
+        await ExecuteWithTimeoutAsync(() => ReceiveLengthPrefixAsync(cts), TimeSpan.FromSeconds(30), cts);
+        await ExecuteWithTimeoutAsync(() => ReceiveObjectAsync(cts), TimeSpan.FromSeconds(30), cts);
+        
+        await _sslStream.FlushAsync(cts);
         DeserializeObject();
+    }
+
+    public async Task ReceiveDataFileAsync(CancellationToken cts = default)
+    {
+        await ReceiveLengthPrefixAsync(cts);
+        await ReceiveObjFileAsync(cts);
+        await _sslStream.FlushAsync(cts);
+
+        DeserializeFile();
+    }
+
+    private void DeserializeFile()
+    {
+        var result = Encoding.UTF8.GetString(_buffer.BufferReceive);
+    }
+
+    private async Task ReceiveObjFileAsync(CancellationToken cts = default)
+    {
+        try
+        {
+            using var ms = new MemoryStream();
+            _buffer.BufferInit = new byte[81920];
+
+            var remaining = _buffer.BufferReceive.Length;
+
+            while (remaining > 0)
+            {
+                var readSize = Math.Min(_buffer.BufferInit.Length, remaining);
+                _totalBytesReceived = await _sslStream.ReadAsync(_buffer.BufferInit.AsMemory(0, readSize), cts);
+                if (_totalBytesReceived == 0) throw new IOException("Prematurely closed connection");
+
+                await ms.WriteAsync(_buffer.BufferInit.AsMemory(0, _totalBytesReceived), cts);
+
+                remaining -= _totalBytesReceived;
+            }
+        }
+        catch (Exception)
+        {
+            throw new Exception("Error when receiving object file.");
+        }
     }
 
     private async Task ReceiveLengthPrefixAsync(CancellationToken cts = default)
     {
         try
         {
-            _ = await this._sslStream.ReadAsync(this._buffer.BufferInit, cts);
+            _ = await _sslStream.ReadAsync(_buffer.BufferInit, cts);
 
-            this._buffer.BufferSize = BitConverter.ToInt32(this._buffer.BufferInit, 0);
-            this._buffer.IsList = this._buffer.BufferInit[4] == 1;
+            _buffer.BufferSize = BitConverter.ToInt32(_buffer.BufferInit, 0);
+            _buffer.IsList = _buffer.BufferInit[4] == 1;
 
-            this._buffer.BufferReceive = new byte[this._buffer.BufferSize];
+            _buffer.BufferReceive = new byte[_buffer.BufferSize];
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new Exception("Error sending object size.");
         }
     }
 
     private async Task ReceiveObjectAsync(CancellationToken cts = default)
     {
-        _totalBytesReceived = 0;
-        while (_totalBytesReceived < this._buffer.BufferSize)
+        try
         {
-            var bytesRead = await _sslStream.ReadAsync(
-                this._buffer.BufferReceive.AsMemory(_totalBytesReceived,
-                    this._buffer.BufferSize - _totalBytesReceived), cts);
+            _totalBytesReceived = 0;
+            while (_totalBytesReceived < _buffer.BufferSize)
+            {
+                var bytesRead = await _sslStream.ReadAsync(
+                    _buffer.BufferReceive.AsMemory(_totalBytesReceived,
+                        _buffer.BufferSize - _totalBytesReceived), cts);
 
-            if (bytesRead == 0) break;
-            _totalBytesReceived += bytesRead;
+                if (bytesRead == 0) break;
+                _totalBytesReceived += bytesRead;
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Error when sending the object.");
         }
     }
 

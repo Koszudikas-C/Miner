@@ -1,4 +1,5 @@
 using System.Data;
+using System.Runtime.InteropServices;
 using DataFictitious.LibClass.LibSaveFile;
 using LibManagerFile.Entities.Enum;
 using LibManagerFile.Interface;
@@ -20,7 +21,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -32,7 +33,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -44,7 +45,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -55,19 +56,20 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
     public void save_file_different_directory()
     {
         var configSaveFile = ConfigSaveFileTest.GetConfigSaveFileTest();
-        configSaveFile.SetPathFile("//tmp");
 
+        configSaveFile.SetPathFile(Path.GetTempPath());
+        
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessUnauthorized(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -80,7 +82,7 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -91,7 +93,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteBytesAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteBytesAsyncSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteByteAsyncSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -119,7 +121,7 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWriteBytes(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteBytesSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteBytesSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -130,7 +132,7 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
     }
 
     [Fact]
@@ -141,6 +143,6 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
     }
 }

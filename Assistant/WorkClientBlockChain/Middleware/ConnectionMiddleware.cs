@@ -7,11 +7,11 @@ using WorkClientBlockChain.Middleware.Interface;
 namespace WorkClientBlockChain.Middleware;
 
 public class ConnectionMiddleware(ISocketMiring socketMiring, 
-	ILogger<ConnectionMiddleware> logger, IClientContext clientContext, IAuthSsl authSsl) : IConnectionMiddleware
+	ILogger<ConnectionMiddleware> logger, IClientConnected clientConnected, IAuthSsl authSsl) : IConnectionMiddleware
 {
     private readonly ISocketMiring _socketMiring = socketMiring;
     private readonly ILogger<ConnectionMiddleware> _logger = logger;
-    private readonly IClientContext _clientContext = clientContext;
+    private readonly IClientConnected _clientConnected = clientConnected;
     private readonly IAuthSsl _authSsl = authSsl; 
 
 
@@ -19,19 +19,19 @@ public class ConnectionMiddleware(ISocketMiring socketMiring,
     {
 		try
 		{
-			var clientInfo = _clientContext.GetClientInfo();
+			var clientInfo = _clientConnected.GetClientInfo();
 			while (true)
 			{
                 if (clientInfo is null)
 				{
-					clientInfo = _clientContext.GetClientInfo();
+					clientInfo = _clientConnected.GetClientInfo();
 					await Task.Delay(2000, cts);
 					continue;
 				}
 
 				if(!CommunicationStatus.IsConnected)
 				{
-					Console.WriteLine("Reconectando...");
+					Console.WriteLine("Reconnecting...");
 					
 					clientInfo.SslStreamWrapper?.InnerSslStream!.Close();
 					

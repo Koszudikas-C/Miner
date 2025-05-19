@@ -14,10 +14,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\LibClass\LibClassManagerOptions\LibClassManagerOptions.csproj" />
     <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibDirectoryFile\LibDirectoryFile.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibDownload\LibDownload.csproj" />
     <ProjectReference Include="..\..\LibClass\LibMiddleware\LibMiddleware.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibPreparationFile\LibPreparationFile.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSaveFile\LibSaveFile.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSearchFile\LibSearchFile.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
     <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibUpload\LibUpload.csproj" />
   </ItemGroup>
 </Project>

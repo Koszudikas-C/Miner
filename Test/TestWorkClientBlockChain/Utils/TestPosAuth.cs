@@ -10,6 +10,7 @@ using LibRemoteAndClient.Entities.Client;
 using LibSend.Interface;
 using Microsoft.Extensions.Logging;
 using Moq;
+using WorkClientBlockChain.Service;
 using WorkClientBlockChain.Utils;
 using WorkClientBlockChain.Utils.Interface;
 using Xunit;
@@ -22,7 +23,7 @@ public class TestPosAuth
     private readonly IMapperObj _mapperObj = new MapperObjService();
     private readonly Mock<IReceive> _mockReceive = new();
     private readonly Mock<ISend<HttpStatusCode>> _mocSendHttpStatusCode = new();
-    private readonly Mock<ILogger<PosAuth>> _mockIloggerPostAuth = new();
+    private readonly Mock<ILogger<PosAuthService>> _mockIloggerPostAuth = new();
     private readonly Mock<ISaveFile> _mockSaveFile = new();
     private readonly Mock<ICryptographFile> _mockCryptographFile = new();
     private readonly Mock<IMapperObj> _mockMapperObj = new();
@@ -31,7 +32,7 @@ public class TestPosAuth
 
     public TestPosAuth()
     {
-        _posAuth = new PosAuth(
+        _posAuth = new PosAuthService(
             _mockReceive.Object,
             _mocSendHttpStatusCode.Object,
             _mockIloggerPostAuth.Object,

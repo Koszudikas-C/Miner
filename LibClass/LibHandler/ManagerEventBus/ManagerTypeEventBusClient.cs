@@ -56,6 +56,24 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
             case ClientMineDto clientMineDto:
                 _globalEventBusClient.Publish(clientMineDto); 
                 break;
+            case ParamsManagerOptionsDto<ParamsSocks5Dto> paramsManagerOptionsDto:
+                _globalEventBusClient.Publish(paramsManagerOptionsDto);
+                break;
+            case ParamsSocks5Dto paramsSocks5Dto:
+                _globalEventBusClient.Publish(paramsSocks5Dto);
+                break;
+            case DownloadRequestDto downloadRequestDto:
+                _globalEventBusClient.Publish(downloadRequestDto);
+                break;
+            case UploadResponseHeaderDto uploadResponseHeaderDto:
+                _globalEventBusClient.Publish(uploadResponseHeaderDto);
+                break;
+            case UploadResponseDto uploadResponseDto:
+                _globalEventBusClient.Publish(uploadResponseDto);
+                break;
+            case ParamsManagerOptionsResponseDto paramsManagerOptionsResponseDto:
+                _globalEventBusClient.Publish(paramsManagerOptionsResponseDto);
+                break;
             default:
                 throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));
         }

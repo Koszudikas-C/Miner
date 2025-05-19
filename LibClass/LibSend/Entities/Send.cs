@@ -14,8 +14,8 @@ public class Send<T>(Socket socket)
 
     public async Task SendAsync(T data, CancellationToken cts = default)
     {
-        await ExecuteWithTimeout(() => SendLengthPrefix(data!, false, cts), TimeSpan.FromMinutes(1), cts);
-        await ExecuteWithTimeout(() => SendObject(data!, cts), TimeSpan.FromMinutes(1), cts);
+        await ExecuteWithTimeout(() => SendLengthPrefix(data!, false, cts), TimeSpan.FromSeconds(30), cts);
+        await ExecuteWithTimeout(() => SendObject(data!, cts), TimeSpan.FromSeconds(30), cts);
     }
 
     public async Task SendListAsync(List<T> listData, CancellationToken cts = default)

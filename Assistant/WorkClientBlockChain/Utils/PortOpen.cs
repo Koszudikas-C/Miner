@@ -4,7 +4,7 @@ using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Utils;
 
-internal class PortOpen : IPortOpen
+public class PortOpen : IPortOpen
 {
     public async Task<bool> IsOpenPortAsync(int port, CancellationToken cts = default)
     {

@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Group\MapperObjAndDto\LibDto\LibDto.csproj" />
+      <ProjectReference Include="..\LibClassProcessOperations\LibClassProcessOperations.csproj" />
+    </ItemGroup>
+
 </Project>

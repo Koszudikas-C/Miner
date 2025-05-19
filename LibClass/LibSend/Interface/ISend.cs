@@ -11,4 +11,7 @@ public interface ISend<T>
     
     Task SendListAsync(List<T> dataList, ClientInfo clientInfo,
         TypeSocketSsl typeSocketSsl, CancellationToken cts = default);
+
+    Task SendFileAsync(T dataFile, ClientInfo clientInfo,
+        TypeSocketSsl typeSocketSsl, CancellationToken cts = default);
 }

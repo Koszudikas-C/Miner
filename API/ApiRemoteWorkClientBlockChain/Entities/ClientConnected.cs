@@ -7,8 +7,11 @@ namespace ApiRemoteWorkClientBlockChain.Entities;
 public class ClientConnected : IClientConnected
 {
     private static readonly Lazy<ClientConnected> _instance = new(() => new ClientConnected());
-
+    
     public static ClientConnected Instance => _instance.Value;
+
+    private static readonly ILoggerFactory LoggerFactory = new LoggerFactory();
+    private readonly ILogger<ClientInfo> _logger = new Logger<ClientInfo>(LoggerFactory);
 
     private readonly Dictionary<Guid, ClientInfo> _clients = new();
     private readonly Dictionary<Guid, ClientMine> _clientsMine = new();
@@ -29,6 +32,8 @@ public class ClientConnected : IClientConnected
 
     public List<ClientInfo> RemoveClientInfo(ClientInfo clientInfo)
     {
+        clientInfo.SocketWrapper!.InnerSocket.Close();
+        clientInfo.SslStreamWrapper!.InnerSslStream!.Close();
         _clients.Remove(clientInfo.Id);
         return _clients.Values.ToList();
     }
@@ -38,28 +43,33 @@ public class ClientConnected : IClientConnected
         _clients[clientInfo.Id] = clientInfo;
         return _clients.Values.ToList();
     }
-    
+
     public List<ClientMine> AddClientMine(ClientMine clientMine)
     {
         if (!_clients.TryGetValue(clientMine.ClientInfoId, out var existingClient)) return _clientsMine.Values.ToList();
-        
+
         existingClient.ClientMine = clientMine;
         _clients[clientMine.ClientInfoId] = existingClient;
         _clientsMine[clientMine.Id] = clientMine;
         return _clientsMine.Values.ToList();
-
     }
 
     public List<ClientMine> UpdateClientMine(ClientMine clientMine)
     {
         throw new NotImplementedException();
     }
-    
+
     public ClientInfo GetClientInfoLastRequirement() => _clients.GetValueOrDefault(ClientInfoLastRequirementId)!;
 
     public ClientInfo GetClientInfo(Guid clientId, bool removeLastRequirement)
     {
-        ClientInfoLastRequirementId = removeLastRequirement ? Guid.Empty : clientId;
+        if (_clients.All(g => g.Key != clientId))
+        {
+            _logger.LogCritical("The user was not found!.");
+            throw new ArgumentNullException("The user was not found!.");
+        }
+        
+        ClientInfoLastRequirementId = removeLastRequirement ? Guid.Empty: clientId;
 
         return _clients.GetValueOrDefault(clientId)!;
     }

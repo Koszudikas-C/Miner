@@ -1,6 +1,6 @@
 namespace LibClassManagerOptions.Entities.Enum;
 
-public enum TypeManagerResponseOperations
+public enum TypeManagerOptionsResponse
 {
     Success = 0,
     NotFound = 1,
@@ -15,4 +15,6 @@ public enum TypeManagerResponseOperations
     SslStreamNotAuthenticated = 10,
     SocketNotConnected = 11,
     PortNotOpen = 12,
+    TypeNotDefined = 13,
+    ProcessNotKill = 14
 }

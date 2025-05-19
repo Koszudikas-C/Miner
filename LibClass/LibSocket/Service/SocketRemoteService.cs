@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using LibCommunicationStatus;
 using LibHandler.EventBus;
 using LibJson.Util;
@@ -57,9 +58,11 @@ public class SocketRemoteService(
     private async Task OnSocketConnectRemoteAuthAsync(Socket socket, TypeAuthMode typeAuthMode
         , CancellationToken cts = default)
     {
-        await ReceiveGuidTokenAsync(socket, typeAuthMode, cts);
+        MapperTypeObj(socket, typeAuthMode);
+        await Task.CompletedTask;
+        // await ReceiveGuidTokenAsync(socket, typeAuthMode, cts);
     }
-
+    
     private async Task ReceiveGuidTokenAsync(Socket socket,
         TypeAuthMode typeAuthMode, CancellationToken cts = default)
     {
@@ -69,10 +72,10 @@ public class SocketRemoteService(
             void Handler(GuidTokenAuth tokenAuth)
             {
                 tcs.TrySetResult(tokenAuth.GuidTokenGlobal);
-                MapperTypeObj(tokenAuth.GuidTokenGlobal, socket, typeAuthMode);
+                // MapperTypeObj(tokenAuth.GuidTokenGlobal, socket, typeAuthMode);
                 _globalEventBusRemote.Unsubscribe<GuidTokenAuth>(Handler);
             }
-
+            
             _globalEventBusRemote.Subscribe<GuidTokenAuth>(Handler);
             var clientInfo = new ClientInfo { SocketWrapper = new SocketWrapper(socket) };
             
@@ -82,27 +85,48 @@ public class SocketRemoteService(
         }
         catch (Exception e)
         {
+            DisconnectSocket(socket);
             throw new Exception(e.Message);
         }
     }
-
-    private void MapperTypeObj(Guid token, Socket socket, TypeAuthMode typeAuthMode)
+    
+    
+    private void MapperTypeObj(Socket socket, TypeAuthMode typeAuthMode)
     {
         if (typeAuthMode == TypeAuthMode.AllowAnonymous)
         {
-            var clientInfo = new ClientInfo { Id = token, SocketWrapper = new SocketWrapper(socket) };
+            var clientInfo = new ClientInfo { SocketWrapper = new SocketWrapper(socket) };
             PublishTyped(clientInfo);
         }
         else
         {
             var sslStreamObj = new ObjSocketSslStream
             {
-                Id = token,
                 SocketWrapper = new SocketWrapper(socket)
             };
             PublishTyped(sslStreamObj);
         }
     }
+
+    // private void MapperTypeObj(Guid token, Socket socket, TypeAuthMode typeAuthMode)
+    // {
+    //     if (typeAuthMode == TypeAuthMode.AllowAnonymous)
+    //     {
+    //         var clientInfo = new ClientInfo { Id = token, SocketWrapper = new SocketWrapper(socket) };
+    //         PublishTyped(clientInfo);
+    //     }
+    //     else
+    //     {
+    //         var sslStreamObj = new ObjSocketSslStream
+    //         {
+    //             Id = token,
+    //             SocketWrapper = new SocketWrapper(socket)
+    //         };
+    //         PublishTyped(sslStreamObj);
+    //     }
+    // }
+
+    private static void DisconnectSocket(Socket socket) => socket.Close();
 
     private void PublishTyped<T>(T data)
     {

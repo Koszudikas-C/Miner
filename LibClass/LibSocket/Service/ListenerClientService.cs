@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Sockets;
-using LibDto.Dto;
 using LibSocket.Entities;
 using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Entities.Enum;

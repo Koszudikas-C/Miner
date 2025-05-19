@@ -33,6 +33,7 @@ public class ManagerConnectionServiceTest
     private readonly Mock<ICryptographFile> _mockCryptograph = new();
     private readonly Mock<IMapperObj> _mapperObj = new();
     private readonly Mock<IReceive> _mockReceive = new();
+    private readonly Mock<IPosAuth> _mockPosAuth = new();
     
     private readonly IManagerConnection _managerConnection;
 
@@ -49,7 +50,8 @@ public class ManagerConnectionServiceTest
             _mockClientConnected.Object,
             _mockCryptograph.Object,
             _mapperObj.Object,
-            _mockReceive.Object
+            _mockReceive.Object,
+            _mockPosAuth.Object
         );
     }
     

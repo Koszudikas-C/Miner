@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LibClassManagerOptions\LibClassManagerOptions.csproj" />
+      <ProjectReference Include="..\LibClassGetProcessInfo\LibClassGetProcessInfo.csproj" />
     </ItemGroup>
-
 </Project>

@@ -14,5 +14,8 @@ public enum TypeExtensionFile
     Json,
     Xml,
     Yml,
-    Markdown
+    Markdown,
+    Zip,
+    Gz,
+    Tar
 }

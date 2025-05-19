@@ -1,8 +1,13 @@
+using LibClassGetProcessInfo.Interface;
+using LibClassManagerOptions.Interface;
+using LibClassProcessOperations.Interface;
 using LibCryptography.Interface;
 using LibCryptography.Service;
+using LibDownload.Interface;
 using LibManagerFile.Interface;
 using LibMapperObj.Interface;
 using LibMapperObj.Service;
+using LibProcess.Interface;
 using LibReceive.Interface;
 using LibReceive.Service;
 using LibSaveFile.Service;
@@ -38,12 +43,16 @@ builder.Services.AddSingleton<IConnectionAndAuth, ConnectionAndAuth>()
     .AddSingleton<IConfigVariable, ConfigVariableService>()
     .AddSingleton<ISocks5Options, Socks5OptionsService>()
     .AddSingleton<ISocks5, Socks5Service>()
-    .AddSingleton<IPosAuth, PosAuth>()
+    .AddSingleton<IPosAuth, PosAuthService>()
     .AddSingleton<ISaveFile, SaveFileService>()
     .AddSingleton<ISearchFile, SearchFileService>()
     .AddSingleton<IMapperObj, MapperObjService>()
-    .AddSingleton<IPosAuth, PosAuth>()
-    .AddSingleton<IClientContext, ClientContext>();
+    .AddSingleton<IDownload, DownloadService>()
+    .AddSingleton(typeof(IManagerOptions<>), typeof(ManagerOptionsService<>))
+    .AddSingleton<IProcessOptionsClient, AuthSocks5OptionsService>()
+    .AddSingleton<IGetProcessInfo, GetProcessInfoService>()
+    .AddSingleton<IProcessKill, ProcessKillService>()
+    .AddSingleton<IClientConnected, ClientConnected>();
 
 var host = builder.Build();
 host.Run();
