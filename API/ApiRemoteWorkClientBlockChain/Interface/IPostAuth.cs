@@ -1,11 +1,9 @@
-using LibDto.Dto;
-using LibCommunicationStatus.Entities;
+using LibDtoRemote.Dto;
 
-namespace ApiRemoteWorkClientBlockChain.Interface
+namespace ApiRemoteWorkClientBlockChain.Interface;
+
+public interface IPosAuth
 {
-    public interface IPosAuth
-    {
-        Task SendDataAsync(
-            ConfigCryptographDto configCryptographDto, Guid clientId, CancellationToken cts = default);
-    }
+  Task SendDataAsync(
+    ConfigCryptographDto configCryptographDto, Guid clientId, CancellationToken cts = default);
 }

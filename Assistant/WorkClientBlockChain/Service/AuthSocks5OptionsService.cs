@@ -1,18 +1,15 @@
-using LibClassGetProcessInfo.Entities;
-using LibClassGetProcessInfo.Interface;
-using LibClassManagerOptions.Entities;
-using LibClassManagerOptions.Entities.Enum;
-using LibClassProcessOperations.Entities;
-using LibClassProcessOperations.Interface;
-using LibDownload.Interface;
-using LibDto.Dto;
-using LibDto.Dto.Enum;
-using LibHandler.EventBus;
-using LibManagerFile.Entities.Enum;
-using LibMapperObj.Interface;
-using LibProcess.Interface;
-using LibRemoteAndClient.Entities.Remote;
+using LibDownloadClient.Interface;
+using LibDtoClient.Dto;
+using LibDtoClient.Dto.Enum;
+using LibEntitiesClient.Entities;
+using LibEntitiesClient.Entities.Params;
+using LibEntitiesClient.Entities.Params.Enum;
+using LibHandlerClient.Entities;
+using LibManagerFileClient.Entities.Enum;
+using LibMapperObjClient.Interface;
+using LibProcessClient.Interface;
 using WorkClientBlockChain.Connection.Interface;
+using WorkClientBlockChain.Interface;
 
 namespace WorkClientBlockChain.Service;
 
@@ -23,7 +20,7 @@ internal class AuthSocks5OptionsService(
     IDownload download,
     IMapperObj mapperObj,
     IProcessKill processKill)
-    : IProcessOptionsClient
+    : IProcessOptions
 {
     private readonly ILogger<AuthSocks5OptionsService> _logger = logger;
     private readonly IClientConnected _clientConnected = clientConnected;
@@ -31,7 +28,7 @@ internal class AuthSocks5OptionsService(
     private readonly IDownload _download = download;
     private readonly IMapperObj _mapperObj = mapperObj;
     private readonly IProcessKill _processKill = processKill;
-    private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
 
     /// <summary>
     /// Process method is always default in a matter of parameters. Summarizing automated.
@@ -39,7 +36,7 @@ internal class AuthSocks5OptionsService(
     public async Task ProcessAsync(object obj, CancellationToken cts = default)
     {
         if (obj is not ParamsSocks5)
-            _globalEventBusClient.Publish(new ParamsManagerOptionsResponse()
+            _globalEventBus.Publish(new ParamsManagerOptionsResponse()
             {
                 TypeName = "Empty",
                 TypeManagerOptionsResponse = TypeManagerOptionsResponse.TypeNotDefined
@@ -66,7 +63,7 @@ internal class AuthSocks5OptionsService(
                 processInfo = _getProcessInfo.GetProcessInfo(paramsGetProcessInfo.Port);
             }
 
-            if (processInfo != null && processInfo.Pid > 0)
+            if (processInfo is { Pid: > 0 })
             {
                 FinalizeProcess(processInfo);
             }
@@ -77,7 +74,7 @@ internal class AuthSocks5OptionsService(
         {
             _logger.LogError($"Error when checking and finishing the process. Error:{e.Message}");
             processInfo!.LastError = e.Message;
-            _globalEventBusClient.Publish(new ParamsManagerOptionsResponseDto
+            _globalEventBus.Publish(new ParamsManagerOptionsResponseDto
             {
                 TypeManagerOptionsResponse = TypeManagerOptionsResponseDto.ProcessNotKill,
                 ParamsForProcessResponse = processInfo
@@ -115,11 +112,11 @@ internal class AuthSocks5OptionsService(
             void Handler(UploadResponseDto uploadResponseDto)
             {
                 taskCompletionSource.TrySetResult(uploadResponseDto);
-                _globalEventBusClient.Unsubscribe<UploadResponseDto>(Handler);
+                _globalEventBus.Unsubscribe<UploadResponseDto>(Handler);
             }
 
-            _globalEventBusClient.Subscribe<UploadResponseHeaderDto>(HandlerHeader);
-            _globalEventBusClient.Subscribe<UploadResponseDto>(Handler);
+            _globalEventBus.Subscribe<UploadResponseHeaderDto>(HandlerHeader);
+            _globalEventBus.Subscribe<UploadResponseDto>(Handler);
 
             await _download.DownloadAsync(downloadRequestDto, cts);
 
@@ -130,7 +127,7 @@ internal class AuthSocks5OptionsService(
         catch (Exception ex)
         {
             _logger.LogError($"Error when downloading the Torrc. Error: {ex.Message}");
-            _globalEventBusClient.Publish(new ParamsManagerOptionsResponseDto()
+            _globalEventBus.Publish(new ParamsManagerOptionsResponseDto()
             {
                 TypeManagerOptionsResponse = TypeManagerOptionsResponseDto.NotFound,
                 ParamsForProcessResponse = _logger

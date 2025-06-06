@@ -1,8 +1,9 @@
-using LibClassManagerOptions.Entities;
-using LibClassManagerOptions.Entities.Enum;
-using LibDto.Dto;
-using LibMapperObj.Interface;
-using LibMapperObj.Service;
+
+using LibDtoRemote.Dto;
+using LibEntitiesRemote.Entities.Params;
+using LibEntitiesRemote.Entities.Params.Enum;
+using LibMapperObjRemote.Interface;
+using LibMapperObjRemote.Service;
 
 namespace ApiRemoteWorkClientBlockChain.Utils;
 

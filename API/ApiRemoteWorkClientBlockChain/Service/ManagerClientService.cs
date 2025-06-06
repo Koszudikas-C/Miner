@@ -2,18 +2,16 @@ using System.Net;
 using System.Security.Cryptography;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
-using LibCommunicationStatus.Entities;
-using LibCryptography.Entities;
-using LibCryptography.Interface;
-using LibDto.Dto;
-using LibHandler.EventBus;
-using LibManagerFile.Entities.Enum;
-using LibManagerFile.Interface;
-using LibMapperObj.Interface;
-using LibReceive.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
-using LibSend.Interface;
+using LibCommunicationStateRemote.Entities;
+using LibCryptographyRemote.Interface;
+using LibDtoRemote.Dto;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Enum;
+using LibHandlerRemote.Entities;
+using LibManagerFileRemote.Interface;
+using LibMapperObjRemote.Interface;
+using LibReceiveRemote.Interface;
+using LibSendRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
@@ -28,7 +26,7 @@ public class ManagerClientService : IManagerClient
     private readonly ISearchFile _searchFile;
     private readonly IMapperObj _mapperObj;
 
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance!;
 
     public ManagerClientService(ILogger<ManagerClientService> logger, IReceive receive,
         IClientConnected clientConnected, ISend<ConfigCryptographDto> send,

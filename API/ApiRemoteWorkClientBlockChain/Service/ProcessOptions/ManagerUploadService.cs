@@ -1,15 +1,14 @@
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
-using LibDirectoryFile.Interface;
-using LibDto.Dto;
-using LibDto.Dto.Enum;
-using LibHandler.EventBus;
-using LibManagerFile.Entities.Enum;
-using LibMapperObj.Interface;
-using LibRemoteAndClient.Entities;
-using LibRemoteAndClient.Entities.Remote;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibUpload;
-using LibUpload.Interface;
+using LibDirectoryFileRemote.Interface;
+using LibDtoRemote.Dto;
+using LibDtoRemote.Dto.Enum;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Params;
+using LibHandlerRemote.Entities;
+using LibManagerFileRemote.Entities.Enum;
+using LibMapperObjRemote.Interface;
+using LibUploadRemote;
+using LibUploadRemote.Interface;
 using NuGet.ProjectModel;
 
 namespace ApiRemoteWorkClientBlockChain.Service.ProcessOptions;
@@ -26,7 +25,7 @@ public class ManagerUploadService : IManagerUpload
     private readonly IClientConnected _clientConnected;
     private readonly IDirectoryFile _directoryFile;
 
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
 
     public ManagerUploadService(
         IMapperObj mapperObj,
@@ -52,7 +51,7 @@ public class ManagerUploadService : IManagerUpload
     {
         if (_subscribed) return;
 
-        _globalEventBusRemote.Subscribe<DownloadRequestDto>(handle =>
+        _globalEventBus.Subscribe<DownloadRequestDto>(handle =>
             _ = OnReceiveDownloadRequest(handle));
 
         _subscribed = true;
@@ -168,7 +167,7 @@ public class ManagerUploadService : IManagerUpload
 
             if (result)
             {
-                _logger.LogInformation("Arquivo enviado com sucesso!");
+                _logger.LogInformation("Archive sent successfully!");
             }
         }
         catch (Exception e)

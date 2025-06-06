@@ -1,0 +1,21 @@
+namespace LibManagerFileRemote.Entities.Enum;
+
+public enum TypeExtensionFile
+{
+    Txt,
+    Pdf,
+    Doc,
+    Docx,
+    Xls,
+    Xlsx,
+    Ppt,
+    Pptx,
+    Csv,
+    Json,
+    Xml,
+    Yml,
+    Markdown,
+    Zip,
+    Gz,
+    Tar
+}

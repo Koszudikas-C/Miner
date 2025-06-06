@@ -1,11 +1,11 @@
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
+using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Utils;
-using LibClassProcessOperations.Interface;
-using LibDto.Dto;
-using LibHandler.EventBus;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
-using LibSend.Interface;
+using LibDtoRemote.Dto;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Enum;
+using LibHandlerRemote.Entities;
+using LibSendRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
@@ -14,7 +14,7 @@ internal class AuthSocks5OptionsService(
     ILogger<AuthSocks5OptionsService> logger,
     IClientConnected clientConnected) : IProcessOptions
 {
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance!;
 
     /// <summary>
     /// Process method is always default in a matter of parameters. Summarizing automated.

@@ -24,13 +24,11 @@ public static class ConfigSaveFileTest
                    }
                    """;
 
-        var configSaveFile = new ConfigSaveFile("teste", @"tmp/dev/null")
+        var configSaveFile = new ConfigSaveFile("teste", @"tmp/null")
         {
             Data = json,
             DataBytes = Encoding.UTF8.GetBytes(json)
         };
-
-        configSaveFile.SetExtension(TypeExtensionFile.Json);
 
         return configSaveFile;
     }

@@ -1,4 +1,4 @@
-using LibRemoteAndClient.Entities.Remote.Client;
+using LibEntitiesClient.Entities;
 
 namespace WorkClientBlockChain.Utils.Interface;
 

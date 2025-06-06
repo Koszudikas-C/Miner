@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using LibProcess.Interface;
-using LibRemoteAndClient.Entities.Remote;
+using LibEntitiesClient.Entities;
+using LibProcessClient.Interface;
 
 namespace WorkClientBlockChain.Service;
 

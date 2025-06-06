@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>LibHardwareInfoClient</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardware.Info"/>
+    <PackageReference Include="LibreHardwareMonitorLib"/>
+    <PackageReference Include="System.Text.Json"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibUtilClient\LibUtilClient.csproj" />
+  </ItemGroup>
+  
+</Project>

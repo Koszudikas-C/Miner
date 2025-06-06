@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LibCommunicationStateClient\LibCommunicationStateClient.csproj" />
+      <ProjectReference Include="..\LibCryptographyClient\LibCryptographyClient.csproj" />
+      <ProjectReference Include="..\LibHandlerClient\LibHandlerClient.csproj" />
+      <ProjectReference Include="..\LibManagerFileClient\LibManagerFileClient.csproj" />
+      <ProjectReference Include="..\LibMapperObjClient\LibMapperObjClient.csproj" />
+      <ProjectReference Include="..\LibSocketAndSslStreamClient\LibSocketAndSslStreamClient.csproj" />
+    </ItemGroup>
+
+</Project>

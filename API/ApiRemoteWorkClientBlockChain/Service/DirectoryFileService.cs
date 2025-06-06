@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using LibDirectoryFile.Interface;
+using LibDirectoryFileRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 

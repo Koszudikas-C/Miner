@@ -1,8 +1,8 @@
-using LibDownload.Interface;
-using LibDto.Dto;
-using LibReceive.Interface;
-using LibRemoteAndClient.Enum;
-using LibSend.Interface;
+using LibDownloadClient.Interface;
+using LibDtoClient.Dto;
+using LibEntitiesClient.Entities.Enum;
+using LibReceiveClient.Interface;
+using LibSendClient.Interface;
 using WorkClientBlockChain.Connection.Interface;
 
 namespace WorkClientBlockChain.Service;

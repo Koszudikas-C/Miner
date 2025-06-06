@@ -1,5 +1,3 @@
-using LibSocketAndSslStream.Entities;
-
 namespace WorkClientBlockChain.Interface;
 
 public interface IConnectionAndAuth

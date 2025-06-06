@@ -1,0 +1,1 @@
+CREATE USER workClient WITH PASSWORD='5`Q7l*0(=7z?';

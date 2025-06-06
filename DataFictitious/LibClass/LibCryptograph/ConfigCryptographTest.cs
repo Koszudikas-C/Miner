@@ -3,7 +3,6 @@ using LibDto.Dto;
 using LibManagerFile.Entities.Enum;
 using LibManagerFile.Interface;
 using LibMapperObj.Interface;
-using LibSocketAndSslStream.Entities;
 
 namespace DataFictitious.LibClass.LibCryptograph;
 

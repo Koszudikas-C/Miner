@@ -1,0 +1,21 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx-proxy
+    networks:
+      - mine
+    ports:
+      - "8080:8080"
+    volumes:
+      - nginx-data:/etc/nginx
+    restart: unless-stopped
+    
+volumes:
+  nginx-data:
+
+networks:
+  mine:
+    external: true
+    name: mine

@@ -13,10 +13,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\API\ApiRemoteWorkClientBlockChain\ApiRemoteWorkClientBlockChain.csproj" />
-      <ProjectReference Include="..\LibClass\LibCryptography\LibCryptography.csproj" />
-      <ProjectReference Include="..\LibClass\LibMapperObj\LibMapperObj.csproj" />
-      <ProjectReference Include="..\LibClass\LibRemoteAndClient\LibRemoteAndClient.csproj" />
-      <ProjectReference Include="..\LibClass\LibSocket\LibSocket.csproj" />
     </ItemGroup>
 
 </Project>

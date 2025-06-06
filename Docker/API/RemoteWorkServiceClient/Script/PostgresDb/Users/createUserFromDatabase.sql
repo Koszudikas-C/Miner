@@ -1,0 +1,1 @@
+CREATE USER create_database WITH PASSWORD 'KdNNx8uWsRKUXuBVH6Q6';

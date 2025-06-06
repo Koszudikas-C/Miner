@@ -1,21 +1,19 @@
 using System.Text.Json;
-using LibClassManagerOptions.Entities;
-using LibClassManagerOptions.Entities.Enum;
-using LibClassManagerOptions.Interface;
-using LibClassProcessOperations.Entities;
-using LibClassProcessOperations.Interface;
-using LibCryptography.Entities;
-using LibCryptography.Interface;
-using LibDto.Dto;
-using LibDto.Dto.Enum;
-using LibHandler.EventBus;
-using LibManagerFile.Entities.Enum;
-using LibManagerFile.Interface;
-using LibMapperObj.Interface;
-using LibRemoteAndClient.Enum;
-using LibSend.Interface;
-using LibSocketAndSslStream.Entities;
+using LibCryptographyClient.Entities;
+using LibCryptographyClient.Interface;
+using LibDtoClient.Dto;
+using LibDtoClient.Dto.Enum;
+using LibEntitiesClient.Entities.Enum;
+using LibEntitiesClient.Entities.Params;
+using LibEntitiesClient.Entities.Params.Enum;
+using LibHandlerClient.Entities;
+using LibManagerFileClient.Entities.Enum;
+using LibManagerFileClient.Interface;
+using LibMapperObjClient.Interface;
+using LibSendClient.Interface;
+using LibSocketAndSslStreamClient.Entities;
 using WorkClientBlockChain.Connection.Interface;
+using WorkClientBlockChain.Interface;
 
 namespace WorkClientBlockChain.Service;
 
@@ -26,8 +24,8 @@ public class ManagerOptionsService<T> : IManagerOptions<T>
     private readonly IClientConnected _clientConnected;
     private readonly ICryptographFile _cryptographFile;
     private readonly ISearchFile _searchFile;
-    private readonly IProcessOptionsClient _processOptionsClient;
-    private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
+    private readonly IProcessOptions _processOptions;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
     private readonly IMapperObj _mapperObj;
     private CancellationTokenSource _ctsSource = new();
     private readonly string _pathFile = Path.Combine(Directory.GetCurrentDirectory(), "Resources" + "koewa.json");
@@ -35,14 +33,14 @@ public class ManagerOptionsService<T> : IManagerOptions<T>
     public ManagerOptionsService(ILogger<ManagerOptionsService<T>> logger,
         ISend<ParamsManagerOptionsResponseDto> send, IClientConnected clientConnected,
         ICryptographFile cryptographFile, ISearchFile searchFile,
-        IProcessOptionsClient processOptionsClient, IMapperObj mapperObj)
+        IProcessOptions processOptions, IMapperObj mapperObj)
     {
         _logger = logger;
         _send = send;
         _clientConnected = clientConnected;
         _cryptographFile = cryptographFile;
         _searchFile = searchFile;
-        _processOptionsClient = processOptionsClient;
+        _processOptions = processOptions;
         _mapperObj = mapperObj;
 
         ManagerSubscribeType();
@@ -50,11 +48,11 @@ public class ManagerOptionsService<T> : IManagerOptions<T>
 
     private void ManagerSubscribeType()
     {
-        _globalEventBusClient.Subscribe<ParamsManagerOptionsDto<ParamsSocks5Dto>>(
+        _globalEventBus.Subscribe<ParamsManagerOptionsDto<ParamsSocks5Dto>>(
             (handler) => _ = OnReceiveParamsOptionsSocks5Async(handler));
         
         //Response
-        _globalEventBusClient.Subscribe<ParamsManagerOptionsResponseDto>(
+        _globalEventBus.Subscribe<ParamsManagerOptionsResponseDto>(
             (handler) => _ = ResponseOptionsAsync(handler));
     }
 
@@ -67,7 +65,7 @@ public class ManagerOptionsService<T> : IManagerOptions<T>
             {
                 case TypeManagerOptions.AuthSocks5:
                     var paramsSocks5 = paramsManagerOptions.GetParamsForProcess<ParamsSocks5>();
-                    await _processOptionsClient.ProcessAsync(paramsSocks5, cts);
+                    await _processOptions.ProcessAsync(paramsSocks5, cts);
                     break;
                 case TypeManagerOptions.CheckAppClientBlockChain:
                     break;
@@ -201,6 +199,6 @@ public class ManagerOptionsService<T> : IManagerOptions<T>
         }
 
         var paramsSocks5 = _mapperObj.Map<ParamsSocks5Dto, ParamsSocks5>(paramsManagerOptionsDto.ParamsForProcess);
-        await _processOptionsClient.ProcessAsync(paramsSocks5);
+        await _processOptions.ProcessAsync(paramsSocks5);
     }
 }

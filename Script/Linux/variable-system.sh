@@ -13,6 +13,7 @@ vars["SERVICE_NAME_REMOTE_BLOCK"]="ee2vg7qiu4wr3p6wf27zxfrvpmcddvkutocovwnyho4el
 vars["SERVICE_NAME_REMOTE_BLOCK_SSL"]="monerokoszudikas.duckdns.org"
 vars["SERVICE_NAME_PROXY_MINE"]="dheq2yivibimsydghgqxnk7iahchjpmzcpijzxrzfmn5lbd6b5yfgdyd"
 vars["CERTIFICATE_PATH"]="/etc/ssl/certs/Monerokoszudikas.pfx"
+vars["HASH CLIENT WORK"]=""
 vars["CERTIFICATE_PASSWORD"]="88199299"
 vars["PROXY_HOST"]="127.0.0.1"
 vars["PROXY_PORT"]="9050"

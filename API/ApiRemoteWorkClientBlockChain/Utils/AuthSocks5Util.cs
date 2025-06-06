@@ -1,7 +1,7 @@
-using LibClassProcessOperations.Entities;
-using LibDto.Dto;
-using LibMapperObj.Interface;
-using LibMapperObj.Service;
+using LibDtoRemote.Dto;
+using LibEntitiesRemote.Entities.Params;
+using LibMapperObjRemote.Interface;
+using LibMapperObjRemote.Service;
 
 namespace ApiRemoteWorkClientBlockChain.Utils;
 

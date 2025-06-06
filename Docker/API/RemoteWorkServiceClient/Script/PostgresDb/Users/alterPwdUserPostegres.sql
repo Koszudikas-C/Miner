@@ -1,0 +1,1 @@
+ALTER USER postgres WITH PASSWORD 'l[631552Yx0e';

@@ -1,15 +1,15 @@
 using System.ComponentModel;
 using System.Net.Sockets;
 using ApiRemoteWorkClientBlockChain.Entities;
+using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Utils;
-using LibClassManagerOptions.Entities;
-using LibClassManagerOptions.Entities.Enum;
-using LibClassManagerOptions.Interface;
-using LibDto.Dto;
-using LibHandler.EventBus;
-using LibSend.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
+using LibDtoRemote.Dto;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Enum;
+using LibEntitiesRemote.Entities.Params;
+using LibEntitiesRemote.Entities.Params.Enum;
+using LibHandlerRemote.Entities;
+using LibSendRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
@@ -18,7 +18,7 @@ public class ManagerOptionsAutomaticService<T> : IManagerOptions<T>
     private readonly ISend<TypeManagerOptions> _send;
     private readonly ILogger<ManagerOptionsAutomaticService<T>> _logger;
     private readonly ISend<ParamsManagerOptionsDto<T>> _sendParamsManagerOptions;
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance!;
     private readonly ClientConnected _clientConnected = ClientConnected.Instance;
     
     public ManagerOptionsAutomaticService(ISend<TypeManagerOptions> send,
@@ -28,7 +28,7 @@ public class ManagerOptionsAutomaticService<T> : IManagerOptions<T>
         _send = send;
         _logger = logger;
         _sendParamsManagerOptions = sendParamsManagerOptions;
-        _globalEventBusRemote.Subscribe<ParamsManagerOptionsResponseDto>(
+        _globalEventBus.Subscribe<ParamsManagerOptionsResponseDto>(
             (handler) => _= ResponseOptionsAsync(handler));
     }
     

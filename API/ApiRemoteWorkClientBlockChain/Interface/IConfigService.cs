@@ -1,5 +1,5 @@
-using LibCryptography.Entities;
-using LibRemoteAndClient.Entities.Remote.Client;
+using LibCryptographyRemote.Entities;
+using LibEntitiesRemote.Entities;
 
 namespace ApiRemoteWorkClientBlockChain.Interface
 {

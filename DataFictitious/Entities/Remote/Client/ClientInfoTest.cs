@@ -1,5 +1,4 @@
 using LibRemoteAndClient.Entities.Remote.Client;
-using LibSocketAndSslStream.Entities;
 
 namespace DataFictitious.Entities.Remote.Client;
 

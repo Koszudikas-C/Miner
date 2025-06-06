@@ -2,9 +2,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using LibClassGetProcessInfo.Interface;
-using LibHandler.EventBus;
-using LibRemoteAndClient.Entities.Remote;
+using LibEntitiesClient.Entities;
+using WorkClientBlockChain.Interface;
 
 namespace WorkClientBlockChain.Service;
 
@@ -31,7 +30,7 @@ public class GetProcessInfoService : IGetProcessInfo
                 processInfo.Port = ports.FirstOrDefault();
                 processInfo.Pid = pid;
                 processInfo.ProcessInit = process.Responding;
-                processInfo.LastError = GetLastError!.Message;
+                processInfo.LastError = GetLastError.Message;
 
                 processInfoList.Add(processInfo);
             }
@@ -165,7 +164,7 @@ public class GetProcessInfoService : IGetProcessInfo
 
             foreach (var line in file.Skip(1))
             {
-                var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+                var parts = line.Split((char[]?)[' '], StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length < 4) continue;
 
                 var localAddress = parts[1];

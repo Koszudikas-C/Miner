@@ -1,4 +1,4 @@
-using LibClassProcessOperations.Interface;
+using ApiRemoteWorkClientBlockChain.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Factory.Abstract;
 

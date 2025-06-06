@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\LibClass\Client\LibManagerFileClient\LibManagerFileClient.csproj" />
+      <ProjectReference Include="..\..\..\..\LibClass\Client\LibMapperObjClient\LibMapperObjClient.csproj" />
+      <ProjectReference Include="..\..\..\..\LibClass\Client\LibSearchFileClient\LibSearchFileClient.csproj" />
+      <ProjectReference Include="..\..\DataFictitiousClient\DataFictitiousClient.csproj" />
+    </ItemGroup>
+    
+</Project>

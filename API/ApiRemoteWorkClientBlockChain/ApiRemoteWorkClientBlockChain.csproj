@@ -8,20 +8,27 @@
     <PackageReference Include="Asp.Versioning.Mvc" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LibClass\LibClassManagerOptions\LibClassManagerOptions.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibDirectoryFile\LibDirectoryFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibDownload\LibDownload.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibMiddleware\LibMiddleware.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibPreparationFile\LibPreparationFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSaveFile\LibSaveFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSearchFile\LibSearchFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibUpload\LibUpload.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibAuthSecurityConnectionRemote\LibAuthSecurityConnectionRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibCommunicationStateRemote\LibCommunicationStateRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibDirectoryFileRemote\LibDirectoryFileRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibEntitiesRemote\LibEntitiesRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibMiddlewareRemote\LibMiddlewareRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibPreparationFileRemote\LibPreparationFileRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibSaveFileRemote\LibSaveFileRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibSearchFileRemote\LibSearchFileRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibSocketAndSslStreamRemote\LibSocketAndSslStreamRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibSocketRemote\LibSocketRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibSslRemote\LibSslRemote.csproj" />
+    <ProjectReference Include="..\..\LibClass\Remote\LibUploadRemote\LibUploadRemote.csproj" />
   </ItemGroup>
+
 </Project>

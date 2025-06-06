@@ -1,46 +1,67 @@
-using LibHandler.EventBus;
-using LibHandler.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
+using LibEntitiesClient.Entities;
+using LibHandlerClient.Entities;
 using WorkClientBlockChain.Connection.Interface;
-using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Connection;
 
 public class ClientConnected : IClientConnected
 {
-    private static readonly object _lock = new();
-    private static ClientInfo? _clientInfo;
-    
-    private static readonly GlobalEventBusClient GlobalEventBusClient = GlobalEventBusClient.Instance!;
-    
-    public ClientConnected()
-    {
-        GlobalEventBusClient.Subscribe<ClientInfo>(OnClientInfoReceived);
-    }
+  private static readonly object Lock = new();
+  private static ClientInfo? _clientInfo;
+  private static ObjSocketSslStream? _objSocketSslStream;
 
-    private void OnClientInfoReceived(ClientInfo? obj)
-    {
-        SetClientInfo(obj);
-    }
+  private static readonly GlobalEventBus GlobalEventBus = GlobalEventBus.Instance;
 
-    public ClientInfo? GetClientInfo()
-    {
-        lock (_lock)
-        {
-            return _clientInfo;
-        }
-    }
+  public ClientConnected()
+  {
+    GlobalEventBus.Subscribe<ClientInfo>(OnClientInfoReceived);
+    GlobalEventBus.Subscribe<ObjSocketSslStream>(OnObjSocketSslStream);
+  }
 
-    public void SetClientInfo(ClientInfo? info)
-    {
-        lock (_lock)
-        {
-            _clientInfo = info;
-        }
-    }
+  private void OnClientInfoReceived(ClientInfo? obj)
+  {
+    SetClientInfo(obj);
+  }
 
-    public void Reset()
+  private static void OnObjSocketSslStream(ObjSocketSslStream obj)
+  {
+    SetObjSocketSslStream(obj);
+  }
+
+  public ClientInfo? GetClientInfo()
+  {
+    lock (Lock)
     {
-        SetClientInfo(null);
+      return _clientInfo;
     }
+  }
+
+  public ObjSocketSslStream? GetObjSocketSslStream()
+  {
+    lock (Lock)
+    {
+      return _objSocketSslStream;
+    }
+  }
+
+  public void SetClientInfo(ClientInfo? info)
+  {
+    lock (Lock)
+    {
+      _clientInfo = info;
+    }
+  }
+
+  public static void SetObjSocketSslStream(ObjSocketSslStream obj)
+  {
+    lock (Lock)
+    {
+      _objSocketSslStream = obj;
+    }
+  }
+
+  public void Reset()
+  {
+    SetClientInfo(null);
+  }
 }

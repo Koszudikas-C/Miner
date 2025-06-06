@@ -1,7 +1,9 @@
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibRemoteAndClient.Enum;
-using LibSend.Interface;
-using LibUpload.Interface;
+
+
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Enum;
+using LibSendRemote.Interface;
+using LibUploadRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service.ProcessOptions;
 

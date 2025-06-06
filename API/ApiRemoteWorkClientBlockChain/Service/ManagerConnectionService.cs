@@ -2,25 +2,27 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
-using LibRemoteAndClient.Enum;
 using ApiRemoteWorkClientBlockChain.Interface;
 using ApiRemoteWorkClientBlockChain.Utils;
-using LibCommunicationStatus;
-using LibCommunicationStatus.Entities;
-using LibCryptography.Entities;
-using LibCryptography.Interface;
-using LibDto.Dto;
-using LibDto.Dto.ClientMine;
-using LibHandler.EventBus;
-using LibManagerFile.Entities.Enum;
-using LibManagerFile.Interface;
-using LibMapperObj.Interface;
-using LibReceive.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
-using LibSend.Interface;
-using LibSocketAndSslStream.Entities;
-using LibSocketAndSslStream.Entities.Enum;
-using LibSocketAndSslStream.Interface;
+using LibCommunicationStateRemote.Entities;
+using LibCommunicationStatusRemote.Entities;
+using LibCryptographyRemote.Entities;
+using LibCryptographyRemote.Interface;
+using LibDtoRemote.Dto;
+using LibDtoRemote.Dto.ClientMine;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Client;
+using LibEntitiesRemote.Entities.Enum;
+using LibHandlerRemote.Entities;
+using LibManagerFileRemote.Entities.Enum;
+using LibManagerFileRemote.Interface;
+using LibMapperObjRemote.Interface;
+using LibReceiveRemote.Interface;
+using LibSendRemote.Interface;
+using LibSocketAndSslStreamRemote.Entities;
+using LibSocketAndSslStreamRemote.Entities.Enum;
+using LibSocketAndSslStreamRemote.Interface;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 
@@ -39,7 +41,7 @@ public class ManagerConnectionService : IManagerConnection
     private readonly IReceive _receive;
     private readonly IPosAuth _posAuth;
 
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBus _globalEventBusRemote = GlobalEventBus.Instance!;
 
     public ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring,
         IAuthSsl authSsl, IManagerClient managerClient,
@@ -67,7 +69,7 @@ public class ManagerConnectionService : IManagerConnection
     public async Task<ApiResponse<object>> InitializeAsync(ConnectionConfig connectionConfig, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
     {
-        if (CommunicationStatus.IsConnected)
+        if (CommunicationStateReceiveAndSend.IsConnected)
             return InstanceApiResponse<object>(HttpStatusCode.Conflict, false,
                 $"Remote server already {connectionConfig.Port} in use", null!);
         try
@@ -77,7 +79,7 @@ public class ManagerConnectionService : IManagerConnection
 
             for (var i = 0; i < 5; i++)
             {
-                if (CommunicationStatus.IsConnecting) break;
+                if (CommunicationStateReceiveAndSend.IsConnecting) break;
 
                 await Task.Delay(1000, cts).ConfigureAwait(false);
 
@@ -96,7 +98,7 @@ public class ManagerConnectionService : IManagerConnection
             _logger.LogError($"Error starting SocketMiringService in mode {typeAuthMode}," +
                              $" Port:{connectionConfig.Port}," +
                              $" MaxConnections:{connectionConfig.MaxConnections}: {e.Message}");
-            CommunicationStatus.SetConnected(false);
+            CommunicationStateReceiveAndSend.SetConnected(false);
             return InstanceApiResponse<object>(HttpStatusCode.InternalServerError, false,
                 "Service initialization failed. Verify the settings and try again.", null!);
         }

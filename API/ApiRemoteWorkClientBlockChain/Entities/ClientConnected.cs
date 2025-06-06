@@ -1,6 +1,6 @@
-using System.Collections.Concurrent;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
-using LibRemoteAndClient.Entities.Remote.Client;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Client;
 
 namespace ApiRemoteWorkClientBlockChain.Entities;
 

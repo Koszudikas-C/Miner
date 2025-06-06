@@ -1,0 +1,22 @@
+services:
+  tor-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tor-socks5
+    networks:
+      - mine
+    volumes:
+      - data:/var/lib/tor
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+    restart: unless-stopped
+
+volumes:
+  data:
+    
+networks:
+  mine:
+    external: true
+    name: mine

@@ -9,18 +9,18 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LibClass\LibClassGetProcessInfo\LibClassGetProcessInfo.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibClassManagerOptions\LibClassManagerOptions.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibCommunicationStatus\LibCommunicationStatus.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibCryptography\LibCryptography.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibDownload\LibDownload.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibHandler\LibHandler.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibProcess\LibProcess.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSaveFile\LibSaveFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSearchFile\LibSearchFile.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSend\LibSend.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSocket\LibSocket.csproj" />
-    <ProjectReference Include="..\..\LibClass\LibSsl\LibSsl.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibAuthSecurityConnectionClient\LibAuthSecurityConnectionClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibCommunicationStateClient\LibCommunicationStateClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibDownloadClient\LibDownloadClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibHandlerClient\LibHandlerClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibMapperObjClient\LibMapperObjClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibProcessClient\LibProcessClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibReceiveClient\LibReceiveClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSaveFileClient\LibSaveFileClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSearchFileClient\LibSearchFileClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSendClient\LibSendClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSocketAndSslStreamClient\LibSocketAndSslStreamClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSocketClient\LibSocketClient.csproj" />
+    <ProjectReference Include="..\..\LibClass\Client\LibSslClient\LibSslClient.csproj" />
   </ItemGroup>
 </Project>

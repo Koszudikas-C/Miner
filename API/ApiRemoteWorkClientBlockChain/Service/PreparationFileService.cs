@@ -1,4 +1,4 @@
-using LibPreparationFile.Interface;
+using LibPreparationFileRemote.Interface;
 
 namespace ApiRemoteWorkClientBlockChain.Service;
 

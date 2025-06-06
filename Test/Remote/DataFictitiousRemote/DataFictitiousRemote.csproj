@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\LibClass\Remote\LibMapperObjRemote\LibMapperObjRemote.csproj" />
+      <ProjectReference Include="..\..\..\LibClass\Remote\LibSocketAndSslStreamRemote\LibSocketAndSslStreamRemote.csproj" />
+    </ItemGroup>
+  
+</Project>

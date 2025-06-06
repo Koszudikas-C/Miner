@@ -1,4 +1,5 @@
-using LibRemoteAndClient.Entities.Remote.Client;
+using LibEntitiesRemote.Entities;
+using LibEntitiesRemote.Entities.Client;
 
 namespace ApiRemoteWorkClientBlockChain.Entities.Interface;
 
