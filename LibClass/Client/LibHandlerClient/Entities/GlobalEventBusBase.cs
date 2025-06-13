@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+
 namespace LibHandlerClient.Entities;
 
 public abstract class GlobalEventBusBase<T> where T : class

@@ -11,11 +11,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Moq" />
         <PackageReference Include="xunit"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="Xunit"/>
     </ItemGroup>
 
 </Project>

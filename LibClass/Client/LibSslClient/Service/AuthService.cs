@@ -1,6 +1,5 @@
 using System.Net.Sockets;
 using System.Net.Security;
-using LibCommunicationStateClient.Entities;
 using LibEntitiesClient.Interface;
 using LibSocketAndSslStreamClient.Interface;
 using LibUtilClient.Util;
@@ -25,15 +24,12 @@ public class AuthService(IConfigVariable configVariable) : IAuth
 
             await sslStream.AuthenticateAsClientAsync(sslClientOptions, ctsSource.Token);
 
-            Console.WriteLine(sslStream.IsAuthenticated);
-            return sslStream;
+            return SetConfigSslStream(sslStream);
         }
         catch (OperationCanceledException)
         {
-            CommunicationStateReceiveAndSend.SetAuthenticated(true);
             sslStream.Close();
-            await sslStream.DisposeAsync();
-            throw new OperationCanceledException();
+            throw;
         }
     }
 
@@ -66,6 +62,14 @@ public class AuthService(IConfigVariable configVariable) : IAuth
     {
         var sslClientAuth = new SslClientAuth(configVariable);
 
-        return sslClientAuth.GetConfigSslClientAuthencitactionOptions();
+        return sslClientAuth.GetConfigSslClientAuthenticationOptions();
+    }
+
+    private static SslStream SetConfigSslStream(SslStream sslStream)
+    {
+        sslStream.ReadTimeout = 10000;
+        sslStream.WriteTimeout = 10000;
+        
+        return sslStream;
     }
 }

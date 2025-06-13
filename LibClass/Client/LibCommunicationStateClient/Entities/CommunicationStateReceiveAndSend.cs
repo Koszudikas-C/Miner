@@ -36,5 +36,7 @@ public static class CommunicationStateReceiveAndSend
     public static void SetAuthenticated(bool status)
     {
         IsAuthenticated = status;
+        
+        
     }
 }

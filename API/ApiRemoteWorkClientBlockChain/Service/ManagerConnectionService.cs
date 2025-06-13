@@ -29,7 +29,7 @@ namespace ApiRemoteWorkClientBlockChain.Service;
 public class ManagerConnectionService : IManagerConnection
 {
     private readonly ILogger<ManagerConnectionService> _logger;
-    private readonly ISocketMiring _socketMiring;
+    private readonly ISocket _socketMiring;
     private readonly IAuthSsl _authSsl;
     private readonly IManagerClient _managerClient;
     private readonly ISearchFile _searchFile;
@@ -43,7 +43,7 @@ public class ManagerConnectionService : IManagerConnection
 
     private readonly GlobalEventBus _globalEventBusRemote = GlobalEventBus.Instance!;
 
-    public ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocketMiring socketMiring,
+    public ManagerConnectionService(ILogger<ManagerConnectionService> logger, ISocket socketMiring,
         IAuthSsl authSsl, IManagerClient managerClient,
         ISearchFile searchFile, ISend<ConfigCryptographDto> sendConfigCryptographDto,
         ISend<ConfigSaveFileDto> sendConfigSaveFileDto, IClientConnected clientConnected,
@@ -74,8 +74,8 @@ public class ManagerConnectionService : IManagerConnection
                 $"Remote server already {connectionConfig.Port} in use", null!);
         try
         {
-            await _socketMiring.InitializeAsync(connectionConfig.Port, connectionConfig.MaxConnections,
-                typeAuthMode, cts).ConfigureAwait(false);
+            _socketMiring.InitializeRemote(connectionConfig.Port, connectionConfig.MaxConnections,
+                typeAuthMode);
 
             for (var i = 0; i < 5; i++)
             {
@@ -152,7 +152,7 @@ public class ManagerConnectionService : IManagerConnection
                 _logger.Log(LogLevel.Information, $"Client connected: {clientInfo.Id}," +
                                                   $" {clientInfo.SocketWrapper!.RemoteEndPoint}");
             }
-
+            
             await _receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.SslStream, 0);
 
             await SendConfig(clientInfo).ConfigureAwait(false);
@@ -160,8 +160,8 @@ public class ManagerConnectionService : IManagerConnection
         catch (Exception e)
         {
             ConnectionDisconnected(clientInfo);
-            _logger.LogError(
-                $"A socketexception on the client side was generated for this reason it will be disconnected: Error: {e.Message}");
+            _logger.LogError("A socketException on the client side was generated " +
+                             "for this reason it will be disconnected: Error: {Message}", e);
             throw new Exception();
         }
     }
@@ -182,7 +182,7 @@ public class ManagerConnectionService : IManagerConnection
         }
         catch (SocketException e)
         {
-            _logger.LogInformation($"A error in sending the configuration to the client:  Error: {e.Message}");
+            _logger.LogInformation("A error in sending the configuration to the client:  Error: {Message}", e);
             ConnectionDisconnected(clientInfo);
             throw new SocketException();
         }

@@ -1,17 +1,13 @@
 using LibCommunicationStateClient.Entities;
-using LibCryptographyClient.Interface;
 using LibEntitiesClient.Entities;
-using LibEntitiesClient.Entities.Params;
 using LibHandlerClient.Entities;
-using WorkClientBlockChain.Connection.Interface;
 using WorkClientBlockChain.Interface;
-using WorkClientBlockChain.Middleware.Interface;
 using WorkClientBlockChain.Utils.Interface;
 
 namespace WorkClientBlockChain.Service;
 
 public class WorkService(ILogger<WorkService> logger, IConnectionAndAuth connectionAndAuth,
- IConnectionMiddleware connectionMiddleware, IPosAuth posAuth) : BackgroundService
+    IPosAuth posAuth) : BackgroundService
 {
     private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
     protected override async Task ExecuteAsync(CancellationToken cts)
@@ -29,7 +25,7 @@ public class WorkService(ILogger<WorkService> logger, IConnectionAndAuth connect
 
             _globalEventBus.Subscribe<ClientInfo>(Handler);
 
-            _= Task.Run(async () => await connectionMiddleware.MonitoringConnectionWorkAsync(cts), cts);
+            // _= Task.Run(async () => await connectionMiddleware.MonitoringConnectionWorkAsync(cts), cts);
 
             await connectionAndAuth.ConnectAndAuthAsync(cts);
 

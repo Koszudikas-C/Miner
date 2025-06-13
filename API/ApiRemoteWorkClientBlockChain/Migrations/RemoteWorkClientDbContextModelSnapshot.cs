@@ -22,6 +22,36 @@ namespace ApiRemoteWorkClientBlockChain.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ApiRemoteWorkClientBlockChain.Entities.Client", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateConnected")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Ip")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Port")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TimeoutReceive")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TimeoutSend")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("client_primary_contact_server", (string)null);
+                });
+
             modelBuilder.Entity("LibRemoteAndClient.Entities.Remote.Client.GuidTokenAuth", b =>
                 {
                     b.Property<int>("Id")

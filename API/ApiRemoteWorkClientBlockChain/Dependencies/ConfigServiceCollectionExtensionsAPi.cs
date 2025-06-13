@@ -50,7 +50,7 @@ public static class ConfigServiceCollectionExtensionsAPi
         services.AddDbContext<RemoteWorkClientDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         
-        services.AddScoped<ISocketMiring, SocketService>()
+        services.AddScoped<ISocket, SocketService>()
             .AddScoped<IAuthSsl, AuthSslService>()
             .AddScoped<IAuth, AuthService>()
             .AddScoped(typeof(ISend<>), typeof(SendService<>))
@@ -74,13 +74,15 @@ public static class ConfigServiceCollectionExtensionsAPi
             .AddScoped<IPosAuth, PosAuthService>()
             .AddScoped(typeof(IManagerOptions<>), typeof(ManagerOptionsAutomaticService<>))
             .AddScoped<IAuthConnection, AuthConnectionService>()
+            .AddScoped<ISslServerAuthOptions, SslServerAuthOptionsService>()
             .AddSingleton<GlobalEventBus>()
             .AddSingleton(ClientConnected.Instance)
             
             //Repositories
             .AddScoped(typeof(IRepositoryBase<,>), typeof(BaseRepository<,>))
             .AddScoped<INonceToken, NonceTokenRepository>()
-            .AddScoped<IClientNotAuthorized, ClientNotAuthorizedRepository>();
+            .AddScoped<IClientNotAuthorized, ClientNotAuthorizedRepository>()
+            .AddScoped<IClient, ClientRepository>();
 
         InitializeConstructorOrService(services);
 
@@ -109,6 +111,7 @@ public static class ConfigServiceCollectionExtensionsAPi
 
     private static void InitializeConstructorOrService(IServiceCollection service)
     {
+        service.BuildServiceProvider().GetRequiredService<IClient>();
         service.BuildServiceProvider().GetRequiredService<IManagerUpload>();
         service.BuildServiceProvider().GetRequiredService<IAuthConnection>();
     }

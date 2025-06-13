@@ -30,5 +30,10 @@
     <ProjectReference Include="..\..\LibClass\Remote\LibSslRemote\LibSslRemote.csproj" />
     <ProjectReference Include="..\..\LibClass\Remote\LibUploadRemote\LibUploadRemote.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Resources\Installer\tor-expert-bundle-linux\tor\pluggable_transports\pt_config.json" />
+    <_ContentIncludedByDefault Remove="Resources\Installer\tor-expert-bundle-windows\tor\pluggable_transports\pt_config.json" />
+    <_ContentIncludedByDefault Remove="Resources\koewa.json" />
+  </ItemGroup>
 
 </Project>

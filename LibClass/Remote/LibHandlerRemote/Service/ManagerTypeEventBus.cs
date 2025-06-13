@@ -91,11 +91,11 @@ public class ManagerTypeEventBus
             throw new ArgumentException("Could not determine type of list elements.", nameof(listData));
 
         if (obj.All(o => o is ClientMineDto))
-            _globalEventBus.PublishList(obj.Cast<ClientMineDto>().ToList());
+            _globalEventBus.Publish(obj.Cast<ClientMineDto>().ToList());
         else if (obj.All(o => o is LogEntryDto))
-            _globalEventBus.PublishList(obj.Cast<LogEntryDto>().ToList());
+            _globalEventBus.Publish(obj.Cast<LogEntryDto>().ToList());
         else if (obj.All(o => o is string))
-            _globalEventBus.PublishList(obj.Cast<string>().ToList());
+            _globalEventBus.Publish(obj.Cast<string>().ToList());
         else
         {
             var types = string.Join(", ", obj.Select(o => o.GetType().FullName ?? "null").Distinct());

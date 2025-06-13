@@ -8,6 +8,7 @@ using LibManagerFileClient.Interface;
 using LibMapperObjClient.Interface;
 using LibMapperObjClient.Service;
 using LibSearchFileClient.Service;
+using Xunit;
 
 namespace TestWorkClientBlockChain.Service;
 

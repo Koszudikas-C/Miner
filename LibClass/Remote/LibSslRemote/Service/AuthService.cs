@@ -1,50 +1,50 @@
 using System.Net.Sockets;
 using System.Net.Security;
-using System.Security.Authentication;
 using LibCertificateRemote.Interface;
+using LibCommunicationStateRemote.Entities;
+using LibCommunicationStatusRemote.Entities.Enum;
 using LibEntitiesRemote.Interface;
 using LibSocketAndSslStreamRemote.Interface;
-using LibTimeTaskRemote.Auth;
+using LibSslRemote.Entities;
 
 namespace LibSslRemote.Service;
 
-public class AuthService(ICertificate certificate) : IAuth
+public class AuthService(ISslServerAuthOptions sslServerAuthOptions) : IAuth
 {
-  public async Task<SslStream> AuthenticateAsync(ISocketWrapper socketWrapper,
-    CancellationToken cts = default)
-  {
-    try
+    public async Task<SslStream> AuthenticateAsync(ISocketWrapper socketWrapper,
+        CancellationToken cts = default)
     {
-      using var ctsTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-      using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts, ctsTimeout.Token);
-      
-      if (socketWrapper is null or { InnerSocket: null })
-        throw new ArgumentNullException(nameof(socketWrapper));
 
-      if (!socketWrapper.Connected)
-        throw new Exception("Socket is not connected");
+            using var ctsTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts, ctsTimeout.Token);
 
-      var networkStream = new NetworkStream(socketWrapper.InnerSocket);
-      var sslStream = new SslStream(networkStream, false,
-        null, null);
+            if (socketWrapper is null or { InnerSocket: null })
+                throw new ArgumentNullException(nameof(socketWrapper));
 
-      var task = sslStream.AuthenticateAsServerAsync(certificate.LoadCertificate(),
-        false, SslProtocols.Tls12 | SslProtocols.Tls13,
-        true);
+            if (!socketWrapper.InnerSocket.Connected)
+                throw new SocketException((int)SocketError.NotConnected);
 
-      var completedTask = await Task.WhenAny(task, AuthTime.AuthenticateRemoteTimeout(linkedCts.Token));
+            var sslOptions = sslServerAuthOptions.GetConfigSslServerAuthenticationOptions();
+            
+            var networkStream = new NetworkStream(socketWrapper.InnerSocket);
+            var sslStream = new SslStream(networkStream, false);
 
-      if (completedTask == task) return sslStream;
-    
-      await linkedCts.CancelAsync();
-      Console.WriteLine(completedTask.IsCanceled);
-      throw new AuthenticationException("Waiting time for authentication were exceeded!.");
+            try
+            {
+                await sslStream.AuthenticateAsServerAsync(sslOptions, linkedCts.Token);
+                return SetConfigSslStream(sslStream);
+            }
+            catch (OperationCanceledException e)
+            {
+                sslStream.Close();
+                throw new OperationCanceledException(e.Message);
+            }
     }
-    catch (Exception ex)
+
+    private static SslStream SetConfigSslStream(SslStream sslStream)
     {
-      Console.WriteLine(ex);
-      throw new Exception($"Failed to try to authenticate the client via SSL/TLS." +
-                          $"Check the connection to the client. Error: {ex.Message}");
+        sslStream.ReadTimeout = 10000;
+        sslStream.WriteTimeout = 10000;
+        return sslStream;
     }
-  }
 }

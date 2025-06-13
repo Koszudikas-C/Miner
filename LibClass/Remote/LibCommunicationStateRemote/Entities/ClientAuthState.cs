@@ -9,7 +9,6 @@ public static class ClientAuthState
   public static Guid Id { get; private set; }
   private static IAuthDisconnectClient? ClientInfo { get; set; }
   private static AuthStateEnum StateOperations { get; set; }
-
   private static ClientAuthStateManager ClientAuthStateManager { get; set; } = new();
 
   public static void AddClientToAuthState(IAuthDisconnectClient clientInfo)
@@ -33,12 +32,16 @@ public static class ClientAuthState
 
   private static void AddClientAuthStateManager()
   {
+    if (ClientInfo == null) return;
+    
     var clientOperation = new ClientOperation<IAuthDisconnectClient>(StateOperations);
     ClientAuthStateManager.AddClientAuthState(ClientInfo!.Id, clientOperation);
   }
   
   private static void UpdateClientAuthStateManager()
   {
-    ClientAuthStateManager.UpdateClientAuthState(ClientInfo!.Id, StateOperations);
+    if (ClientInfo == null) return;
+    
+    ClientAuthStateManager.UpdateClientAuthState(ClientInfo.Id, StateOperations);
   }
 }

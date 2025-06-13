@@ -31,7 +31,8 @@ public class AuthSslService : IAuthSsl
         _sendGuidTokenDto = sendGuidTokenDto;
         _mapperObj = mapperObj;
 
-        _globalEventBus.Subscribe<ObjSocketSslStream>(OnSslAuthenticateClient);
+        _globalEventBus.SubscribeFunc<ObjSocketSslStream>(async (obj, cts)
+            => await OnSslAuthenticateClient(obj, cts));
     }
 
     private void Subscribe()
@@ -49,23 +50,15 @@ public class AuthSslService : IAuthSsl
     public async Task AuthenticateAsync(ObjSocketSslStream objSocketSslStream,
         CancellationToken cts = default)
     {
-        try
-        {
-            var sslStream = await _authRemote.AuthenticateAsync(objSocketSslStream.SocketWrapper!, cts);
+        var sslStream = await _authRemote.AuthenticateAsync(objSocketSslStream.SocketWrapper, cts);
 
-            var clientInfo = OnSslAuthenticateRemote(sslStream, objSocketSslStream.SocketWrapper!.InnerSocket,
-                objSocketSslStream.Id);
+        var clientInfo = OnSslAuthenticateRemote(sslStream, objSocketSslStream.SocketWrapper.InnerSocket,
+            objSocketSslStream.Id);
 
-            _clientInfoTemp = clientInfo;
-            _remoteSslDict[objSocketSslStream.Id] = sslStream;
+        _clientInfoTemp = clientInfo;
+        _remoteSslDict[objSocketSslStream.Id] = sslStream;
 
-            await SendGuidTokenNonce(clientInfo, cts);
-        }
-        catch (Exception)
-        {
-            Reconnect(objSocketSslStream.Id);
-            throw;
-        }
+        await SendGuidTokenNonce(clientInfo, cts);
     }
 
     public void Reconnect(Guid clientId)
@@ -81,7 +74,7 @@ public class AuthSslService : IAuthSsl
         new ClientInfo
         {
             Id = clientId,
-            SocketWrapper  = new SocketWrapper(socket),
+            SocketWrapper = new SocketWrapper(socket),
             SslStreamWrapper = new SslStreamWrapper(sslStream)
         };
 
@@ -124,9 +117,10 @@ public class AuthSslService : IAuthSsl
 
     private static void DisconnectClient(ClientInfo clientInfo) => clientInfo.Disconnect();
 
-    private void OnSslAuthenticateClient(ObjSocketSslStream objSocketSslStream)
+    private async Task OnSslAuthenticateClient(ObjSocketSslStream objSocketSslStream,
+        CancellationToken cts = default)
     {
-        _ = AuthenticateAsync(objSocketSslStream);
+        await AuthenticateAsync(objSocketSslStream, cts);
     }
 
     private async Task OnReceiveStatusCode(HttpStatusCode httpStatusCode)

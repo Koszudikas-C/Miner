@@ -17,7 +17,7 @@ public class SearchFileService : ISearchFile
         {
             TypeFile.Certificate => SearchCertificate(),
             TypeFile.ConfigVariable => await SearchConfigVariableAsync(cts),
-            _ => throw new FileNotFoundException(),
+            _ => throw new InvalidOperationException("Unknown file type"),
         };
     }
     

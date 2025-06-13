@@ -1,7 +1,7 @@
 using LibCommunicationStatusRemote.Entities.Enum;
 using LibEntitiesRemote.Interface;
 
-namespace LibCommunicationStatusRemote.Entities;
+namespace LibCommunicationStateRemote.Entities;
 
 public class ClientAuthStateManager
 {
@@ -19,10 +19,21 @@ public class ClientAuthStateManager
     CheckClientAuthState(clientInfoOperation);
     clientInfoOperation.StateOperation = newState;
   }
-
-  public ClientOperation<IAuthDisconnectClient>? GetClientAuthState(Guid clientInfoId)
+  
+  public ClientOperation<IAuthDisconnectClient>? GetClientAuthStateAll()
+  {
+    return _clientsInfoAuthStates.Values.FirstOrDefault();
+  }
+  
+  public ClientOperation<IAuthDisconnectClient>? GetClientAuthStateById(Guid clientInfoId)
   {
     return _clientsInfoAuthStates.GetValueOrDefault(clientInfoId);
+  }
+  
+  public ClientOperation<IAuthDisconnectClient>? GetAuthStateFiledAll()
+  {
+    return _clientsInfoAuthStates.Values.FirstOrDefault(x
+      => x.StateOperation == AuthStateEnum.Failed);
   }
 
   private static void CheckClientAuthState(ClientOperation<IAuthDisconnectClient> clientInfoOperation)

@@ -1,4 +1,4 @@
-namespace DataFictitious.Entities;
+namespace DataFictitiousClient.Entities;
 
 public class ConfigVariableTest
 {

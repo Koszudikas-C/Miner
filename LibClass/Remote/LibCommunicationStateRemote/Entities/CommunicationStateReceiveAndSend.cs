@@ -1,4 +1,4 @@
-﻿namespace LibCommunicationStatusRemote.Entities;
+﻿namespace LibCommunicationStateRemote.Entities;
 
 public static class CommunicationStateReceiveAndSend
 {

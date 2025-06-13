@@ -8,10 +8,10 @@ public interface IListener
   Task StartAsync(TypeAuthMode typeAuthMode, uint port,
     CancellationToken cts = default);
   
-  Task ReconnectAsync(TypeAuthMode typeAuthMode, uint port,
+  Task ReconnectAsync(Socket socket , TypeAuthMode typeAuthMode,
     CancellationToken cts = default);
   
-  void Stop();
+  void Disposable();
   
   event Func<Socket, CancellationToken, Task>? ConnectedAct;
 }

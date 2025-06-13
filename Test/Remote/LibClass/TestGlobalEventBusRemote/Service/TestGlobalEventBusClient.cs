@@ -20,7 +20,7 @@ public class TestGlobalEventBusClient
             m.Subscribe(It.IsAny<Action<string>>()))
             .Callback<Action<string>>(handler => capturedHandler = handler);
         
-        _testIEventBusTes.Object.Subscribe<string>(msg => { });
+        _testIEventBusTes.Object.Subscribe((string msg) => { });
         
         const string expected = "Hello World!";
         string? received = null;
@@ -47,7 +47,7 @@ public class TestGlobalEventBusClient
             m.Subscribe(It.IsAny<Action<ClientCommand>>()))
             .Callback<Action<ClientCommand>>(handler => capturedHandler = handler);
         
-        _testIEventBusTes.Object.Subscribe<Enum>(msg => { });
+        _testIEventBusTes.Object.Subscribe((Enum msg) => { });
         
         const ClientCommand expected = ClientCommand.ClientMining;
         Enum? received = null;
@@ -71,7 +71,7 @@ public class TestGlobalEventBusClient
             m.Subscribe(It.IsAny<Action<int>>()))
             .Callback<Action<int>>(handler => capturedHandler = handler);
         
-        _testIEventBusTes.Object.Subscribe<int>(msg => { });
+        _testIEventBusTes.Object.Subscribe((int msg) => { });
         
         const int expected = 1;
         int? received = null;
@@ -95,7 +95,7 @@ public class TestGlobalEventBusClient
             m.Subscribe(It.IsAny<Action<bool>>()))
             .Callback<Action<bool>>(handler => capturedHandler = handler);
         
-        _testIEventBusTes.Object.Subscribe<bool>(msg => { });
+        _testIEventBusTes.Object.Subscribe((bool msg) => { });
         
         const bool expected = true;
         bool? received = null;
@@ -121,7 +121,7 @@ public class TestGlobalEventBusClient
                 m.Subscribe(It.IsAny<Action<Guid>>()))
             .Callback<Action<Guid>>(handler => capturedHandler = handler);
 
-        _testIEventBusTes.Object.Subscribe<Guid>(msg => { });
+        _testIEventBusTes.Object.Subscribe((Guid msg) => { });
 
         var expected = Guid.NewGuid();
         Guid? received = null;
@@ -170,7 +170,7 @@ public class TestGlobalEventBusClient
             m.Subscribe(It.IsAny<Action<ClientInfo>>()))
             .Callback<Action<ClientInfo>>(handler => captureHandler = handler);
         
-        _testIEventBusTes.Object.Subscribe<ClientInfo>(msg => { });
+        _testIEventBusTes.Object.Subscribe((ClientInfo msg) => { });
 
         var expected = ClientInfoTest.GetClientInfo();
         ClientInfo? received = null;

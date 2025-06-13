@@ -9,7 +9,7 @@ namespace LibSslClient.Entities.Enum;
 public class SslClientAuth(IConfigVariable configVariable)
 {
 
-    public SslClientAuthenticationOptions GetConfigSslClientAuthencitactionOptions()
+    public SslClientAuthenticationOptions GetConfigSslClientAuthenticationOptions()
     {
         var config = configVariable.GetConfigVariable();
         var data = (ConfigVariable)config.GetData();

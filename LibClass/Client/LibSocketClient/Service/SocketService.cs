@@ -1,6 +1,9 @@
+using System.Data;
 using System.Net.Sockets;
 using LibCommunicationStateClient.Entities;
+using LibCommunicationStateClient.Entities.Enum;
 using LibEntitiesClient.Entities;
+using LibEntitiesClient.Interface;
 using LibHandlerClient.Entities;
 using LibSocketAndSslStreamClient.Entities.Enum;
 using LibSocketAndSslStreamClient.Interface;
@@ -8,7 +11,7 @@ using LibSocketAndSslStreamClient.Interface;
 namespace LibSocketClient.Service;
 
 public class SocketService(
-    IListener listener) : ISocketMiring
+    IListener listener) : ISocket
 {
     private readonly IListener _listener = listener;
     private readonly GlobalEventBus _globalEventBusClient = GlobalEventBus.Instance;
@@ -29,37 +32,19 @@ public class SocketService(
         }
     }
 
-    public async Task ReconnectAsync(uint port, TypeAuthMode typeAuthMode,
-        CancellationToken cts = default)
-    {
-        try
-        {
-            Console.WriteLine("Reconectando ao servidor");
-            await ReconnectionClientAsync(port, typeAuthMode, cts);
-        }
-        catch (Exception e)
-        {
-            throw new Exception($"Failed to reconnect to the server: {e.Message}");
-        }
-    }
-
-    private async Task ReconnectionClientAsync(uint port,
+    public async Task ReconnectAsync(ISocketWrapper socketWrapper,
         TypeAuthMode typeAuthMode, CancellationToken cts = default)
     {
         _listener.ConnectedAct += async (handle, ctsa) =>
-         await OnSocketConnectedClientAuth(handle, ctsa);
+            await OnSocketConnectedClientAuth(handle, ctsa);
 
-        await _listener.ReconnectAsync(typeAuthMode, port, cts);
+        await _listener.ReconnectAsync(socketWrapper.InnerSocket, typeAuthMode, cts);
     }
 
     private async Task StartClientAsync(uint port, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
     {
-
-        _listener.ConnectedAct += async (handle, ctsa) =>
-        {
-            await OnSocketConnectedClientAuth(handle, ctsa);
-        };
+        _listener.ConnectedAct += async (handle, ctsa) => { await OnSocketConnectedClientAuth(handle, ctsa); };
 
 
         await _listener.StartAsync(typeAuthMode, port, cts);
@@ -80,13 +65,11 @@ public class SocketService(
         {
             SocketWrapper = new SocketWrapper(socket)
         };
-        
-        Console.WriteLine(sslStreamObj.SocketWrapper.PortRemote);
-        await PublishTyped(sslStreamObj, cts);
+        await PublishTypedAsync(sslStreamObj, cts);
     }
-
-    private async Task PublishTyped<T>(T data, CancellationToken cts)
+    private async Task PublishTypedAsync<T>(T data, CancellationToken cts)
     {
+        _globalEventBusClient.Publish(ConnectionStates.Connecting, cts);
         _globalEventBusClient.Publish(data);
         await _globalEventBusClient.PublishAsync(data, cts);
     }

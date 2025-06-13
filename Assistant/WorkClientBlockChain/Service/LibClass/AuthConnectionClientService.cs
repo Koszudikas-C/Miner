@@ -69,7 +69,7 @@ public class AuthConnectionClientService : IAuthConnectionClient
     }
     catch (Exception e)
     {
-      _logger.LogError($"Error authenticating with the server. Error: {e.Message}");
+      _logger.LogError("Error authenticating with the server. Error: {Message}", e);
       throw new Exception();
     }
   }

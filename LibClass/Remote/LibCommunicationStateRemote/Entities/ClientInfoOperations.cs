@@ -1,7 +1,7 @@
 using LibCommunicationStatusRemote.Entities.Enum;
 using LibEntitiesRemote.Interface;
 
-namespace LibCommunicationStatusRemote.Entities;
+namespace LibCommunicationStateRemote.Entities;
 
 public class ClientOperation<T>(AuthStateEnum authStateEnum)
 {

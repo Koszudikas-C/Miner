@@ -1,5 +1,6 @@
 using WorkClientBlockChain.Interface;
 using WorkClientBlockChain.Service;
+using Xunit;
 
 namespace TestWorkClientBlockChain.Service;
 

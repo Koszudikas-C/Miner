@@ -32,10 +32,10 @@ builder.Services.AddHostedService<WorkService>();
 builder.Services.AddSingleton<IConnectionAndAuth, ConnectionAndAuth>()
     .AddSingleton(typeof(ISend<>), typeof(SendService<>))
     .AddSingleton<IReceive, ReceiveService>()
-    .AddSingleton<ISocketMiring, SocketService>()
+    .AddSingleton<ISocket, SocketService>()
     .AddSingleton<IAuthSsl, AuthSslService>()
     .AddSingleton<IAuth, AuthService>()
-    .AddSingleton<IConnectionMiddleware, ConnectionMiddleware>()
+    .AddSingleton<IConnectionRemoteState, ConnectionRemoteState>()
     .AddSingleton<ICryptographFile, CryptographFileService>()
     .AddSingleton<IListener, ListenerService>()
     .AddSingleton<IConfigVariable, ConfigVariableService>()
@@ -54,6 +54,7 @@ builder.Services.AddSingleton<IConnectionAndAuth, ConnectionAndAuth>()
     .AddSingleton<IAuthConnectionClient, AuthConnectionClientService>();
 
 builder.Services.BuildServiceProvider().GetRequiredService<IClientConnected>();
+builder.Services.BuildServiceProvider().GetRequiredService<IConnectionRemoteState>();
 builder.Services.BuildServiceProvider().GetRequiredService<IAuthSsl>();
 builder.Services.BuildServiceProvider().GetRequiredService<IAuthConnectionClient>();
 

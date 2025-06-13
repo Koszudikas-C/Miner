@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using LibCommunicationStateClient.Entities.Enum;
 using LibDtoClient.Dto;
 using LibEntitiesClient.Entities;
 using LibEntitiesClient.Entities.Enum;
@@ -8,6 +9,7 @@ using LibHandlerClient.Entities;
 using LibReceiveClient.Interface;
 using LibSendClient.Interface;
 using LibSocketAndSslStreamClient.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace LibSslClient.Service;
 
@@ -16,15 +18,16 @@ public class AuthSslService : IAuthSsl
     private readonly IAuth _authClient;
     private readonly IReceive _receive;
     private readonly ISend<HttpStatusCode> _sendStatusCode;
+    private readonly ILogger<AuthSslService> _logger;
     private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
-    private readonly Dictionary<Guid, SslStream> _clientSslDict = new();
 
     public AuthSslService(IAuth authClient, IReceive receive,
-        ISend<HttpStatusCode> sendStatusCode)
+        ISend<HttpStatusCode> sendStatusCode, ILogger<AuthSslService> logger)
     {
         _authClient = authClient;
         _receive = receive;
         _sendStatusCode = sendStatusCode;
+        _logger = logger;
         SubscribeEvents();
     }
 
@@ -39,24 +42,27 @@ public class AuthSslService : IAuthSsl
     public async Task AuthenticateAsync(ObjSocketSslStream objSocketSslStream,
         CancellationToken cts = default)
     {
-        var sslStream = await _authClient.AuthenticateAsync(
-            objSocketSslStream.SocketWrapper!, cts);
+        try
+        {
+            var sslStream = await _authClient.AuthenticateAsync(
+                objSocketSslStream.SocketWrapper!, cts);
+            
+            var clientInfo = GetClientInfo(sslStream, objSocketSslStream.SocketWrapper!.InnerSocket);
 
-        _clientSslDict[objSocketSslStream.Id] = sslStream;
-
-        var clientInfo = GetClientInfo(sslStream, objSocketSslStream.SocketWrapper!.InnerSocket);
-
-        await ReceiveNonceAsync(clientInfo, cts);
+            await ReceiveNonceAsync(clientInfo, cts);
+        }
+        catch (OperationCanceledException e)
+        {
+            _logger.LogWarning("Authentication operation exceeded with Remote. Error: {Message}", e);
+            _globalEventBus.Publish(ConnectionStates.NoAuthenticated, cts);
+            throw new OperationCanceledException();
+        }
+        catch (Exception)
+        {
+            _globalEventBus.Publish(ApplicationState.Restart, cts);
+            throw new Exception();
+        }
     }
-
-    public void Reconnect(Guid clientId)
-    {
-        if (!_clientSslDict.TryGetValue(clientId, out var sslStream)) return;
-
-        sslStream.Close();
-        _clientSslDict.Remove(clientId);
-    }
-
 
     private async Task ReceiveNonceAsync(ClientInfo clientInfo, CancellationToken cts = default)
     {
@@ -102,5 +108,11 @@ public class AuthSslService : IAuthSsl
     private async Task OnSslAuthenticateClient(ObjSocketSslStream objSocketSslStream, CancellationToken cts)
     {
         await AuthenticateAsync(objSocketSslStream, cts);
+    }
+
+    private void TriggerEvent(CancellationToken cts = default)
+    {
+        _globalEventBus.Publish(ConnectionStates.Authenticated, cts);
+        _globalEventBus.Publish(ConnectionStates.Connected, cts);
     }
 }

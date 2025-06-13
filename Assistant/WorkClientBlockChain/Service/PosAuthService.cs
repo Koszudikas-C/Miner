@@ -38,7 +38,7 @@ public class PosAuthService(
     }
     catch (Exception e)
     {
-      logger.LogError($"Error sending mining data to the customer. Discarding connection. Error: {e.Message}");
+      logger.LogError("Error sending mining data to the customer. Discarding connection. Error: {Message}", e);
       DisconnectClient();
       throw new Exception();
     }
@@ -61,9 +61,9 @@ public class PosAuthService(
       logger.LogInformation("Awaiting receiving the configuration file...");
       await receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.SslStream, 2);
     }
-    catch (Exception ex)
+    catch (Exception e)
     {
-      logger.LogError($"Error receiving encrypted data. Discarding connection. Error:{ex.Message}");
+      logger.LogError("Error receiving encrypted data. Discarding connection. Error: {Message}", e);
       DisconnectClient();
       throw new Exception();
     }
