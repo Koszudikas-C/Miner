@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Reflection.Metadata;
 using LibCommunicationStateRemote.Entities;
 using LibSocket.Entities;
 using LibSocketAndSslStreamRemote.Entities.Enum;
