@@ -1,0 +1,22 @@
+services:
+  certbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+    - mine
+    volumes:
+      - shared-data:/var/www/certbot/:rw
+      - shared-data:/etc/letsencrypt/:rw
+
+volumes:
+  shared-data:
+    external: true
+    name: shared-data
+      
+networks:
+  mine:
+    external: true
+    name: mine

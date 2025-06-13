@@ -1,0 +1,1 @@
+certbot certonly --non-interactive --agree-tos --email badmonero@proton.me --preferred-challenges dns --authenticator dns-duckdns --dns-duckdns-token 20e08e21-534b-4b4e-9a4d-7148b48a9ef7 --dns-duckdns-propagation-seconds 60 -d monerokoszudikas.duckdns.org
