@@ -1,4 +1,5 @@
 using LibCommunicationStateClient.Entities.Enum;
+using LibException;
 using LibHandlerClient.Entities;
 using LibSocketAndSslStreamClient.Entities.Enum;
 using LibSocketAndSslStreamClient.Interface;
@@ -14,17 +15,15 @@ public class ConnectionAndAuth(ISocket socket,
     public async Task ConnectAndAuthAsync(CancellationToken cts = default)
     {
         try
-        {
-             _ = socket.InitializeAsync(5051, TypeAuthMode.RequireAuthentication,
-              cts).ConfigureAwait(false);
-             await Task.CompletedTask;
+        { 
+            socket.InitializeAsync(5051, TypeAuthMode.RequireAuthentication,
+                cts).ConfigureAwait(false).GetAwaiter();
+            await Task.CompletedTask;
         }
         catch (Exception e)
         {
             logger.LogCritical("An error occurred when trying to connect or" +
              "attentive with the server. Error: {Message}", e);
-
-            throw new Exception();
         }
     }
 }

@@ -25,27 +25,20 @@ public class WorkService(ILogger<WorkService> logger, IConnectionAndAuth connect
 
             _globalEventBus.Subscribe<ClientInfo>(Handler);
 
-            // _= Task.Run(async () => await connectionMiddleware.MonitoringConnectionWorkAsync(cts), cts);
+            connectionAndAuth.ConnectAndAuthAsync(cts).GetAwaiter();
 
-            await connectionAndAuth.ConnectAndAuthAsync(cts);
-
-            while (!cts.IsCancellationRequested)
-            {
-                if (!CommunicationStateReceiveAndSend.IsConnected)
-                {
-                    await Task.Delay(1000, cts);
-                    continue;
-                }
-
-                // if (logger.IsEnabled(LogLevel.Information))
-                // {
-                //     logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                // }
-
-                // if (i++ == 5) CommunicationStateReceiveAndSend.SetConnected(false);
-
-                await Task.Delay(1000, cts);
-            }
+            // while (!cts.IsCancellationRequested)
+            // {
+            //
+            //     // if (logger.IsEnabled(LogLevel.Information))
+            //     // {
+            //     //     logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            //     // }
+            //
+            //     // if (i++ == 5) CommunicationStateReceiveAndSend.SetConnected(false);
+            //
+            //     await Task.Delay(1000, cts);
+            // }
         }
         catch (Exception)
         {

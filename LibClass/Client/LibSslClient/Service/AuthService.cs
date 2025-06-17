@@ -9,10 +9,15 @@ namespace LibSslClient.Service;
 
 public class AuthService(IConfigVariable configVariable) : IAuth
 {
+    private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
+    private int Attempt { get; set; }
+
     public async Task<SslStream> AuthenticateAsync(ISocketWrapper socketWrapper,
         CancellationToken cts = default)
     {
         using var ctsSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        
+        await _semaphoreSlim.WaitAsync(ctsSource.Token);
         var networkStream = CreateNetworkStream(socketWrapper);
 
         var sslStream = CreateSslStream(networkStream);
@@ -30,6 +35,15 @@ public class AuthService(IConfigVariable configVariable) : IAuth
         {
             sslStream.Close();
             throw;
+        }
+        catch (Exception)
+        {
+            sslStream.Close();
+            throw;
+        }
+        finally
+        {
+            _semaphoreSlim.Release();
         }
     }
 
@@ -69,7 +83,7 @@ public class AuthService(IConfigVariable configVariable) : IAuth
     {
         sslStream.ReadTimeout = 10000;
         sslStream.WriteTimeout = 10000;
-        
+
         return sslStream;
     }
 }

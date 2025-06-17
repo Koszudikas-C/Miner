@@ -36,7 +36,7 @@ public class SocketService(
         TypeAuthMode typeAuthMode, CancellationToken cts = default)
     {
         _listener.ConnectedAct += async (handle, ctsa) =>
-            await OnSocketConnectedClientAuth(handle, ctsa);
+             await OnSocketConnectedClientAuth(handle, ctsa);
 
         await _listener.ReconnectAsync(socketWrapper.InnerSocket, typeAuthMode, cts);
     }
@@ -44,19 +44,15 @@ public class SocketService(
     private async Task StartClientAsync(uint port, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
     {
-        _listener.ConnectedAct += async (handle, ctsa) => { await OnSocketConnectedClientAuth(handle, ctsa); };
-
-
+        _listener.ConnectedAct += async (handle, ctsa) =>
+             await OnSocketConnectedClientAuth(handle, ctsa);
+        
         await _listener.StartAsync(typeAuthMode, port, cts);
-
-        CommunicationStateReceiveAndSend.SetSending(true);
     }
 
     private async Task OnSocketConnectedClientAuth(Socket socket, CancellationToken cts)
     {
         await MapperTypeObj(socket, cts);
-
-        CommunicationStateReceiveAndSend.SetConnected(true);
     }
 
     private async Task MapperTypeObj(Socket socket, CancellationToken cts)
@@ -65,12 +61,16 @@ public class SocketService(
         {
             SocketWrapper = new SocketWrapper(socket)
         };
+        
         await PublishTypedAsync(sslStreamObj, cts);
     }
+
     private async Task PublishTypedAsync<T>(T data, CancellationToken cts)
     {
         _globalEventBusClient.Publish(ConnectionStates.Connecting, cts);
         _globalEventBusClient.Publish(data);
-        await _globalEventBusClient.PublishAsync(data, cts);
+       await _globalEventBusClient.PublishAsync(data, cts);
+
+        await Task.CompletedTask;
     }
 }

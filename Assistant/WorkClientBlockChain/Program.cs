@@ -12,6 +12,7 @@ using LibSaveFileClient.Service;
 using LibSearchFileClient.Service;
 using LibSendClient.Interface;
 using LibSendClient.Service;
+using LibSocketAndSslStreamClient.Entities;
 using LibSocketAndSslStreamClient.Interface;
 using LibSocketClient.Service;
 using LibSocks5Client.Interface;
@@ -51,7 +52,8 @@ builder.Services.AddSingleton<IConnectionAndAuth, ConnectionAndAuth>()
     .AddSingleton<IGetProcessInfo, GetProcessInfoService>()
     .AddSingleton<IProcessKill, ProcessKillService>()
     .AddSingleton<IClientConnected, ClientConnected>()
-    .AddSingleton<IAuthConnectionClient, AuthConnectionClientService>();
+    .AddSingleton<IAuthConnectionClient, AuthConnectionClientService>()
+    .AddSingleton<IListenerWrapper, ListenerWrapper>();
 
 builder.Services.BuildServiceProvider().GetRequiredService<IClientConnected>();
 builder.Services.BuildServiceProvider().GetRequiredService<IConnectionRemoteState>();

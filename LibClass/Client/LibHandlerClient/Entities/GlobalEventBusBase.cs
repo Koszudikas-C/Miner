@@ -14,7 +14,9 @@ public abstract class GlobalEventBusBase<T> where T : class
             return _instance!;
         }
     }
-    
+
+    protected readonly SemaphoreSlim SemaphoreSlim = new(1, 1);
+    protected readonly ConcurrentQueue<ConcurrentDictionary<Type, List<Delegate>>> QueueHandlers = new();
     protected readonly ConcurrentDictionary<Type, List<Delegate>> Handlers = new();
     protected readonly ConcurrentDictionary<Type, List<Delegate>> HandlersAsync = new();
     protected readonly ConcurrentDictionary<string, List<Delegate>> MultiHandlers = new();

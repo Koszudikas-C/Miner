@@ -41,8 +41,9 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         lock (HandlersAsync[type])
         {
             HandlersAsync[type].Add(handlerAsync);
+            QueueHandlers.Enqueue(HandlersAsync);
+            Console.WriteLine($"Total Signature of Functions {QueueHandlers.Count}");
         }
-
     }
 
     public override void SubscribeList<TW>(Action<List<TW>> handlers)
@@ -60,12 +61,12 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
     public override void SubscribeListAsync<TW>(Func<List<TW>, CancellationToken, Task> handlerListAsync)
     {
         var type = typeof(List<TW>);
-        if (!Handlers.ContainsKey(type))
+        if (!HandlersAsync.ContainsKey(type))
             Handlers[type] = [];
 
-        lock (Handlers[type])
+        lock (HandlersAsync[type])
         {
-            Handlers[type].Add(handlerListAsync);
+            HandlersAsync[type].Add(handlerListAsync);
         }
     }
 
@@ -74,8 +75,11 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         var type = typeof(TW);
         if (!Handlers.TryGetValue(type, out var handlers)) return;
 
-        foreach (var handler in handlers.ToList())
-            ((Action<TW>)handler)(eventData);
+        lock (Handlers[type])
+        {
+            foreach (var handler in handlers.ToList())
+                ((Action<TW>)handler)(eventData);
+        }
     }
 
     public override void Publish<TW, T>(TW data1, T data2)
@@ -83,20 +87,30 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         var key = GetKey(typeof(TW), typeof(T));
         if (!MultiHandlers.TryGetValue(key, out var handlers)) return;
 
-        foreach (var handler in handlers.ToList())
-            ((Action<TW, T>)handler)(data1, data2);
+        lock (MultiHandlers[key])
+        {
+            foreach (var handler in handlers.ToList())
+                ((Action<TW, T>)handler)(data1, data2);
+        }
     }
 
     public override async Task PublishAsync<TW>(TW eventDataAsync, CancellationToken cts = default)
     {
-        if (HandlersAsync.TryGetValue(typeof(TW), out var handlers))
+        try
         {
+            await SemaphoreSlim.WaitAsync(cts);
+            var type = typeof(TW);
+            if (!HandlersAsync.TryGetValue(type, out var handlers)) return;
+
             foreach (var handler in handlers.Cast<Func<TW, CancellationToken, Task>>())
             {
-                await handler(eventDataAsync, cts); 
+                await handler(eventDataAsync, cts);
             }
         }
-
+        finally
+        {
+            SemaphoreSlim.Release();
+        }
     }
 
     public override void PublishList<TW>(List<TW> eventData)
@@ -104,17 +118,28 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         var type = typeof(List<TW>);
         if (!Handlers.TryGetValue(type, out var handlers)) return;
 
-        foreach (var handler in handlers.ToList())
-            ((Action<List<TW>>)handler)(eventData);
+        lock (Handlers[type])
+        {
+            foreach (var handler in handlers.ToList())
+                ((Action<List<TW>>)handler)(eventData);
+        }
     }
 
     public override async Task PublishListAsync<TW>(List<TW> eventData, CancellationToken cts = default)
     {
-        var type = typeof(List<TW>);
-        if (!Handlers.TryGetValue(type, out var handlers)) return;
+        try
+        {
+            await SemaphoreSlim.WaitAsync(cts);
+            var type = typeof(List<TW>);
+            if (!Handlers.TryGetValue(type, out var handlers)) return;
 
-        foreach (var handler in handlers.ToList())
-            await ((Func<List<TW>, CancellationToken, Task>)handler)(eventData, cts);
+            foreach (var handler in handlers.ToList())
+                await ((Func<List<TW>, CancellationToken, Task>)handler)(eventData, cts);
+        }
+        finally
+        {
+            SemaphoreSlim.Release();
+        }
     }
 
     public override void Unsubscribe<TW>(Action<TW> handler)

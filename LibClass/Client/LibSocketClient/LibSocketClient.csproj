@@ -9,10 +9,15 @@
     <ItemGroup>
       <ProjectReference Include="..\LibCommunicationStateClient\LibCommunicationStateClient.csproj" />
       <ProjectReference Include="..\LibCryptographyClient\LibCryptographyClient.csproj" />
+      <ProjectReference Include="..\LibException\LibException.csproj" />
       <ProjectReference Include="..\LibHandlerClient\LibHandlerClient.csproj" />
       <ProjectReference Include="..\LibManagerFileClient\LibManagerFileClient.csproj" />
       <ProjectReference Include="..\LibMapperObjClient\LibMapperObjClient.csproj" />
       <ProjectReference Include="..\LibSocketAndSslStreamClient\LibSocketAndSslStreamClient.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
 
 </Project>

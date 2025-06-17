@@ -9,7 +9,6 @@ using LibHandlerClient.Entities;
 using LibReceiveClient.Interface;
 using LibSendClient.Interface;
 using LibSocketAndSslStreamClient.Interface;
-using Microsoft.Extensions.Logging;
 
 namespace LibSslClient.Service;
 
@@ -18,16 +17,15 @@ public class AuthSslService : IAuthSsl
     private readonly IAuth _authClient;
     private readonly IReceive _receive;
     private readonly ISend<HttpStatusCode> _sendStatusCode;
-    private readonly ILogger<AuthSslService> _logger;
     private readonly GlobalEventBus _globalEventBus = GlobalEventBus.Instance;
+    private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
     public AuthSslService(IAuth authClient, IReceive receive,
-        ISend<HttpStatusCode> sendStatusCode, ILogger<AuthSslService> logger)
+        ISend<HttpStatusCode> sendStatusCode)
     {
         _authClient = authClient;
         _receive = receive;
         _sendStatusCode = sendStatusCode;
-        _logger = logger;
         SubscribeEvents();
     }
 
@@ -44,23 +42,17 @@ public class AuthSslService : IAuthSsl
     {
         try
         {
+            await _semaphoreSlim.WaitAsync(cts);
             var sslStream = await _authClient.AuthenticateAsync(
-                objSocketSslStream.SocketWrapper!, cts);
-            
+                objSocketSslStream.SocketWrapper!, cts).ConfigureAwait(false);
+
             var clientInfo = GetClientInfo(sslStream, objSocketSslStream.SocketWrapper!.InnerSocket);
 
             await ReceiveNonceAsync(clientInfo, cts);
         }
-        catch (OperationCanceledException e)
+        finally
         {
-            _logger.LogWarning("Authentication operation exceeded with Remote. Error: {Message}", e);
-            _globalEventBus.Publish(ConnectionStates.NoAuthenticated, cts);
-            throw new OperationCanceledException();
-        }
-        catch (Exception)
-        {
-            _globalEventBus.Publish(ApplicationState.Restart, cts);
-            throw new Exception();
+            _semaphoreSlim.Release();
         }
     }
 

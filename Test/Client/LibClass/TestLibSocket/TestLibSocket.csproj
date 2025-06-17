@@ -15,4 +15,10 @@
         <PackageReference Include="xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\LibClass\Client\LibSocketAndSslStreamClient\LibSocketAndSslStreamClient.csproj" />
+      <ProjectReference Include="..\..\..\..\LibClass\Client\LibSocketClient\LibSocketClient.csproj" />
+      <ProjectReference Include="..\..\DataFictitiousClient\DataFictitiousClient.csproj" />
+    </ItemGroup>
+    
 </Project>
