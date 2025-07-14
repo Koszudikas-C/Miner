@@ -1,56 +1,57 @@
 using ApiRemoteWorkClientBlockChain.Entities;
 using ApiRemoteWorkClientBlockChain.Interface.Repository;
+using LibCommunicationStateRemote.Entities;
 
 namespace ApiRemoteWorkClientBlockChain.Repository;
 
 public class ClientNotAuthorizedRepository : IClientNotAuthorized
 {
-    public void Add(ClientNotAuthorized entity)
+    public ApiResponse<bool> Add(ClientNotAuthorized entity)
     {
         throw new NotImplementedException();
     }
 
-    public void Update(ClientNotAuthorized entity)
+    public ApiResponse<bool> Update(ClientNotAuthorized entity)
     {
         throw new NotImplementedException();
     }
 
-    public void Delete(ClientNotAuthorized entity)
+    public ApiResponse<bool> Delete(ClientNotAuthorized entity)
     {
         throw new NotImplementedException();
     }
 
-    public ClientNotAuthorized GetById(Guid id)
+    public ApiResponse<ClientNotAuthorized> GetById(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public List<ClientNotAuthorized> GetAll()
+    public ApiResponse<List<ClientNotAuthorized>> GetAll(int page, int pageSize,bool all)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> AddAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> UpdateAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> DeleteAsync(ClientNotAuthorized entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ClientNotAuthorized> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<ClientNotAuthorized>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<ClientNotAuthorized>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<ApiResponse<IEnumerable<ClientNotAuthorized>>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

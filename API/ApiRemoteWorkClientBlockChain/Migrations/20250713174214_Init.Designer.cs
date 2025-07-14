@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ApiRemoteWorkClientBlockChain.Migrations
 {
     [DbContext(typeof(RemoteWorkClientDbContext))]
-    [Migration("20250613091744_TwoDb")]
-    partial class TwoDb
+    [Migration("20250713174214_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,28 +25,48 @@ namespace ApiRemoteWorkClientBlockChain.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ApiRemoteWorkClientBlockChain.Entities.Client", b =>
+            modelBuilder.Entity("LibEntitiesRemote.Entities.Client.Client", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttemptsConnection")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("DateConnected")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Ip")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<string>("IpLocal")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<string>("Port")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
-                    b.Property<string>("TimeoutReceive")
-                        .HasColumnType("text");
+                    b.Property<DateTimeOffset>("PrimaryConnection")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("TimeoutSend")
-                        .HasColumnType("text");
+                    b.Property<int>("StateClient")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TimeoutReceive")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TimeoutSend")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

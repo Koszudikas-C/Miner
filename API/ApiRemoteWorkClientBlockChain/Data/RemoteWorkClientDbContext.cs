@@ -1,5 +1,6 @@
 using System.Reflection;
 using ApiRemoteWorkClientBlockChain.Entities;
+using LibEntitiesRemote.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,7 @@ public class RemoteWorkClientDbContext(DbContextOptions<RemoteWorkClientDbContex
         {
             entity.ToTable("client_primary_contact_server");
             entity.HasIndex(e => e.Id);
+            entity.HasIndex(i => i.Ip);
         });
     }
 }

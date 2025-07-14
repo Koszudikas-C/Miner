@@ -156,6 +156,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibsaveFile", "Test\Cli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibSocket", "Test\Client\LibClass\TestLibSocket\TestLibSocket.csproj", "{953D1EA0-43DD-42FA-AEF0-0AA1CB70A10C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{D86D7548-E903-49D2-831C-E48394D76B8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApiRemoteWorkClientBlockChain", "Test\Remote\API\TestApiRemoteWorkClientBlockChain\TestApiRemoteWorkClientBlockChain.csproj", "{72A41774-EFD1-4156-82A1-CAE79A39DD25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -422,6 +426,10 @@ Global
 		{953D1EA0-43DD-42FA-AEF0-0AA1CB70A10C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{953D1EA0-43DD-42FA-AEF0-0AA1CB70A10C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{953D1EA0-43DD-42FA-AEF0-0AA1CB70A10C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72A41774-EFD1-4156-82A1-CAE79A39DD25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72A41774-EFD1-4156-82A1-CAE79A39DD25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72A41774-EFD1-4156-82A1-CAE79A39DD25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72A41774-EFD1-4156-82A1-CAE79A39DD25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -497,6 +505,8 @@ Global
 		{1FA85A1B-023B-4D73-85D1-0FAA74DC1506} = {29D20770-3B4E-4D33-B451-CB40D05565CD}
 		{0210E732-60CB-41CC-AA92-027D669E76CE} = {AEB6BB03-7E4A-4C7C-992F-4BCAF947FCEA}
 		{953D1EA0-43DD-42FA-AEF0-0AA1CB70A10C} = {AEB6BB03-7E4A-4C7C-992F-4BCAF947FCEA}
+		{D86D7548-E903-49D2-831C-E48394D76B8C} = {4F79EFC4-6553-4137-A841-D939DB9D0724}
+		{72A41774-EFD1-4156-82A1-CAE79A39DD25} = {D86D7548-E903-49D2-831C-E48394D76B8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C5BE125-F4C6-4D19-AF54-89625CE911B5}

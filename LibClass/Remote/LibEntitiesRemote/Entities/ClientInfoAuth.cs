@@ -8,7 +8,7 @@ public class ClientInfoAuth(Socket socket) : IAuthDisconnectClient
 {
     public Guid Id { get; set; }
     
-    public ISocketWrapper? SocketWrapper { get; set; } = new SocketWrapper(socket);
+    public ISocketWrapper SocketWrapper { get; set; } = new SocketWrapper(socket);
    
     public ISslStreamWrapper? SslStreamWrapper { get; init; }
     

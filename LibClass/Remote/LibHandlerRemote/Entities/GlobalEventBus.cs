@@ -15,7 +15,7 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         }
     }
 
-    public override void Subscribe<TW>(Action<List<TW>> handlers)
+    public override void SubscribeList<TW>(Action<List<TW>> handlers)
     {
         var type = CheckBeforeHandler<TW>();
         lock (Handlers[type])
@@ -133,7 +133,7 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
     }
 
     // Methods with two generics types
-    public override void Subscribe<TW, T>(Action<Tuple<TW, T>> handler)
+    public override void Subscribe<TW, T>(Action<TW, T> handler)
     {
         var key = GetKey(typeof(TW), typeof(T));
         if (!MultiHandlers.ContainsKey(key))
@@ -145,7 +145,7 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         }
     }
 
-    public override void Subscribe<TW, T>(Action<List<Tuple<TW, T>>> handler)
+    public override void SubscribeList<TW, T>(Action<List<Tuple<TW, T>>> handler)
     {
         var key = GetKey(typeof(TW), typeof(T));
         if (!MultiHandlers.ContainsKey(key))

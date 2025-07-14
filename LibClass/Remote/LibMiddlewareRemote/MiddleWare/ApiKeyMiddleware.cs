@@ -13,7 +13,7 @@ public class ApiKeyMiddleware(
 
   public async Task InvokeAsync(HttpContext context)
   {
-    if (!context.Request.Headers.TryGetValue("x-api-key", out var extractedApiKey)
+    if (!context.Request.Headers.TryGetValue("Authorization", out var extractedApiKey)
         || extractedApiKey != _apiKey)
     {
       context.Response.StatusCode = 401;

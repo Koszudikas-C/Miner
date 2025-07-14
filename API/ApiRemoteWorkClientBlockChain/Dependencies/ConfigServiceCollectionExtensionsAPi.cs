@@ -8,6 +8,8 @@ using ApiRemoteWorkClientBlockChain.Repository;
 using ApiRemoteWorkClientBlockChain.Service;
 using ApiRemoteWorkClientBlockChain.Service.LibClass;
 using ApiRemoteWorkClientBlockChain.Service.ProcessOptions;
+using ApiRemoteWorkClientBlockChain.Utils;
+using ApiRemoteWorkClientBlockChain.Utils.Interface;
 using LibAuthSecurityConnectionRemote.Interface;
 using LibCertificateRemote.Interface;
 using LibCertificateRemote.Service;
@@ -38,10 +40,7 @@ namespace ApiRemoteWorkClientBlockChain.Dependencies;
 public static class ConfigServiceCollectionExtensionsAPi
 {
     private static readonly ILoggerFactory LoggerFactory = new LoggerFactory();
-
-    private static readonly ILogger<object> _logger =
-        new Logger<object>(LoggerFactory);
-
+    
     public static IServiceCollection AddConfigServiceCollection(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -75,6 +74,9 @@ public static class ConfigServiceCollectionExtensionsAPi
             .AddScoped(typeof(IManagerOptions<>), typeof(ManagerOptionsAutomaticService<>))
             .AddScoped<IAuthConnection, AuthConnectionService>()
             .AddScoped<ISslServerAuthOptions, SslServerAuthOptionsService>()
+            .AddScoped<IClientConnectionHandler, ClientConnectionHandler>()
+            .AddScoped<ISendClientsEvent, SendClientsEvent>()
+            .AddSingleton<IManagerSocketConnected, ManagerSocketConnectedService>()
             .AddSingleton<GlobalEventBus>()
             .AddSingleton(ClientConnected.Instance)
             
@@ -100,6 +102,17 @@ public static class ConfigServiceCollectionExtensionsAPi
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
         });
+        var  myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        
+        services.AddCors(options =>
+        {
+            options.AddPolicy(name: myAllowSpecificOrigins,
+                policy  =>
+                {
+                    policy.WithOrigins("http://localhost:5239")
+                        .AllowAnyMethod().WithHeaders("Authorization","x-api-key", "Content-Type");
+                });
+        });
         
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -111,7 +124,7 @@ public static class ConfigServiceCollectionExtensionsAPi
 
     private static void InitializeConstructorOrService(IServiceCollection service)
     {
-        service.BuildServiceProvider().GetRequiredService<IClient>();
+        service.BuildServiceProvider().GetRequiredService<IClientConnectionHandler>();
         service.BuildServiceProvider().GetRequiredService<IManagerUpload>();
         service.BuildServiceProvider().GetRequiredService<IAuthConnection>();
     }

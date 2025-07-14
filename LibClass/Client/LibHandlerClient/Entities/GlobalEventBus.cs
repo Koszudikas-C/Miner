@@ -42,7 +42,6 @@ public class GlobalEventBus : GlobalEventBusBase<GlobalEventBus>, IEventBus
         {
             HandlersAsync[type].Add(handlerAsync);
             QueueHandlers.Enqueue(HandlersAsync);
-            Console.WriteLine($"Total Signature of Functions {QueueHandlers.Count}");
         }
     }
 

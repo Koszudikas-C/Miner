@@ -32,6 +32,12 @@ else
     app.UseHsts();
 }
 
+app.UseCors("_myAllowSpecificOrigins");
+
+// app.UseAuthentication();
+//
+// app.UseAuthorization();
+
 app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();

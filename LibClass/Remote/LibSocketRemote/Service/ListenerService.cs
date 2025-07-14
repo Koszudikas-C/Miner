@@ -9,6 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace LibSocketRemote.Service;
 
+/// <summary>
+/// Do Bind is a reserve amount of socket for the kernel.
+/// Accepts client connection triggers an event by passing the socket to class called. 
+/// </summary>
+/// <param name="logger"></param>
 public class ListenerService(ILogger<ListenerService> logger) : IListener
 {
     private readonly Listener _listener = new Listener();
@@ -30,11 +35,10 @@ public class ListenerService(ILogger<ListenerService> logger) : IListener
 
         _logger.LogInformation($"Remote started successfully at the port {port} " +
                                $"with the kernel listening to the total of {maxConnections} ");
-        
+
         _listener.Listening = true;
-
+        
         CommunicationStateReceiveAndSend.SetConnecting(true);
-
         await ConnectForClientAsync(typeAuthMode, cts);
     }
 
@@ -50,7 +54,7 @@ public class ListenerService(ILogger<ListenerService> logger) : IListener
         CancellationToken cts)
     {
         _logger.LogInformation($"Starting client Acceptance mode {typeAuthMode}");
-        
+
         while (!cts.IsCancellationRequested)
         {
             try
@@ -59,7 +63,7 @@ public class ListenerService(ILogger<ListenerService> logger) : IListener
 
                 _listener.SocketClient = await _listener.Socket.AcceptAsync(cts);
 
-                _ = OnConnectedActAsync(cts);
+                OnConnectedActAsync(cts).ConfigureAwait(false).GetAwaiter();
             }
             catch (Exception e)
             {
@@ -82,40 +86,18 @@ public class ListenerService(ILogger<ListenerService> logger) : IListener
     {
         CheckNullSocketClient();
         SetConfigSocket();
-
-        try
-        {
-            if (ConnectedActAsync is not null)
-                await ConnectedActAsync.Invoke(_listener.SocketClient!, cts);
-        }
-        catch (OperationCanceledException e)
-        {
-            _logger.LogWarning("Listen to a canceled operation probably" +
-                               " timeout at the time of SSL/TLS authentication with remote. Client IP: {IP}. Error: {Message}",
-                _listener.SocketClient!.RemoteEndPoint!.ToString(), e);
-            throw;
-        }
-        catch (IOException e)
-        {
-            _logger.LogCritical("There was an error " +
-                                "when receiving possible client data possibly can " +
-                                "be bots trying to seek information. bot IP: {IP}. Error: {Message}",
-                _listener.SocketClient!.RemoteEndPoint, e);
-            throw;
-        }
-        catch (Exception e)
-        {
-            _logger.LogCritical("A generic error occurred check the past method " +
-                                "for the client to check the reliability is integrity. IP: {IP}. Error: {Message}",
-                _listener.SocketClient!.RemoteEndPoint, e);
-            throw;
-        }
-        finally
-        {
-            _listener.SocketClient!.Close();
-        }
+        
+        if (ConnectedActAsync is not null)
+            await ConnectedActAsync.Invoke(_listener.SocketClient!, cts);
     }
-
+    
+    private void SetConfigSocket()
+    {
+        CheckNullSocketClient();
+        _listener.SocketClient!.ReceiveTimeout = 10000;
+        _listener.SocketClient.SendTimeout = 10000;
+    }
+    
     private void CheckNullSocketClient()
     {
         if (_listener.SocketClient is null)
@@ -123,12 +105,5 @@ public class ListenerService(ILogger<ListenerService> logger) : IListener
             throw new InvalidOperationException("Check the customer's " +
                                                 "socket is passing with a null value");
         }
-    }
-
-    private void SetConfigSocket()
-    {
-        CheckNullSocketClient();
-        _listener.SocketClient!.ReceiveTimeout = 10000;
-        _listener.SocketClient.SendTimeout = 10000;
     }
 }

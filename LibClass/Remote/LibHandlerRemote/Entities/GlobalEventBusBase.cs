@@ -24,7 +24,7 @@ public abstract class GlobalEventBusBase<T> where T : class
     protected static string GetKey(Type t1, Type t2) => $"{t1.FullName}_{t2.FullName}";
     
     public abstract void Subscribe<TW>(Action<TW> handler);
-    public abstract void Subscribe<TW>(Action<List<TW>> handlers);
+    public abstract void SubscribeList<TW>(Action<List<TW>> handlers);
     public abstract void SubscribeFunc<TW>(Func<TW, CancellationToken, Task> funcHandler);
     public abstract void SubscribeListFunc<TW>(Func<List<TW>, CancellationToken , Task> handlers);
     
@@ -39,8 +39,8 @@ public abstract class GlobalEventBusBase<T> where T : class
     public abstract void UnsubscribeListFunc<TW>(Action<List<TW>> handlers);
 
     // Methods with two generic types
-    public abstract void Subscribe<TW, T>(Action<Tuple<TW, T>> handler);
-    public abstract void Subscribe<TW, T>(Action<List<Tuple<TW, T>>> handlers);
+    public abstract void Subscribe<TW, T>(Action<TW, T> handler);
+    public abstract void SubscribeList<TW, T>(Action<List<Tuple<TW, T>>> handlers);
     public abstract void SubscribeFunc<TW, T>(Func<TW, T, CancellationToken, Task> handler);
     public abstract void SubscribeListFunc<TW, T>(Func<List<Tuple<TW, T>>, CancellationToken, Task> handlers);
     

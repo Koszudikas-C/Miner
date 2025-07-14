@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace LibCommunicationStateClient.Entities.Enum;
+namespace LibEntitiesRemote.Entities.Client.Enum;
 
 public enum ConnectionStates
 {

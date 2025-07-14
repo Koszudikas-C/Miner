@@ -10,5 +10,9 @@
       <ProjectReference Include="..\..\..\LibClass\Remote\LibMapperObjRemote\LibMapperObjRemote.csproj" />
       <ProjectReference Include="..\..\..\LibClass\Remote\LibSocketAndSslStreamRemote\LibSocketAndSslStreamRemote.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Repository\" />
+    </ItemGroup>
   
 </Project>

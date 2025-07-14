@@ -1,55 +1,56 @@
 using ApiRemoteWorkClientBlockChain.Interface.Repository;
+using LibCommunicationStateRemote.Entities;
 
 namespace ApiRemoteWorkClientBlockChain.Repository;
 
 public class BaseRepository<TW, T> : IRepositoryBase<TW, T>
 {
-    public void Add(T entity)
+    public ApiResponse<bool> Add(T entity)
     {
         throw new NotImplementedException();
     }
 
-    public void Update(T entity)
+    public ApiResponse<bool> Update(T entity)
     {
         throw new NotImplementedException();
     }
 
-    public void Delete(T entity)
+    public ApiResponse<bool> Delete(T entity)
     {
         throw new NotImplementedException();
     }
 
-    public T GetById(TW id)
+    public ApiResponse<T> GetById(TW id)
     {
         throw new NotImplementedException();
     }
 
-    public List<T> GetAll()
+    public ApiResponse<List<T>> GetAll(int page, int pageSize, bool all)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(T entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<bool>> DeleteAsync(T entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<T> GetByIdAsync(TW id, CancellationToken cancellationToken = default)
+    public Task<ApiResponse<T>> GetByIdAsync(TW id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<ApiResponse<IEnumerable<T>>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

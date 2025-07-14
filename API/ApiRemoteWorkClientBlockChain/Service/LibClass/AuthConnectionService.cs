@@ -58,8 +58,15 @@ public class AuthConnectionService : IAuthConnection
     await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
   }
 
-  private void GetNonceDb() =>
-    _usedNonce.AddRange(_nonceTokenRepository.GetAll().Select(g => g.GuidTokenGlobal));
+  private void GetNonceDb(Guid id)
+  {
+    var data = _nonceTokenRepository.GetByNonce(id);
+    
+    if (!data.Success || data.Data is null)
+      throw new InvalidOperationException("Not found client not found");
+
+    _usedNonce.Add(data.Data.FirstOrDefault()!.GuidTokenGlobal);
+  }
 
 
   public async Task HandleClientAsync(ClientInfo clientInfo, ClientHandshakeRequest clientHandshakeRequest,
@@ -70,7 +77,7 @@ public class AuthConnectionService : IAuthConnection
     {
       if (!PrimaryGetStatus)
       {
-        GetNonceDb();
+        GetNonceDb(clientHandshakeRequest.Nonce);
         PrimaryGetStatus = true;
       }
 
