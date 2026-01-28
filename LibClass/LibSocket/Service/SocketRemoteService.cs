@@ -1,18 +1,12 @@
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using LibCommunicationStatus;
 using LibHandler.EventBus;
-using LibJson.Util;
-using LibReceive.Entities;
 using LibReceive.Interface;
-using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client;
 using LibRemoteAndClient.Enum;
-using LibSend.Entities;
 using LibSocketAndSslStream.Entities;
 using LibSocketAndSslStream.Entities.Enum;
 using LibSocketAndSslStream.Interface;
-using LibSocks5.Entities;
+using GuidTokenAuth = LibRemoteAndClient.Entities.Remote.Client.GuidTokenAuth;
 
 namespace LibSocket.Service;
 
@@ -20,7 +14,7 @@ public class SocketRemoteService(
     IListenerRemote listenerRemote,
     IReceive receive) : ISocketMiring
 {
-    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance!;
+    private readonly GlobalEventBusRemote _globalEventBusRemote = GlobalEventBusRemote.Instance;
 
     public async Task InitializeAsync(uint port, int maxConnection, TypeAuthMode typeAuthMode,
         CancellationToken cts = default)
@@ -81,7 +75,7 @@ public class SocketRemoteService(
             
             await receive.ReceiveDataAsync(clientInfo, TypeSocketSsl.Socket, 0, cts);
             
-            await tcs.Task.WaitAsync(TimeSpan.FromHours(1), cts);
+            await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5), cts);
         }
         catch (Exception e)
         {
@@ -104,6 +98,7 @@ public class SocketRemoteService(
             {
                 SocketWrapper = new SocketWrapper(socket)
             };
+            
             PublishTyped(sslStreamObj);
         }
     }

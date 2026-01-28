@@ -13,6 +13,7 @@ public class SaveFileService : ISaveFile
     {
         try
         {
+            configSaveFile.SetPathFile(PreparationConfigSaveFile(configSaveFile.PathFile));
             var writeTask = File.WriteAllTextAsync(configSaveFile.PathFile,
                 configSaveFile.Data, cts);
 
@@ -59,6 +60,7 @@ public class SaveFileService : ISaveFile
             throw new ArgumentNullException("The property responsible for processing the bytes is null.");
         try
         {
+            configSaveFile.SetPathFile(PreparationConfigSaveFile(configSaveFile.PathFile));
             var writeTask = File.WriteAllBytesAsync(configSaveFile.PathFile,
                 configSaveFile.DataBytes!, cts);
 
@@ -103,6 +105,7 @@ public class SaveFileService : ISaveFile
     {
         try
         {
+            configSaveFile.SetPathFile(PreparationConfigSaveFile(configSaveFile.PathFile));
             File.WriteAllText(configSaveFile.PathFile, configSaveFile.Data);
 
             ApplyAttributesFile(configSaveFile);
@@ -119,7 +122,7 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"UnauthorizedAccessException. SaveFileWrite directory: {configSaveFile.PathFile}");
         }
-        catch (DirectoryNotFoundException) when (_count == 0)
+        catch (DirectoryNotFoundException) when (_count++ == 0)
         {
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
@@ -140,15 +143,15 @@ public class SaveFileService : ISaveFile
             throw new ArgumentNullException("The property responsible for processing the bytes is null.");
         try
         {
+            configSaveFile.SetPathFile(PreparationConfigSaveFile(configSaveFile.PathFile));
             File.WriteAllBytes(configSaveFile.PathFile, configSaveFile.DataBytes!);
 
             ApplyAttributesFile(configSaveFile);
 
             return ReturnMessageSuccess($@"SaveFileWriteBytes directory: {configSaveFile.PathFile}");
         }
-        catch (UnauthorizedAccessException) when (_count == 0)
+        catch (UnauthorizedAccessException) when (_count++ == 0)
         {
-            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
             SaveFileWriteBytes(configSaveFile);
@@ -156,9 +159,8 @@ public class SaveFileService : ISaveFile
             return ReturnMessageSuccess(
                 $@"UnauthorizedAccessException. SaveFileWriteBytes directory: {configSaveFile.PathFile}");
         }
-        catch (DirectoryNotFoundException) when( _count == 0)
+        catch (DirectoryNotFoundException) when( _count++ == 0)
         {
-            if(_count++ == 1) throw;
             var pathDefault = PreparationConfigSaveFile("");
             configSaveFile.SetPathFile(pathDefault);
              SaveFileWriteBytes(configSaveFile);
@@ -180,7 +182,7 @@ public class SaveFileService : ISaveFile
             : Path.GetDirectoryName(filePath)!;
 
         Directory.CreateDirectory(dir);
-        return Path.Combine(dir, Path.GetFileName(filePath ?? "default.txt"));
+        return dir;
     }
 
 

@@ -1,9 +1,14 @@
 using System.Net;
+using ApiRemoteWorkClientBlockChain.Data;
 using ApiRemoteWorkClientBlockChain.Entities;
 using ApiRemoteWorkClientBlockChain.Entities.Interface;
 using ApiRemoteWorkClientBlockChain.Interface;
+using ApiRemoteWorkClientBlockChain.Interface.Repository;
+using ApiRemoteWorkClientBlockChain.Repository;
 using ApiRemoteWorkClientBlockChain.Service;
+using ApiRemoteWorkClientBlockChain.Service.LibClass;
 using ApiRemoteWorkClientBlockChain.Service.ProcessOptions;
+using LibAuthSecurityConnection.Interface;
 using LibCertificate.Interface;
 using LibCertificate.Service;
 using LibClassManagerOptions.Interface;
@@ -12,7 +17,6 @@ using LibCryptography.Interface;
 using LibCryptography.Service;
 using LibDirectoryFile.Interface;
 using LibDownload.Interface;
-using LibDto.Dto;
 using LibHandler.EventBus;
 using LibManagerFile.Interface;
 using LibMapperObj.Interface;
@@ -30,6 +34,7 @@ using LibSsl.Service;
 using LibUpload.Interface;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiRemoteWorkClientBlockChain.Dependencies;
 
@@ -39,9 +44,15 @@ public static class ConfigServiceCollectionExtensionsAPi
 
     private static readonly ILogger<object> _logger =
         new Logger<object>(LoggerFactory);
+
     public static IServiceCollection AddConfigServiceCollection(this IServiceCollection services,
         IConfiguration configuration)
     {
+        
+        //DataBaseConnection
+        services.AddDbContext<RemoteWorkClientDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        
         services.AddScoped<ISocketMiring, SocketRemoteService>()
             .AddScoped<IAuthSsl, AuthSslRemoteService>()
             .AddScoped<IAuthRemote, AuthRemoteService>()
@@ -66,8 +77,14 @@ public static class ConfigServiceCollectionExtensionsAPi
             .AddScoped<IPreparationFile, PreparationFileService>()
             .AddScoped<IPosAuth, PosAuthService>()
             .AddScoped(typeof(IManagerOptions<>), typeof(ManagerOptionsAutomaticService<>))
+            .AddScoped<IAuthConnectionRemote, AuthConnectionRemoteService>()
             .AddSingleton<GlobalEventBusRemote>()
-            .AddSingleton(ClientConnected.Instance);
+            .AddSingleton(ClientConnected.Instance)
+            
+            //Repositories
+            .AddScoped(typeof(IRepositoryBase<,>), typeof(BaseRepository<,>))
+            .AddScoped<INonceToken, NonceTokenRepository>()
+            .AddScoped<IClientNotAuthorized, ClientNotAuthorizedRepository>();
 
         InitializeConstructorOrService(services);
 
@@ -85,7 +102,7 @@ public static class ConfigServiceCollectionExtensionsAPi
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
         });
-
+        
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         // services.AddEndpointsApiExplorer();
@@ -96,14 +113,7 @@ public static class ConfigServiceCollectionExtensionsAPi
 
     private static void InitializeConstructorOrService(IServiceCollection service)
     {
-        try
-        {
-            service.BuildServiceProvider().GetRequiredService<IManagerUpload>();
-        }
-        catch (Exception e)
-        {
-            _logger.LogCritical($"Some service initialized the construction builder manually check. Error: {e.Message}");
-            throw new Exception();
-        }
+        service.BuildServiceProvider().GetRequiredService<IManagerUpload>();
+        service.BuildServiceProvider().GetRequiredService<IAuthConnectionRemote>();
     }
 }

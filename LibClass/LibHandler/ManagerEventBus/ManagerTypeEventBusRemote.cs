@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Security;
 using System.Text.Json;
 using LibCryptography.Entities;
@@ -8,7 +9,6 @@ using LibJson.Util;
 using LibManagerFile.Entities;
 using LibRemoteAndClient.Entities.Client;
 using LibRemoteAndClient.Entities.Remote.Client.Enum;
-using LibSocketAndSslStream.Entities;
 
 namespace LibHandler.ManagerEventBus;
 
@@ -32,7 +32,7 @@ public class ManagerTypeEventBusRemote
             case string message:
                 _globalEventBusRemote.Publish(message);
                 break;
-            case GuidTokenAuth guidTokenAuth:
+            case GuidTokenAuthDto guidTokenAuth:
                 _globalEventBusRemote.Publish(guidTokenAuth);
                 break;
             case ClientCommandXmrig xmrigResult:
@@ -77,8 +77,14 @@ public class ManagerTypeEventBusRemote
             case ParamsManagerOptionsResponseDto paramsManagerOptionsResponseDto:
                 _globalEventBusRemote.Publish(paramsManagerOptionsResponseDto);
                 break;
+            case HttpStatusCode httpStatusCode:
+                _globalEventBusRemote.Publish(httpStatusCode);
+                break;
+            case ClientHandshakeDto clientHandshakeDto:
+                _globalEventBusRemote.Publish(clientHandshakeDto);
+                break;
             default:
-                throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));
+                throw new ArgumentException($"Unsupported data type from publish: {obj.GetType().FullName ?? "null"}", nameof(data));
         }
     }
 

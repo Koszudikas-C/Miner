@@ -15,7 +15,7 @@ namespace LibHandler.ManagerEventBus;
 public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
 {
     private readonly GlobalEventBusClient _globalEventBusClient = GlobalEventBusClient.Instance!;
-    
+
     public override void PublishEventType(JsonElement data)
     {
         var obj = JsonElementConvertClient.ConvertToObject(data) ??
@@ -54,7 +54,7 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
                 _globalEventBusClient.Publish(configSaveFileDto);
                 break;
             case ClientMineDto clientMineDto:
-                _globalEventBusClient.Publish(clientMineDto); 
+                _globalEventBusClient.Publish(clientMineDto);
                 break;
             case ParamsManagerOptionsDto<ParamsSocks5Dto> paramsManagerOptionsDto:
                 _globalEventBusClient.Publish(paramsManagerOptionsDto);
@@ -74,8 +74,14 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
             case ParamsManagerOptionsResponseDto paramsManagerOptionsResponseDto:
                 _globalEventBusClient.Publish(paramsManagerOptionsResponseDto);
                 break;
+            case GuidTokenAuthDto guidTokenAuth:
+                _globalEventBusClient.Publish(guidTokenAuth);
+                break;
+            case ClientHandshakeDto clientHandshakeDto:
+                _globalEventBusClient.Publish(clientHandshakeDto);
+                break;
             default:
-                throw new ArgumentException($"Unsupported data type: {obj.GetType().FullName ?? "null"}", nameof(data));
+                throw new ArgumentException($"Unsupported data type from publish: {obj.GetType().FullName ?? "null"}", nameof(data));
         }
     }
 
@@ -94,11 +100,11 @@ public class ManagerTypeEventBusClient : ManagerTypeEventBusBase
         {
             _globalEventBusClient.Publish(obj.Cast<ClientMine>().ToList());
         }
-        else if(obj.All(o => o is LogEntry))
+        else if (obj.All(o => o is LogEntry))
         {
             _globalEventBusClient.Publish(obj.Cast<LogEntry>().ToList());
         }
-        else if(obj.All(o => o is ClientCommandMine))
+        else if (obj.All(o => o is ClientCommandMine))
         {
             _globalEventBusClient.Publish(obj.Cast<ClientCommandMine>().ToList());
         }

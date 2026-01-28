@@ -1,6 +1,7 @@
-namespace ServerBlockChain.Entities.Client;
+namespace LibRemoteAndClient.Entities.Remote.Client;
 
 public class GuidTokenAuth
 {
-    public Guid GuidTokenGlobal { get; set; }
+    public int Id { get; set; }
+    public Guid GuidTokenGlobal { get; set; } = GuidToken.GuidTokenGlobal;
 }

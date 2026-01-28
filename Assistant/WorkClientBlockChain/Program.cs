@@ -1,3 +1,4 @@
+using LibClassAuthSecurityConnection.Interface;
 using LibClassGetProcessInfo.Interface;
 using LibClassManagerOptions.Interface;
 using LibClassProcessOperations.Interface;
@@ -25,7 +26,7 @@ using WorkClientBlockChain.Interface;
 using WorkClientBlockChain.Middleware;
 using WorkClientBlockChain.Middleware.Interface;
 using WorkClientBlockChain.Service;
-using WorkClientBlockChain.Utils;
+using WorkClientBlockChain.Service.LibClass;
 using WorkClientBlockChain.Utils.Interface;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -52,7 +53,10 @@ builder.Services.AddSingleton<IConnectionAndAuth, ConnectionAndAuth>()
     .AddSingleton<IProcessOptionsClient, AuthSocks5OptionsService>()
     .AddSingleton<IGetProcessInfo, GetProcessInfoService>()
     .AddSingleton<IProcessKill, ProcessKillService>()
-    .AddSingleton<IClientConnected, ClientConnected>();
+    .AddSingleton<IClientConnected, ClientConnected>()
+    .AddSingleton<IAuthConnectionClient, AuthConnectionClientService>();
+
+builder.Services.BuildServiceProvider().GetRequiredService<IAuthConnectionClient>();
 
 var host = builder.Build();
 host.Run();

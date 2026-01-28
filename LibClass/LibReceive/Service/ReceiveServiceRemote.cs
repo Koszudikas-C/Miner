@@ -133,13 +133,13 @@ public class ReceiveServiceRemote : IReceive
 
     private void OnReceivedAtc(JsonElement data)
     {
-        Console.WriteLine($"Data received{data}");
+        Console.WriteLine($"Data received: {data}");
         _managerTypeEventBusRemote.PublishEventType(data!);
     }
 
     private void OnReceiveList(List<JsonElement> listData)
     {
-        Console.WriteLine($"List received {listData}");
+        Console.WriteLine($"List received:{listData}");
         _managerTypeEventBusRemote.PublishListEventType(listData);
     }
 

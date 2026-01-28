@@ -46,6 +46,7 @@ public class SendServiceRemote<T> : ISend<T>
     {
         if (clientInfo == null)
             throw new ArgumentNullException(nameof(clientInfo), "ClientInfo cannot be null.");
+        
         switch (typeSocketSsl)
         {
             case TypeSocketSsl.SslStream:

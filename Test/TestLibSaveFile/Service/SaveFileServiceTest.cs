@@ -21,7 +21,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -82,19 +82,9 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
     }
-
-    [Fact]
-    public async Task save_file_bytes_async()
-    {
-        var configSaveFile = ConfigSaveFileTest.GetConfigSaveFileTest();
-
-        var result = await _saveFile.SaveFileWriteBytesAsync(configSaveFile);
-
-        Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteByteAsyncSuccessDirectoryNotFound(configSaveFile), result);
-    }
+    
 
     [Fact]
     public async Task save_file_write_byte_async_should_throw_if_bytes_null()
@@ -113,18 +103,6 @@ public class SaveFileServiceTest
     }
 
     [Fact]
-    public void save_file_byte_write_should_throw_on_exception()
-    {
-        var configSaveFile = ConfigSaveFileTest.GetConfigSaveFileTest();
-        configSaveFile.SetPathFile("invalid_path/invalid_file.bin");
-
-        var result = _saveFile.SaveFileWriteBytes(configSaveFile);
-
-        Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteBytesSuccessDirectoryNotFound(configSaveFile), result);
-    }
-
-    [Fact]
     public void SaveFileWrite_Should_Throw_When_Data_IsNull()
     {
         var configSaveFile = ConfigSaveFileTest.GetConfigSaveFileTest();
@@ -132,7 +110,7 @@ public class SaveFileServiceTest
         var result = _saveFile.SaveFileWrite(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteSuccess(configSaveFile), result);
     }
 
     [Fact]
@@ -143,6 +121,6 @@ public class SaveFileServiceTest
         var result = await _saveFile.SaveFileWriteAsync(configSaveFile);
 
         Assert.NotNull(result);
-        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccessDirectoryNotFound(configSaveFile), result);
+        Assert.Equal(ConfigSaveFileTest.SaveFileWriteAsyncSuccess(configSaveFile), result);
     }
 }

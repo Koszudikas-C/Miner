@@ -1,0 +1,1 @@
+CREATE DATABASE work_client_database OWNER 'create_database';

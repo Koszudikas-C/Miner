@@ -1,6 +1,6 @@
 namespace LibRemoteAndClient.Entities.Client;
 
-public record ClientHandshakeRequest
+public record ClientHandshake
 {
     public string? HashExecHex { get; set; }
 

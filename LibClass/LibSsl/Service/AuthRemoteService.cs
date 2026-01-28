@@ -24,19 +24,30 @@ public class AuthRemoteService(ICertificate certificate) : IAuthRemote
             var sslStream = new SslStream(networkStream, false, 
                 null, null);
 
-            await sslStream.AuthenticateAsServerAsync(certificate.LoadCertificate(),
+            var task = sslStream.AuthenticateAsServerAsync(certificate.LoadCertificate(),
                 false, SslProtocols.Tls12 | SslProtocols.Tls13,
                 true);
-            
-            if (!sslStream.IsAuthenticated)
-                throw new AuthenticationException("Failed to authenticate remote");
-
+            await WithTimeoutAndCancel(task, TimeSpan.FromSeconds(5));
+            await task;
             return sslStream;
         }
         catch (Exception ex)
         {
             throw new Exception($"Failed to try to authenticate the client via SSL/TLS." +
                                 $"Check the connection to the client. Error: {ex.Message}");
+        }
+    }
+    
+    private static async Task WithTimeoutAndCancel(Task task, TimeSpan timeout)
+    {
+        using var cts = new CancellationTokenSource();
+        var delay = Task.Delay(timeout, cts.Token);
+
+        var completed = await Task.WhenAny(task, delay);
+        if (completed == delay)
+        {
+            await cts.CancelAsync();
+            throw new TimeoutException("Tempo limite excedido.");
         }
     }
 }

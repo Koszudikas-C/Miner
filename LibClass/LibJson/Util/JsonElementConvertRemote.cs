@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using LibDto.Dto;
@@ -37,9 +38,14 @@ public static class JsonElementConvertRemote
         }
 
         if (JsonMatchesType<GuidTokenAuth>(jsonElement))
-        {
             return jsonElement.Deserialize<GuidTokenAuth>()!;
-        }
+        
+        if (JsonMatchesType<HttpStatusCode>(jsonElement))
+            return jsonElement.Deserialize<HttpStatusCode>();
+        
+        if(JsonMatchesType<ClientHandshakeDto>(jsonElement))
+            return jsonElement.Deserialize<ClientHandshakeDto>()!;
+        
 
         return IdentifierTypeToProcess1(jsonElement);
     }

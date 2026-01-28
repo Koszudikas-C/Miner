@@ -37,6 +37,7 @@ public class SendServiceClient<T> : ISend<T>
     {
         if (clientInfo.SocketWrapper?.InnerSocket == null)
             throw new InvalidOperationException("Socket is not available in ClientInfo.");
+
         var send = new Send<T>(clientInfo.SocketWrapper.InnerSocket);
         await send.SendAsync(data, cts);
     }
@@ -46,6 +47,7 @@ public class SendServiceClient<T> : ISend<T>
     {
         if (clientInfo == null)
             throw new ArgumentNullException(nameof(clientInfo), "ClientInfo cannot be null.");
+
         switch (typeSocketSsl)
         {
             case TypeSocketSsl.SslStream:
@@ -94,6 +96,7 @@ public class SendServiceClient<T> : ISend<T>
     {
         if (clientInfo == null)
             throw new ArgumentNullException(nameof(clientInfo), "ClientInfo cannot be null.");
+
         switch (typeSocketSsl)
         {
             case TypeSocketSsl.SslStream:

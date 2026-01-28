@@ -31,7 +31,7 @@ public void SetPathFile(string directory)
     
     var cleanDirectory = directory.TrimStart('/', '\\');
     
-    PathFile = Path.Combine(cleanDirectory, FileName);
+    PathFile = Path.Combine(cleanDirectory, $"{FileName}.{ExtensionFile}");
 }
 
 

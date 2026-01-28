@@ -9,6 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LibClass\Client\LibClassAuthSecurityConnection\LibClassAuthSecurityConnection.csproj" />
+    <ProjectReference Include="..\..\LibClass\LibAuthSecurityConnection\LibAuthSecurityConnection.csproj" />
     <ProjectReference Include="..\..\LibClass\LibClassGetProcessInfo\LibClassGetProcessInfo.csproj" />
     <ProjectReference Include="..\..\LibClass\LibClassManagerOptions\LibClassManagerOptions.csproj" />
     <ProjectReference Include="..\..\LibClass\LibClassProcessOperations\LibClassProcessOperations.csproj" />
